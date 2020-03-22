@@ -28,12 +28,21 @@ public class MeshCreateControlPoints : MonoBehaviour
     [SerializeField] private string selectableTag = "Selectable";
     [SerializeField] private Material defaultMaterial;
     int goCounter=1;
+    private List<int> _indexOrder = new List<int>();
+    //private List<Vector3> Ceshi1 /*= new List<Vector3>()*/;
 
     void Start()
     {
 
         CreateControlPoints();
 
+        //Ceshi1=convertTransfromPosition(newListPositionControlPoints);
+        _indexOrder = mapping(initialControlPointPosition, ReadFileComputeNewcage.cageMatrices);
+        //display mapping rule
+        for (int i = 0; i < _indexOrder.Count; i++)
+        {
+            Debug.Log("this is mapping rule" + _indexOrder[i]);
+        }
     }
     /// <summary>
     /// function to create control points
@@ -60,11 +69,54 @@ public class MeshCreateControlPoints : MonoBehaviour
             var controlPointRenderer = ControlPoint.GetComponent<MeshRenderer>();
             controlPointRenderer.material = defaultMaterial;
             newListPositionControlPoints.Add(ControlPoint.transform);
-
-
         }
-
+        for (int i = 0; i < newListPositionControlPoints.Count; i++)
+        {
+            Debug.Log("newly recorded newListPositionControlPoints" + "\t" /*+ i + "\t" */+ newListPositionControlPoints[i].position.ToString("F6"));
+        }
     }
+
+
+    // extract the postion in TransformList
+    private List<Vector3> convertTransfromPosition(List<Transform> listTransfromInput)
+    {
+        List<Vector3> toReturn = new List<Vector3>();
+        for (int i = 0; i < listTransfromInput.Count; i++)
+        {
+            toReturn.Add(listTransfromInput[i].position);
+        }
+        return toReturn;
+    }
+
+    // returns List of int, which is the mapping rule from.
+    private List<int> mapping(Vector3[] positionInUnity, double[,] matrixCage)
+    {
+        // list of int
+        List<int> order = new List<int>();
+
+        for (int i = 0; i < positionInUnity.Length; i++)
+        {
+            int j;
+            for (j = 0; j < (matrixCage.Length) / 3; j++)
+            {
+                if (positionInUnity[i]./*position.*/x == matrixCage[j, 0])
+                {
+                    if (positionInUnity[i]./*position.*/y == matrixCage[j, 1])
+                    {
+                        if (positionInUnity[i]./*position.*/z == matrixCage[j, 2])
+                        {
+                            order.Add(j);
+                        }
+                    }
+                }
+            }
+            //matrixCage.RemoveRow(j); can be optimized
+        }
+        return order;
+    }
+
+
+
 
     void Update()
     {

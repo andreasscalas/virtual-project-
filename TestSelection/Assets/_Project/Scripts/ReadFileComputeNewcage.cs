@@ -16,14 +16,19 @@ public class ReadFileComputeNewcage : MonoBehaviour
     public string modelFileName;
     public string cageFileName;
     public string barCoordFileName;
-    /*public*/ double[,] modelMatrices;
+
+    [HideInInspector]
+    public double[,] modelMatrices;
+    [HideInInspector]
+    public double[,] cageMatrices;
+    [HideInInspector]
+    public double[,] barMatrices;
 
 
     //public List<Transform> lst = new List<Transform>();
-    public double[,] barMatrices;
     /*public*/ int columnNumber;
     //public List<int> selectedVertices;
-    double[,] deformation;
+    //double[,] deformation;
 
     void Start() 
     {
@@ -36,7 +41,7 @@ public class ReadFileComputeNewcage : MonoBehaviour
         barMatrices = ReadMatrixFromFile(barCoordFileName, true);
         Debug.Log("load matrix 3");
 
-        //displayProductBG(barMatrices, cageMatrices);
+        computeProductBG(barMatrices, cageMatrices);
 
         //var newcageVertices = ComputeNewcage(selectedVertices, deformation, cageMatrices);
 
@@ -80,7 +85,7 @@ public class ReadFileComputeNewcage : MonoBehaviour
     /// <param name="barMatrices"></param>
     /// <param name="cageMatrices"></param>
     /// <returns></returns>
-    private double[,] displayProductBG(double[,] barMatrices, double[,] cageMatrices)
+    private double[,] computeProductBG(double[,] barMatrices, double[,] cageMatrices)
     {
         var produit = Matrix.Dot(barMatrices, cageMatrices);
         for (int i = 0; i < Matrix.Rows(produit); i++)
