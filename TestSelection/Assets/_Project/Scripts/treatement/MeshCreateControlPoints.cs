@@ -35,9 +35,7 @@ public class MeshCreateControlPoints : MonoBehaviour
     {
 
         CreateControlPoints();
-
-        //Ceshi1=convertTransfromPosition(newListPositionControlPoints);
-        _indexOrder = mapping(initialControlPointPosition, ReadFileComputeNewcage.cageMatrices);
+        _indexOrder = mapping(meshCage.vertices, ReadFileComputeNewcage.cageMatrices);
         //display mapping rule
         for (int i = 0; i < _indexOrder.Count; i++)
         {
