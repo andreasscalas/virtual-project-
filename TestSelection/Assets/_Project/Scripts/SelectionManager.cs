@@ -12,14 +12,14 @@ public class SelectionManager : MonoBehaviour
 
     Mesh mesh;
     Vector3[] vertices;
-
+    [HideInInspector]
     public GameObject obj;
     private List<Transform> selectionList = new List<Transform>();
 
-    public Text objectselected;
-    public Text objectstored;
-    public Text objectdeleted;
-    public Text objectremoved;
+    //public Text objectselected;
+    //public Text objectstored;
+    //public Text objectdeleted;
+    //public Text objectremoved;
 
     private void Update()
     {
@@ -45,7 +45,7 @@ public class SelectionManager : MonoBehaviour
                     var selectionRenderer = selection.GetComponent<Renderer>();
                     Debug.Log(obj + " gameobject is selected");
 
-                    objectselected.text= obj+ "is selected";
+                    //objectselected.text= obj+ "is selected";
 
                     if (selectionRenderer != null)
                     {
@@ -56,7 +56,7 @@ public class SelectionManager : MonoBehaviour
                         selectionList.Add(selection);
                         Debug.Log(obj+" gameobject is stored" );
 
-                        objectstored.text = obj+"is stored";
+                        //objectstored.text = obj+"is stored";
                     }
                 }
             }
@@ -84,10 +84,10 @@ public class SelectionManager : MonoBehaviour
                         var selectionRenderer = selection.GetComponent<Renderer>();
                             selectionRenderer.material = defaultMaterial;
                             Debug.Log(obj + " is deleted");
-                            objectdeleted.text = obj + "is deleted";
+                            //objectdeleted.text = obj + "is deleted";
                             selectionList.Remove(selection);
                             Debug.Log(obj + " is removed ");
-                            objectremoved.text = obj + "is removed";
+                            //objectremoved.text = obj + "is removed";
                     }
 
                 }

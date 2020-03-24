@@ -191,7 +191,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "Removed \u201Dcontrol point\u201C"
+  m_Text: 
 --- !u!222 &57148805
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -339,7 +339,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Stored "control point"
+  m_Text: 
 --- !u!222 &164258988
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -418,7 +418,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "Selected \u201Dcontrol point\u201C"
+  m_Text: 
 --- !u!222 &209882895
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -455,7 +455,7 @@ Transform:
   m_GameObject: {fileID: 242140931}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: -4.32, z: 0}
-  m_LocalScale: {x: 5, y: 1, z: 5}
+  m_LocalScale: {x: 5, y: 1, z: 16.35}
   m_Children: []
   m_Father: {fileID: 377920396}
   m_RootOrder: 0
@@ -590,7 +590,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: New Text
+  m_Text: 
 --- !u!222 &270952448
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -879,7 +879,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "Deleted \u201Dcontrol point\u201C"
+  m_Text: 
 --- !u!222 &1207234203
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -894,6 +894,19 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 1777298968}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1355157839
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1355157838}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3e4824ed86d866743a6f70fcdcee3043, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  FPSController: {fileID: 0}
 --- !u!114 &1355157844
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -901,11 +914,17 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1355157838}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c12e09016d916a84dbc2fbdac51bd748, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &1455319779 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2534866581884222612, guid: c7eba02c722021343981dd88934a0ee1,
+    type: 3}
+  m_PrefabInstance: {fileID: 1617015034}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1550730619
 GameObject:
   m_ObjectHideFlags: 0
@@ -941,10 +960,6 @@ MonoBehaviour:
   highlightMaterial: {fileID: 2100000, guid: 76191a502167024488da6dc320d2e35a, type: 2}
   defaultMaterial: {fileID: 2100000, guid: 5a21f72b8943e09419e0e25fa746b43e, type: 2}
   obj: {fileID: 0}
-  objectselected: {fileID: 1813610987}
-  objectstored: {fileID: 1691651490}
-  objectdeleted: {fileID: 270952447}
-  objectremoved: {fileID: 1975181853}
 --- !u!4 &1550730621
 Transform:
   m_ObjectHideFlags: 0
@@ -971,9 +986,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10f8f1604cf8b16448d3c27ee4a54f1f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  objCage: {fileID: 0}
+  objCage: {fileID: 1455319779}
   objModel: {fileID: 475631520}
-  ReadFileComputeNewcage: {fileID: 0}
+  initialControlPointPosition: []
   selectableTag: Selectable
   defaultMaterial: {fileID: 2100000, guid: 5a21f72b8943e09419e0e25fa746b43e, type: 2}
 --- !u!114 &1550730625
@@ -989,9 +1004,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   modelFileName: hand
-  cageFileName: handcageMerged
+  cageFileName: handcage
   barCoordFileName: hand.coord
---- !u!1001 &1634306224
+  meshCreateControlPoints: {fileID: 1550730623}
+  order: 
+--- !u!1001 &1617015034
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -1003,10 +1020,15 @@ PrefabInstance:
       propertyPath: m_Name
       value: handcageMerged
       objectReference: {fileID: 0}
+    - target: {fileID: 2534866581884222612, guid: c7eba02c722021343981dd88934a0ee1,
+        type: 3}
+      propertyPath: m_Name
+      value: handcage merged
+      objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: c7eba02c722021343981dd88934a0ee1,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: c7eba02c722021343981dd88934a0ee1,
         type: 3}
@@ -1026,12 +1048,12 @@ PrefabInstance:
     - target: {fileID: -4216859302048453862, guid: c7eba02c722021343981dd88934a0ee1,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: c7eba02c722021343981dd88934a0ee1,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: c7eba02c722021343981dd88934a0ee1,
         type: 3}
@@ -1130,7 +1152,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: New Text
+  m_Text: 
 --- !u!222 &1691651491
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1160,7 +1182,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -5.8891945
+      value: -8.8
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
       propertyPath: m_LocalRotation.x
@@ -1196,7 +1218,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 11400000, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
       propertyPath: m_GravityMultiplier
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 11400000, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
       propertyPath: m_IsWalking
@@ -1204,7 +1226,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 11400000, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5400000, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
       propertyPath: m_UseGravity
@@ -1213,6 +1235,18 @@ PrefabInstance:
     - target: {fileID: 5400000, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
       propertyPath: m_IsKinematic
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 400002, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -3.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 400002, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -4.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 400002, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.8
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
@@ -1286,7 +1320,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: New Text
+  m_Text: 
 --- !u!222 &1813610988
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1365,7 +1399,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: New Text
+  m_Text: 
 --- !u!222 &1975181854
 CanvasRenderer:
   m_ObjectHideFlags: 0

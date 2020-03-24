@@ -22,25 +22,26 @@ public class MeshCreateControlPoints : MonoBehaviour
     private double[,] newMatrixPositionControlPoints;
     private double[,] newMatrixPositionModel;
     GameObject ControlPoint /*= new GameObject()*/;
-    Vector3[] initialControlPointPosition;
+    public Vector3[] initialControlPointPosition;
     private List<Transform> newListPositionControlPoints = new List<Transform>();
-    public ReadFileComputeNewcage ReadFileComputeNewcage;
     [SerializeField] private string selectableTag = "Selectable";
     [SerializeField] private Material defaultMaterial;
     int goCounter=1;
-    private List<int> _indexOrder = new List<int>();
+    List<int> _indexOrder = new List<int>();
     //private List<Vector3> Ceshi1 /*= new List<Vector3>()*/;
+    //private ReadFileComputeNewcage readFileComputeNewcage;
+
 
     void Start()
     {
-
         CreateControlPoints();
-        _indexOrder = mapping(meshCage.vertices, ReadFileComputeNewcage.cageMatrices);
-        //display mapping rule
-        for (int i = 0; i < _indexOrder.Count; i++)
-        {
-            Debug.Log("this is mapping rule" + _indexOrder[i]);
-        }
+        ////_indexOrder = mapping(meshCage.vertices, ReadFileComputeNewcage.cageMatrices);
+        //////display mapping rule
+        ////for (int i = 0; i < _indexOrder.Count; i++)
+        ////{
+        ////    Debug.Log("this is mapping rule" + _indexOrder[i]);
+        ////}
+        
     }
     /// <summary>
     /// function to create control points
@@ -70,7 +71,7 @@ public class MeshCreateControlPoints : MonoBehaviour
         }
         for (int i = 0; i < newListPositionControlPoints.Count; i++)
         {
-            Debug.Log("newly recorded newListPositionControlPoints" + "\t" /*+ i + "\t" */+ newListPositionControlPoints[i].position.ToString("F6"));
+            Debug.Log("newly recorded newListPositionControlPoints" + "\t" + i + "\t" + newListPositionControlPoints[i].position.ToString("F6"));
         }
     }
 
@@ -87,31 +88,36 @@ public class MeshCreateControlPoints : MonoBehaviour
     }
 
     // returns List of int, which is the mapping rule from.
-    private List<int> mapping(Vector3[] positionInUnity, double[,] matrixCage)
-    {
-        // list of int
-        List<int> order = new List<int>();
-
-        for (int i = 0; i < positionInUnity.Length; i++)
-        {
-            int j;
-            for (j = 0; j < (matrixCage.Length) / 3; j++)
-            {
-                if (positionInUnity[i]./*position.*/x == matrixCage[j, 0])
-                {
-                    if (positionInUnity[i]./*position.*/y == matrixCage[j, 1])
-                    {
-                        if (positionInUnity[i]./*position.*/z == matrixCage[j, 2])
-                        {
-                            order.Add(j);
-                        }
-                    }
-                }
-            }
-            //matrixCage.RemoveRow(j); can be optimized
-        }
-        return order;
-    }
+    //////private void/*List<int>*/ mapping(/*Vector3[] positionInUnity, double[,] matrixCage*/)
+    //////{
+    //////    // list of int
+    //////    List<int> order = new List<int>();
+    //////    Debug.Log("initialControlPointPosition.Length" + initialControlPointPosition.Length);
+    //////    Debug.Log("ccageMatrices" + ccageMatrices[0,0]);
+    //////    for (int i = 0; i < initialControlPointPosition.Length; i++)
+    //////    {
+    //////        int j;
+    //////        for (j = 0; j < (ReadFileComputeNewcage.cageMatrices.Length) / 3; j++)
+    //////        {
+    //////            if (initialControlPointPosition[i]./*position.*/x == ReadFileComputeNewcage.cageMatrices[j, 0])
+    //////            {
+    //////                if (initialControlPointPosition[i]./*position.*/y == ReadFileComputeNewcage.cageMatrices[j, 1])
+    //////                {
+    //////                    if (initialControlPointPosition[i]./*position.*/z == ReadFileComputeNewcage.cageMatrices[j, 2])
+    //////                    {
+    //////                        order.Add(j);
+    //////                    }
+    //////                }
+    //////            }
+    //////        }
+    //////        //matrixCage.RemoveRow(j); can be optimized
+    //////    }
+    //////    ////return order;
+    //////////    for (int i = 0; i < _indexOrder.Count; i++)
+    //////////    {
+    //////////        Debug.Log("this is mapping rule" + _indexOrder[i]);
+    //////////    }
+    //////////}
 
 
 

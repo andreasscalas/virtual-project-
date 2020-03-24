@@ -8,6 +8,7 @@ using Accord.Math;
 using System.Linq;
 using System.Transactions;
 using JetBrains.Annotations;
+using Vector3 = UnityEngine.Vector3;
 
 
 public class ReadFileComputeNewcage : MonoBehaviour
@@ -23,25 +24,34 @@ public class ReadFileComputeNewcage : MonoBehaviour
     public double[,] cageMatrices;
     [HideInInspector]
     public double[,] barMatrices;
-
+    public MeshCreateControlPoints meshCreateControlPoints;
 
     //public List<Transform> lst = new List<Transform>();
-    /*public*/ int columnNumber;
-    //public List<int> selectedVertices;
+    /*public*/
+    int columnNumber;
+    public List<int> order;
     //double[,] deformation;
 
     void Start() 
     {
-        var modelMatrices = ReadMatrixFromFile(modelFileName, false);
+        modelMatrices = ReadMatrixFromFile(modelFileName, false);
         Debug.Log("load matrix 1");
 
-        var cageMatrices = ReadMatrixFromFile(cageFileName, false);
+        cageMatrices = ReadMatrixFromFile(cageFileName, false);
         Debug.Log("load matrix 2");
 
         barMatrices = ReadMatrixFromFile(barCoordFileName, true);
         Debug.Log("load matrix 3");
 
-        //computeProductBG(barMatrices, cageMatrices);
+        order = mapping(meshCreateControlPoints.initialControlPointPosition, cageMatrices);
+        Debug.Log("this is mapping rule start");
+        Debug.Log("order.Count?" + order.Count);
+        for (int i = 0; i < order.Count; i++)
+        {
+            Debug.Log("this is mapping rule\t"+i+"→" + order[i]);
+        }
+
+        computeProductBG(barMatrices, cageMatrices);
 
         //var newcageVertices = ComputeNewcage(selectedVertices, deformation, cageMatrices);
 
@@ -88,7 +98,7 @@ public class ReadFileComputeNewcage : MonoBehaviour
     private double[,] computeProductBG(double[,] barMatrices, double[,] cageMatrices)
     {
         var produit = Matrix.Dot(barMatrices, cageMatrices);
-        for (int i = 0; i < Matrix.Rows(produit); i++)
+        for (int i = 0; i < 20/*Matrix.Rows(produit)*/; i++)
         {
             for (int j = 0; j < 3; j++)
             { Debug.Log("produit[" + i + ", " + j + "]"+ "\t" + produit[i, j]); }
@@ -184,20 +194,51 @@ public class ReadFileComputeNewcage : MonoBehaviour
             for (int j = 0; j < columnNumber; j++)
             {
                 MatrixMandG[i, j] = float.Parse(eachData.Get(j));
-                //////int l = j + 1;
-                //////if (fileName.Contains("cage"))
-                //////{ Debug.Log("To see [" + k + "," + l + "] element in Matrix G:" + MatrixMandG[i, j].ToString("F6")); }
-                ////////else if (fileName.Contains("coord"))
-                ////////{ }
-                //////else /*if (fileName.Contains("coord")!=true)*/
-                //////{
-                //////  Debug.Log("To see [" + k + "," + l + "] element in Matrix M:" + MatrixMandG[i, j].ToString("F11"));
-                //////}
+                ////int l = j + 1;
+                ////if (fileName.Contains("cage"))
+                ////{ Debug.Log("To see [" + k + "," + l + "] element in Matrix G:" + MatrixMandG[i, j]/*.ToString("F6")*/); }
+                //////else if (fileName.Contains("coord"))
+                //////{ }
+                ////else /*if (fileName.Contains("coord")!=true)*/
+                ////{
+                ////    Debug.Log("To see [" + k + "," + l + "] element in Matrix M:" + MatrixMandG[i, j]/*.ToString("F6")*/);
+                ////}
             }
         }
 
         return MatrixMandG;
     }
 
+    private List<int> mapping(Vector3[] positionInUnity, double[,] matrixCage)
+    {
+        // list of int
+        List<int> order = new List<int>();
+        Debug.Log("initialControlPointPosition.Length" + positionInUnity.Length);
+        Debug.Log("matrixCage.Length" + matrixCage.Length);
+        for (int i = 0; i < positionInUnity.Length; i++)
+        {
+            int j;
+            for (j = 0; j < (matrixCage.Length) / 3; j++)
+            {
+                //Debug.Log("positionInUnity[i].x" + positionInUnity[i]./*position.*/x);
+                //Debug.Log("matrixCage[j, 0]" + matrixCage[j, 0]);
+                double deltaX = positionInUnity[i]. /*position.*/x + matrixCage[j, 0];
+                if (Mathf.Abs((float)deltaX) <0.00001)
+                {
+                    double deltaY = positionInUnity[i]. /*position.*/y - matrixCage[j, 1];
+                    if (Mathf.Abs((float)deltaY) < 0.00001)
+                    {
+                        double deltaZ = positionInUnity[i]. /*position.*/z - matrixCage[j, 2];
+                        if (Mathf.Abs((float)deltaZ) < 0.00001)
+                        {
+                            order.Add(j);
+                        }
+                    }
+                }
+            }
+            //matrixCage.RemoveRow(j); can be optimized
+        }
+        return order;
 
+    }
 }
