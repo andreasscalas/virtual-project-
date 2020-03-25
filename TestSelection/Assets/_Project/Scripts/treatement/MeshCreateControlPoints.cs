@@ -15,33 +15,29 @@ public class MeshCreateControlPoints : MonoBehaviour
     Mesh meshModel;
     Vector3[] cageVertices;
     Vector3[] modelVertices;
+    public Vector3[] initialControlPointPosition;
+    public Vector3[] initialModelVerticesPosition;
+
     public GameObject objCage;
     public GameObject objModel;
     private int[] trisCage;
     private int[] trisModel;
-    private double[,] newMatrixPositionControlPoints;
-    private double[,] newMatrixPositionModel;
+    double[,] newMatrixPositionModel;
     GameObject ControlPoint /*= new GameObject()*/;
-    public Vector3[] initialControlPointPosition;
+    
     private List<Transform> newListPositionControlPoints = new List<Transform>();
+    private List<Transform> newListPositionVerticesModel = new List<Transform>(100);
     [SerializeField] private string selectableTag = "Selectable";
     [SerializeField] private Material defaultMaterial;
     int goCounter=1;
     List<int> _indexOrder = new List<int>();
     //private List<Vector3> Ceshi1 /*= new List<Vector3>()*/;
-    //private ReadFileComputeNewcage readFileComputeNewcage;
+    public ReadFileComputeNewcage readFileComputeNewcage;
 
 
     void Start()
     {
         CreateControlPoints();
-        ////_indexOrder = mapping(meshCage.vertices, ReadFileComputeNewcage.cageMatrices);
-        //////display mapping rule
-        ////for (int i = 0; i < _indexOrder.Count; i++)
-        ////{
-        ////    Debug.Log("this is mapping rule" + _indexOrder[i]);
-        ////}
-        
     }
     /// <summary>
     /// function to create control points
@@ -50,9 +46,13 @@ public class MeshCreateControlPoints : MonoBehaviour
     {
         //extract the information of the cage mesh(vertices, tris)
         meshCage = objCage.GetComponent<MeshFilter>().mesh;
+        meshModel = objModel.GetComponent<MeshFilter>().mesh;
         cageVertices = meshCage.vertices;
+        modelVertices = meshModel.vertices;
         initialControlPointPosition = meshCage.vertices;
+        initialModelVerticesPosition = meshModel.vertices;
         trisCage = meshCage.triangles;
+        trisModel = meshModel.triangles;
         //Debug.Log("the vertices" + vertices);
 
         //generate the control points
@@ -73,6 +73,7 @@ public class MeshCreateControlPoints : MonoBehaviour
         {
             Debug.Log("newly recorded newListPositionControlPoints" + "\t" + i + "\t" + newListPositionControlPoints[i].position.ToString("F6"));
         }
+
     }
 
 
@@ -87,61 +88,71 @@ public class MeshCreateControlPoints : MonoBehaviour
         return toReturn;
     }
 
-    // returns List of int, which is the mapping rule from.
-    //////private void/*List<int>*/ mapping(/*Vector3[] positionInUnity, double[,] matrixCage*/)
-    //////{
-    //////    // list of int
-    //////    List<int> order = new List<int>();
-    //////    Debug.Log("initialControlPointPosition.Length" + initialControlPointPosition.Length);
-    //////    Debug.Log("ccageMatrices" + ccageMatrices[0,0]);
-    //////    for (int i = 0; i < initialControlPointPosition.Length; i++)
-    //////    {
-    //////        int j;
-    //////        for (j = 0; j < (ReadFileComputeNewcage.cageMatrices.Length) / 3; j++)
-    //////        {
-    //////            if (initialControlPointPosition[i]./*position.*/x == ReadFileComputeNewcage.cageMatrices[j, 0])
-    //////            {
-    //////                if (initialControlPointPosition[i]./*position.*/y == ReadFileComputeNewcage.cageMatrices[j, 1])
-    //////                {
-    //////                    if (initialControlPointPosition[i]./*position.*/z == ReadFileComputeNewcage.cageMatrices[j, 2])
-    //////                    {
-    //////                        order.Add(j);
-    //////                    }
-    //////                }
-    //////            }
-    //////        }
-    //////        //matrixCage.RemoveRow(j); can be optimized
-    //////    }
-    //////    ////return order;
-    //////////    for (int i = 0; i < _indexOrder.Count; i++)
-    //////////    {
-    //////////        Debug.Log("this is mapping rule" + _indexOrder[i]);
-    //////////    }
-    //////////}
-
-
-
-
     void Update()
     {
-        //if (Input.GetKeyDown(KeyCode.V))
-        //{
-            UpdateModification(cageVertices, newListPositionControlPoints, meshCage);
-        //}
+        if (Input.GetKeyDown(KeyCode.V))
+        {
+            UpdateCageModification(cageVertices, newListPositionControlPoints, meshCage);
+        }
 
-        //if (Input.GetKeyDown(KeyCode.B))
-        //{
-        //////newMatrixPositionControlPoints = convertListtoMatrix(newListPositionControlPoints);
-        //////newMatrixPositionModel = Matrix.Dot(ReadFileComputeNewcage.barMatrices, newMatrixPositionControlPoints);
-        //////List<Vector3> newListPositionModel = newMatrixPositionModel.Cast<Vector3>().ToList();
-        //////UpdateModelModification(modelVertices, newListPositionModel, meshModel);
-        //}
+        if (Input.GetKeyDown(KeyCode.B))
+        {
+            // assign the moved position of control points to the mesh vertices.
+            double[,] newMatrixPositionControlPoints = new double[newListPositionControlPoints.Count,3];
 
+            double[,] newMatrixPositionModelVertices = new double[readFileComputeNewcage.columnNumberUpdate,
+                                                                 readFileComputeNewcage.columnNumberUpdate];
+
+            for (int i = 0; i < newListPositionControlPoints.Count; i++)
+            {
+                newMatrixPositionControlPoints[i, 0]=newListPositionControlPoints[i].position.x;
+                newMatrixPositionControlPoints[i, 1]=newListPositionControlPoints[i].position.y;
+                newMatrixPositionControlPoints[i, 2]=newListPositionControlPoints[i].position.z;
+            }
+            // compute the model matrix M with the verticesPosition after deformation
+
+            newMatrixPositionModelVertices = readFileComputeNewcage.computeProductBG(readFileComputeNewcage.barMatrices, newMatrixPositionControlPoints);
+            /////convert the position from  matrix to accessible transform list（disposal step）
+
+            ////////Debug.Log("newMatrixPositionControlPoints.Length/3\t" + newMatrixPositionModelVertices.Length / 3);
+            ////////for (int i = 0; i < newMatrixPositionModelVertices.Length/3; i++)
+            ////////{
+            ////////    Debug.Log("问题在这里");
+            ////////    double x = newListPositionVerticesModel[i].position.x;
+            ////////    Debug.Log("newListPositionVerticesModel[i].position.x\t" + x);
+
+            ////////    double y = newListPositionVerticesModel[i].position.y;
+            ////////    double z = newListPositionVerticesModel[i].position.z;
+            ////////    x = newMatrixPositionModelVertices[i, 0];
+            ////////    y = newMatrixPositionModelVertices[i, 0];
+            ////////    z = newMatrixPositionModelVertices[i, 0];
+            ////////}
+
+            // call the mesh modification function to update the mesh of the model cage
+            UpdateModelModification(modelVertices, newMatrixPositionModelVertices, meshModel);
+
+        }
+
+    }
+
+    private void UpdateModelModification(Vector3[] vertices, double[,] matrixMprime , Mesh mesh)
+    {
+        Debug.Log("vertices.Length\t" + vertices.Length);
+        Debug.Log("matrixMprime.count/3\t" + matrixMprime.Length / 3);
+        for (int i = 0; i < vertices.Length; i++)
+        {
+            vertices[i].x = (float)matrixMprime[i, 0];
+            vertices[i].y = (float)matrixMprime[i, 1];
+            vertices[i].z = (float)matrixMprime[i, 2];
+        }
+        mesh.vertices = vertices;
+        mesh.RecalculateBounds();
+        mesh.triangles = trisModel;
     }
     /// <summary>
     /// Update modification to the cage.
     /// </summary>
-    private void UpdateModification(Vector3[] vertices, List<Transform> newListPosition, Mesh mesh)
+    private void UpdateCageModification(Vector3[] vertices, List<Transform> newListPosition, Mesh mesh)
     {
 
         for (int i = 0; i < vertices.Length; i++)
@@ -153,54 +164,4 @@ public class MeshCreateControlPoints : MonoBehaviour
         mesh.RecalculateBounds();
         mesh.triangles = trisCage;
     }
-
-
-    ////private void UpdateModelModification(Vector3[] vertices, List<Vector3> newListPosition, Mesh mesh)
-    ////{
-
-    ////    for (int i = 0; i < vertices.Length; i++)
-    ////    {
-    ////        vertices[i] = newListPosition[i];
-    ////    }
-    ////    // assign the local vertices array into the vertices array of the Mesh.
-    ////    mesh.vertices = vertices;
-    ////    mesh.RecalculateBounds();
-    ////    mesh.triangles = trisCage;
-    ////}
-
-
-
-
-
-    ////////private void UpdateModification()
-    ////////{
-    ////////    for (var i = 0; i < cageVertices.Length; i++)
-    ////////    {
-    ////////        cageVertices[i] = newListPositionControlPoints[i].position;
-    ////////    }
-    ////////    // assign the local vertices array into the vertices array of the Mesh.
-    ////////    meshCage.vertices = cageVertices;
-    ////////    meshCage.RecalculateBounds();
-    ////////    meshCage.triangles = trisCage;
-    ////////}
-
-
-    ///convert newPositionControlPoints into a matrix.
-    ///
-    //////private double[,] convertListtoMatrix(List<Transform> positionList)
-
-    //////{
-    //////    double[,] b = new double[positionList.Count, 3 /*c*/];
-
-    //////    //list to matrix
-    //////    for (int i = 0; i < positionList.Count; i++)
-    //////    {
-    //////        b[i, 0] = positionList[i].x;
-    //////        b[i, 1] = positionList[i].y;
-    //////        b[i, 2] = positionList[i].z;
-    //////    }
-    //////    return b;
-    //////}
-
-
 }

@@ -29,6 +29,9 @@ public class ReadFileComputeNewcage : MonoBehaviour
     //public List<Transform> lst = new List<Transform>();
     /*public*/
     int columnNumber;
+    public int rowNumberUpdate;
+    public int columnNumberUpdate;
+    [HideInInspector]
     public List<int> order;
     //double[,] deformation;
 
@@ -43,12 +46,12 @@ public class ReadFileComputeNewcage : MonoBehaviour
         barMatrices = ReadMatrixFromFile(barCoordFileName, true);
         Debug.Log("load matrix 3");
 
-        order = mapping(meshCreateControlPoints.initialControlPointPosition, cageMatrices);
+        order = mapping(meshCreateControlPoints.initialModelVerticesPosition, modelMatrices);
         Debug.Log("this is mapping rule start");
         Debug.Log("order.Count?" + order.Count);
         for (int i = 0; i < order.Count; i++)
         {
-            Debug.Log("this is mapping rule\t"+i+"→" + order[i]);
+            Debug.Log("this is mapping rule\t" + i + "→" + order[i]);
         }
 
         computeProductBG(barMatrices, cageMatrices);
@@ -95,14 +98,14 @@ public class ReadFileComputeNewcage : MonoBehaviour
     /// <param name="barMatrices"></param>
     /// <param name="cageMatrices"></param>
     /// <returns></returns>
-    private double[,] computeProductBG(double[,] barMatrices, double[,] cageMatrices)
+    public double[,] computeProductBG(double[,] barMatrices, double[,] cageMatrices)
     {
         var produit = Matrix.Dot(barMatrices, cageMatrices);
-        for (int i = 0; i < 20/*Matrix.Rows(produit)*/; i++)
-        {
-            for (int j = 0; j < 3; j++)
-            { Debug.Log("produit[" + i + ", " + j + "]"+ "\t" + produit[i, j]); }
-        }
+        //for (int i = 0; i < 20/*Matrix.Rows(produit)*/; i++)
+        //{
+        //    for (int j = 0; j < 3; j++)
+        //    { Debug.Log("produit[" + i + ", " + j + "]"+ "\t" + produit[i, j]); }
+        //}
         return (produit);
     }
 
@@ -151,8 +154,10 @@ public class ReadFileComputeNewcage : MonoBehaviour
             //Read the number of rows and columns from the second line of the file
             string[] matrixData = firstFileLine.Split(' ');
             rowNumber = Int32.Parse(matrixData.Get(0));
+            rowNumberUpdate = Int32.Parse(matrixData.Get(0));
             Debug.Log("This is matrix B's row size:" + rowNumber);
             columnNumber = Int32.Parse(matrixData.Get(1));
+            columnNumberUpdate = Int32.Parse(matrixData.Get(1));
             Debug.Log("This is matrix B's column size:" + columnNumber);
             double[,] Barycentric = Matrix.Create(new double[rowNumber, columnNumber]);
             for (int i = 2; i < rowNumber + 2; i++)
@@ -209,12 +214,12 @@ public class ReadFileComputeNewcage : MonoBehaviour
         return MatrixMandG;
     }
 
-    private List<int> mapping(Vector3[] positionInUnity, double[,] matrixCage)
+    List<int> mapping(Vector3[] positionInUnity, double[,] matrixCage)
     {
         // list of int
         List<int> order = new List<int>();
-        Debug.Log("initialControlPointPosition.Length" + positionInUnity.Length);
-        Debug.Log("matrixCage.Length" + matrixCage.Length);
+        Debug.Log("initialControlPointPosition.Length\t" + positionInUnity.Length);
+        Debug.Log("matrixCage.Length/3\t" + matrixCage.Length/3);
         for (int i = 0; i < positionInUnity.Length; i++)
         {
             int j;
