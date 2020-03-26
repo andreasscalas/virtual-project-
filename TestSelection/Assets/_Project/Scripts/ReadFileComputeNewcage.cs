@@ -46,20 +46,43 @@ public class ReadFileComputeNewcage : MonoBehaviour
         barMatrices = ReadMatrixFromFile(barCoordFileName, true);
         Debug.Log("load matrix 3");
 
-        order = mapping(meshCreateControlPoints.initialModelVerticesPosition, modelMatrices);
-        Debug.Log("this is mapping rule start");
-        Debug.Log("order.Count?" + order.Count);
+        order = mapping(meshCreateControlPoints.initialControlPointPosition, cageMatrices);
+        Debug.Log("this is cage mapping rule start");
+        Debug.Log("cage mesh order.Count\t" + order.Count);
+        bool flagcage = true;
         for (int i = 0; i < order.Count; i++)
         {
-            Debug.Log("this is mapping rule\t" + i + "→" + order[i]);
+            Debug.Log("this is model mapping rule\t" + i + "th vertex" + "→" + order[i] + "th vertex by reading .xyz");
+
+            if (i != order[i])
+            {
+                flagcage = false;
+            }
         }
 
-        computeProductBG(barMatrices, cageMatrices);
+        if (flagcage == true)
+        {
+            Debug.Log("We are sure we do not need re-mapping for cage");
+        }
 
-        //var newcageVertices = ComputeNewcage(selectedVertices, deformation, cageMatrices);
+        order = mapping(meshCreateControlPoints.initialModelVerticesPosition, modelMatrices);
+        Debug.Log("this is model mapping rule start");
+        Debug.Log("model mesh order.Count\t" + order.Count);
+        bool flagmodel = true;
+        for (int i = 0; i < order.Count; i++)
+        {
+            Debug.Log("this is model mapping rule\t" + i+"th vertex" + "→" + order[i]+"th vertex by reading .xyz");
+            if (i != order[i])
+            {
+                flagmodel = false;
+            }
+        }
+        if (flagmodel == true)
+        {
+            Debug.Log("We are sure we do not need re-mapping for model");
+        }
 
-        //modelMatrices = UpdateMesh(cageMatrices, barMatrices);
-        //lst = modelMatrices.Cast<Transform>().ToList();
+        //computeProductBG(barMatrices, cageMatrices);
     }
 
     /// <summary>
@@ -104,7 +127,7 @@ public class ReadFileComputeNewcage : MonoBehaviour
         //for (int i = 0; i < 20/*Matrix.Rows(produit)*/; i++)
         //{
         //    for (int j = 0; j < 3; j++)
-        //    { Debug.Log("produit[" + i + ", " + j + "]"+ "\t" + produit[i, j]); }
+        //    { Debug.Log("produit[" + i + ", " + j + "]" + "\t" + produit[i, j]); }
         //}
         return (produit);
     }
@@ -218,8 +241,8 @@ public class ReadFileComputeNewcage : MonoBehaviour
     {
         // list of int
         List<int> order = new List<int>();
-        Debug.Log("initialControlPointPosition.Length\t" + positionInUnity.Length);
-        Debug.Log("matrixCage.Length/3\t" + matrixCage.Length/3);
+        //Debug.Log("initialControlPointPosition.Length\t" + positionInUnity.Length);
+        //Debug.Log("matrixCage.Length/3\t" + matrixCage.Length/3);
         for (int i = 0; i < positionInUnity.Length; i++)
         {
             int j;

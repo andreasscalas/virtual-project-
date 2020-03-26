@@ -24,16 +24,15 @@ public class MeshCreateControlPoints : MonoBehaviour
     private int[] trisModel;
     double[,] newMatrixPositionModel;
     GameObject ControlPoint /*= new GameObject()*/;
-    
     private List<Transform> newListPositionControlPoints = new List<Transform>();
-    private List<Transform> newListPositionVerticesModel = new List<Transform>(100);
     [SerializeField] private string selectableTag = "Selectable";
     [SerializeField] private Material defaultMaterial;
     int goCounter=1;
     List<int> _indexOrder = new List<int>();
     //private List<Vector3> Ceshi1 /*= new List<Vector3>()*/;
     public ReadFileComputeNewcage readFileComputeNewcage;
-
+    public SelectionManager selectionManager;
+    public GameObject InitializedControlPoints;
 
     void Start()
     {
@@ -63,16 +62,17 @@ public class MeshCreateControlPoints : MonoBehaviour
             ControlPoint.transform.position = new Vector3(K[0], K[1], K[2]);
             ControlPoint.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
             ControlPoint.tag = selectableTag;
-            ControlPoint.name = "\"Control Point\""+ goCounter.ToString();
+            ControlPoint.name = "\"Control Point\""+ goCounter;
             goCounter++;
+            ControlPoint.transform.parent = InitializedControlPoints.transform;
             var controlPointRenderer = ControlPoint.GetComponent<MeshRenderer>();
             controlPointRenderer.material = defaultMaterial;
             newListPositionControlPoints.Add(ControlPoint.transform);
         }
-        for (int i = 0; i < newListPositionControlPoints.Count; i++)
-        {
-            Debug.Log("newly recorded newListPositionControlPoints" + "\t" + i + "\t" + newListPositionControlPoints[i].position.ToString("F6"));
-        }
+        //for (int i = 0; i < newListPositionControlPoints.Count; i++)
+        //{
+        //    Debug.Log("newly recorded newListPositionControlPoints" + "\t" + i + "\t" + newListPositionControlPoints[i].position.ToString("F6"));
+        //}
 
     }
 
@@ -112,27 +112,8 @@ public class MeshCreateControlPoints : MonoBehaviour
             // compute the model matrix M with the verticesPosition after deformation
 
             newMatrixPositionModelVertices = readFileComputeNewcage.computeProductBG(readFileComputeNewcage.barMatrices, newMatrixPositionControlPoints);
-            /////convert the position from  matrix to accessible transform list（disposal step）
-
-            ////////Debug.Log("newMatrixPositionControlPoints.Length/3\t" + newMatrixPositionModelVertices.Length / 3);
-            ////////for (int i = 0; i < newMatrixPositionModelVertices.Length/3; i++)
-            ////////{
-            ////////    Debug.Log("问题在这里");
-            ////////    double x = newListPositionVerticesModel[i].position.x;
-            ////////    Debug.Log("newListPositionVerticesModel[i].position.x\t" + x);
-
-            ////////    double y = newListPositionVerticesModel[i].position.y;
-            ////////    double z = newListPositionVerticesModel[i].position.z;
-            ////////    x = newMatrixPositionModelVertices[i, 0];
-            ////////    y = newMatrixPositionModelVertices[i, 0];
-            ////////    z = newMatrixPositionModelVertices[i, 0];
-            ////////}
-
-            // call the mesh modification function to update the mesh of the model cage
             UpdateModelModification(modelVertices, newMatrixPositionModelVertices, meshModel);
-
         }
-
     }
 
     private void UpdateModelModification(Vector3[] vertices, double[,] matrixMprime , Mesh mesh)

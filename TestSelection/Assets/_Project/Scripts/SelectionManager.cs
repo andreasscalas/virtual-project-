@@ -16,6 +16,8 @@ public class SelectionManager : MonoBehaviour
     public GameObject obj;
     private List<Transform> selectionList = new List<Transform>();
 
+    public GameObject SelectedVertices;
+    public GameObject UnselectedVertices;
     //public Text objectselected;
     //public Text objectstored;
     //public Text objectdeleted;
@@ -43,6 +45,8 @@ public class SelectionManager : MonoBehaviour
                 {
                     obj = selection.gameObject;
                     var selectionRenderer = selection.GetComponent<Renderer>();
+                    obj.transform.parent = null;
+                    obj.transform.parent = SelectedVertices.transform;
                     Debug.Log(obj + " gameobject is selected");
 
                     //objectselected.text= obj+ "is selected";
@@ -82,12 +86,14 @@ public class SelectionManager : MonoBehaviour
                     {
                         obj = selection.gameObject;
                         var selectionRenderer = selection.GetComponent<Renderer>();
-                            selectionRenderer.material = defaultMaterial;
-                            Debug.Log(obj + " is deleted");
-                            //objectdeleted.text = obj + "is deleted";
-                            selectionList.Remove(selection);
-                            Debug.Log(obj + " is removed ");
-                            //objectremoved.text = obj + "is removed";
+                        selectionRenderer.material = defaultMaterial;
+                        Debug.Log(obj + " is deleted");
+                        //objectdeleted.text = obj + "is deleted";
+                        obj.transform.parent = null;
+                        obj.transform.parent = UnselectedVertices.transform;
+                        selectionList.Remove(selection);
+                        Debug.Log(obj + " is removed ");
+                        //objectremoved.text = obj + "is removed";
                     }
 
                 }
