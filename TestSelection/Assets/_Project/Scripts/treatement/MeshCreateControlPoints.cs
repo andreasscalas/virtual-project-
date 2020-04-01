@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Accord.Math;
+using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
 using UnityEngine.UI;
 using Vector3 = UnityEngine.Vector3;
@@ -37,6 +38,7 @@ public class MeshCreateControlPoints : MonoBehaviour
     void Start()
     {
         CreateControlPoints();
+        
     }
     /// <summary>
     /// function to create control points
@@ -98,22 +100,54 @@ public class MeshCreateControlPoints : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.B))
         {
             // assign the moved position of control points to the mesh vertices.
-            double[,] newMatrixPositionControlPoints = new double[newListPositionControlPoints.Count,3];
+            double[,] newMatrixPositionControlPoints;
+            newMatrixPositionControlPoints =ConvertListToMatrix(newListPositionControlPoints);
+            
 
             double[,] newMatrixPositionModelVertices = new double[readFileComputeNewcage.columnNumberUpdate,
                                                                  readFileComputeNewcage.columnNumberUpdate];
-
-            for (int i = 0; i < newListPositionControlPoints.Count; i++)
-            {
-                newMatrixPositionControlPoints[i, 0]=newListPositionControlPoints[i].position.x;
-                newMatrixPositionControlPoints[i, 1]=newListPositionControlPoints[i].position.y;
-                newMatrixPositionControlPoints[i, 2]=newListPositionControlPoints[i].position.z;
-            }
             // compute the model matrix M with the verticesPosition after deformation
-
             newMatrixPositionModelVertices = readFileComputeNewcage.computeProductBG(readFileComputeNewcage.barMatrices, newMatrixPositionControlPoints);
             UpdateModelModification(modelVertices, newMatrixPositionModelVertices, meshModel);
         }
+    }
+
+    private double[,] ConvertListToMatrix(List<Transform> myList)
+    {
+        double[,] myMatrix = new double[myList.Count, 3];
+        for (int i = 0; i < myList.Count; i++)
+        {
+            myMatrix[i, 0] = myList[i].position.x;
+            myMatrix[i, 1] = myList[i].position.y;
+            myMatrix[i, 2] = myList[i].position.z;
+        }
+        return(myMatrix);
+
+    }
+
+    public void ClickResetMesh()
+    {
+        //Reset Cage mesh and the control points
+        ResetCageMesh(cageVertices, initialControlPointPosition, meshCage);
+        //Reset Model mesh 
+        meshModel.vertices = initialModelVerticesPosition;
+        meshModel.triangles = trisModel;
+
+    }
+
+    private void ResetCageMesh(Vector3[] vertices, Vector3[] DefaultPosition, Mesh mesh)
+    {
+       
+        for (int i = 0; i < vertices.Length; i++)
+        {
+            vertices[i] = DefaultPosition[i];
+            newListPositionControlPoints[i].position = initialControlPointPosition[i];
+        }
+        // assign the local vertices array into the vertices array of the Mesh.
+        mesh.vertices = vertices;
+        mesh.RecalculateBounds();
+        mesh.triangles = trisCage;
+        
     }
 
     private void UpdateModelModification(Vector3[] vertices, double[,] matrixMprime , Mesh mesh)

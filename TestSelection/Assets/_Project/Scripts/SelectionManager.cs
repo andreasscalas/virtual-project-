@@ -16,12 +16,16 @@ public class SelectionManager : MonoBehaviour
     public GameObject obj;
     private List<Transform> selectionList = new List<Transform>();
 
-    public GameObject SelectedVertices;
-    public GameObject UnselectedVertices;
+    public GameObject SelectedControlPoints;
+    public GameObject UnselectedControlPoints;
     //public Text objectselected;
     //public Text objectstored;
     //public Text objectdeleted;
     //public Text objectremoved;
+    void start()
+    {
+        Collider boxCol = SelectedControlPoints.AddComponent<BoxCollider>();
+    }
 
     private void Update()
     {
@@ -36,7 +40,7 @@ public class SelectionManager : MonoBehaviour
     {
         var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0)&& Input.GetKey(KeyCode.X))
         {
             if (Physics.Raycast(ray, out hit) /*&& b == true*/)
             {
@@ -46,7 +50,7 @@ public class SelectionManager : MonoBehaviour
                     obj = selection.gameObject;
                     var selectionRenderer = selection.GetComponent<Renderer>();
                     obj.transform.parent = null;
-                    obj.transform.parent = SelectedVertices.transform;
+                    obj.transform.parent = SelectedControlPoints.transform;
                     Debug.Log(obj + " gameobject is selected");
 
                     //objectselected.text= obj+ "is selected";
@@ -75,7 +79,7 @@ public class SelectionManager : MonoBehaviour
         var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
         //这里指的是如果处于退出选中状态，将会赋予初始。我们要做的是退出选中状态之后：我们会把选中的vertices的index从list里面删除）
-        if (Input.GetMouseButtonDown(1) )
+        if (Input.GetMouseButtonDown(1)&& Input.GetKey(KeyCode.X))
         {
             if (Physics.Raycast(ray, out hit) /*&& b == true*/)
             {
@@ -90,7 +94,7 @@ public class SelectionManager : MonoBehaviour
                         Debug.Log(obj + " is deleted");
                         //objectdeleted.text = obj + "is deleted";
                         obj.transform.parent = null;
-                        obj.transform.parent = UnselectedVertices.transform;
+                        obj.transform.parent = UnselectedControlPoints.transform;
                         selectionList.Remove(selection);
                         Debug.Log(obj + " is removed ");
                         //objectremoved.text = obj + "is removed";

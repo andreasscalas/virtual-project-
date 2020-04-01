@@ -52,7 +52,7 @@ public class ReadFileComputeNewcage : MonoBehaviour
         bool flagcage = true;
         for (int i = 0; i < order.Count; i++)
         {
-            Debug.Log("this is model mapping rule\t" + i + "th vertex" + "→" + order[i] + "th vertex by reading .xyz");
+            //Debug.Log("this is model mapping rule\t" + i + "th vertex" + "→" + order[i] + "th vertex by reading .xyz");
 
             if (i != order[i])
             {
@@ -71,7 +71,7 @@ public class ReadFileComputeNewcage : MonoBehaviour
         bool flagmodel = true;
         for (int i = 0; i < order.Count; i++)
         {
-            Debug.Log("this is model mapping rule\t" + i+"th vertex" + "→" + order[i]+"th vertex by reading .xyz");
+            //Debug.Log("this is model mapping rule\t" + i+"th vertex" + "→" + order[i]+"th vertex by reading .xyz");
             if (i != order[i])
             {
                 flagmodel = false;
