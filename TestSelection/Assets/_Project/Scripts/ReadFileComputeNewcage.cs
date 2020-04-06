@@ -38,17 +38,17 @@ public class ReadFileComputeNewcage : MonoBehaviour
     void Start() 
     {
         modelMatrices = ReadMatrixFromFile(modelFileName, false);
-        Debug.Log("load matrix 1");
+        //Debug.Log("load matrix 1");
 
         cageMatrices = ReadMatrixFromFile(cageFileName, false);
-        Debug.Log("load matrix 2");
+        //Debug.Log("load matrix 2");
 
         barMatrices = ReadMatrixFromFile(barCoordFileName, true);
-        Debug.Log("load matrix 3");
+        //Debug.Log("load matrix 3");
 
         order = mapping(meshCreateControlPoints.initialControlPointPosition, cageMatrices);
-        Debug.Log("this is cage mapping rule start");
-        Debug.Log("cage mesh order.Count\t" + order.Count);
+        //Debug.Log("this is cage mapping rule start");
+        //Debug.Log("cage mesh order.Count\t" + order.Count);
         bool flagcage = true;
         for (int i = 0; i < order.Count; i++)
         {
@@ -62,12 +62,12 @@ public class ReadFileComputeNewcage : MonoBehaviour
 
         if (flagcage == true)
         {
-            Debug.Log("We are sure we do not need re-mapping for cage");
+            //Debug.Log("We are sure we do not need re-mapping for cage");
         }
 
         order = mapping(meshCreateControlPoints.initialModelVerticesPosition, modelMatrices);
-        Debug.Log("this is model mapping rule start");
-        Debug.Log("model mesh order.Count\t" + order.Count);
+        //Debug.Log("this is model mapping rule start");
+        //Debug.Log("model mesh order.Count\t" + order.Count);
         bool flagmodel = true;
         for (int i = 0; i < order.Count; i++)
         {
@@ -79,7 +79,7 @@ public class ReadFileComputeNewcage : MonoBehaviour
         }
         if (flagmodel == true)
         {
-            Debug.Log("We are sure we do not need re-mapping for model");
+            //Debug.Log("We are sure we do not need re-mapping for model");
         }
 
         //computeProductBG(barMatrices, cageMatrices);
@@ -178,10 +178,10 @@ public class ReadFileComputeNewcage : MonoBehaviour
             string[] matrixData = firstFileLine.Split(' ');
             rowNumber = Int32.Parse(matrixData.Get(0));
             rowNumberUpdate = Int32.Parse(matrixData.Get(0));
-            Debug.Log("This is matrix B's row size:" + rowNumber);
+            //Debug.Log("This is matrix B's row size:" + rowNumber);
             columnNumber = Int32.Parse(matrixData.Get(1));
             columnNumberUpdate = Int32.Parse(matrixData.Get(1));
-            Debug.Log("This is matrix B's column size:" + columnNumber);
+            //Debug.Log("This is matrix B's column size:" + columnNumber);
             double[,] Barycentric = Matrix.Create(new double[rowNumber, columnNumber]);
             for (int i = 2; i < rowNumber + 2; i++)
             {

@@ -10,63 +10,33 @@ using UnityStandardAssets.Characters.FirstPerson;
 public class SwitchCameraMouse : MonoBehaviour
 
 {
-
     public GameObject FPSController;
-
-    public static bool camlock = false;
-
+    public GameObject selectionManager;
+    public static bool camSeleclock = false;
     // Start is called before the first frame update
-
     void Start()
-
     {
-
         FPSController = GameObject.Find("FPSController");
-
+        //selectionManager = GameObject.Find("Selection Manager");
     }
-
-
-
     void Update()
-
     {
-
         if (Input.GetKeyDown(KeyCode.C))
-
         {
-
-
-
-            if (camlock == false)
-
+            if (camSeleclock == false)
             {
-
                 FPSController.GetComponent<FirstPersonController>().enabled = false;
-
+                //selectionManager.GetComponent<MultiSelection>().enabled = false;
                 Cursor.lockState = CursorLockMode.None;
-
                 Cursor.visible = true;
-
-                camlock = true;
-
+                camSeleclock = true;
             }
-
             else
-
             {
-
                 FPSController.GetComponent<FirstPersonController>().enabled = true;
-
-                camlock = false;
-
-
-
+                //selectionManager.GetComponent<MultiSelection>().enabled = true;
+                camSeleclock = false;
             }
-
         }
-
-
-
     }
-
 }

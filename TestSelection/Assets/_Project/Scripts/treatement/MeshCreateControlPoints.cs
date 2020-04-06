@@ -26,6 +26,7 @@ public class MeshCreateControlPoints : MonoBehaviour
     double[,] newMatrixPositionModel;
     GameObject ControlPoint /*= new GameObject()*/;
     private List<Transform> newListPositionControlPoints = new List<Transform>();
+    
     [SerializeField] private string selectableTag = "Selectable";
     [SerializeField] private Material defaultMaterial;
     int goCounter=1;
@@ -33,7 +34,7 @@ public class MeshCreateControlPoints : MonoBehaviour
     //private List<Vector3> Ceshi1 /*= new List<Vector3>()*/;
     public ReadFileComputeNewcage readFileComputeNewcage;
     public SelectionManager selectionManager;
-    public GameObject InitializedControlPoints;
+    public Transform InitializedControlPoints;
 
     void Start()
     {
@@ -43,9 +44,10 @@ public class MeshCreateControlPoints : MonoBehaviour
     /// <summary>
     /// function to create control points
     /// </summary>
-    private void CreateControlPoints()
+    public void CreateControlPoints()
     {
         //extract the information of the cage mesh(vertices, tris)
+        List<Transform> PositionControlPoints= new List<Transform>();
         meshCage = objCage.GetComponent<MeshFilter>().mesh;
         meshModel = objModel.GetComponent<MeshFilter>().mesh;
         cageVertices = meshCage.vertices;
@@ -55,8 +57,7 @@ public class MeshCreateControlPoints : MonoBehaviour
         trisCage = meshCage.triangles;
         trisModel = meshModel.triangles;
         //Debug.Log("the vertices" + vertices);
-
-        //generate the control points
+        ////generate the control points
         for (int i = 0; i < meshCage.vertices.Length; i++)
         {
             ControlPoint = GameObject.CreatePrimitive(PrimitiveType.Sphere);
@@ -66,10 +67,11 @@ public class MeshCreateControlPoints : MonoBehaviour
             ControlPoint.tag = selectableTag;
             ControlPoint.name = "\"Control Point\""+ goCounter;
             goCounter++;
-            ControlPoint.transform.parent = InitializedControlPoints.transform;
+            ControlPoint.transform.parent = InitializedControlPoints;
             var controlPointRenderer = ControlPoint.GetComponent<MeshRenderer>();
             controlPointRenderer.material = defaultMaterial;
             newListPositionControlPoints.Add(ControlPoint.transform);
+            PositionControlPoints.Add(ControlPoint.transform);
         }
         //for (int i = 0; i < newListPositionControlPoints.Count; i++)
         //{
@@ -92,13 +94,13 @@ public class MeshCreateControlPoints : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.V))
-        {
+        //if (Input.GetKeyDown(KeyCode.V))
+        //{
             UpdateCageModification(cageVertices, newListPositionControlPoints, meshCage);
-        }
+        //}
 
-        if (Input.GetKeyDown(KeyCode.B))
-        {
+        //if (Input.GetKeyDown(KeyCode.B))
+        //{
             // assign the moved position of control points to the mesh vertices.
             double[,] newMatrixPositionControlPoints;
             newMatrixPositionControlPoints =ConvertListToMatrix(newListPositionControlPoints);
@@ -109,7 +111,7 @@ public class MeshCreateControlPoints : MonoBehaviour
             // compute the model matrix M with the verticesPosition after deformation
             newMatrixPositionModelVertices = readFileComputeNewcage.computeProductBG(readFileComputeNewcage.barMatrices, newMatrixPositionControlPoints);
             UpdateModelModification(modelVertices, newMatrixPositionModelVertices, meshModel);
-        }
+        //}
     }
 
     private double[,] ConvertListToMatrix(List<Transform> myList)

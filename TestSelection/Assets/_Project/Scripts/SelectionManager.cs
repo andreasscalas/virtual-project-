@@ -10,11 +10,16 @@ public class SelectionManager : MonoBehaviour
     [SerializeField] private Material highlightMaterial;
     [SerializeField] private Material defaultMaterial;
 
-    Mesh mesh;
-    Vector3[] vertices;
+    //Mesh mesh;
+    //Vector3[] vertices;
     [HideInInspector]
     public GameObject obj;
     private List<Transform> selectionList = new List<Transform>();
+    public List<GameObject> selectedObjects;
+    public List<GameObject> selectableObjects;
+
+    private Vector3 mousePos1;
+    private Vector3 mousePos2;
 
     public GameObject SelectedControlPoints;
     public GameObject UnselectedControlPoints;
@@ -24,14 +29,13 @@ public class SelectionManager : MonoBehaviour
     //public Text objectremoved;
     void start()
     {
-        Collider boxCol = SelectedControlPoints.AddComponent<BoxCollider>();
+        //Collider boxCol = SelectedControlPoints.AddComponent<BoxCollider>();
     }
 
     private void Update()
     {
         deleteGameobject();
         storeGameobject();
-        
     }
     /// <summary>
     /// select and store data of gameobject(the control points) function.
@@ -44,6 +48,7 @@ public class SelectionManager : MonoBehaviour
         {
             if (Physics.Raycast(ray, out hit) /*&& b == true*/)
             {
+                mousePos1 =Camera.main.ScreenToViewportPoint(Input.mousePosition);
                 var selection = hit.transform;
                 if (selection.CompareTag(selectableTag))
                 {
@@ -63,7 +68,6 @@ public class SelectionManager : MonoBehaviour
                     {
                         selectionList.Add(selection);
                         Debug.Log(obj+" gameobject is stored" );
-
                         //objectstored.text = obj+"is stored";
                     }
                 }
