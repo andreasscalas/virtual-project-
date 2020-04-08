@@ -20,8 +20,12 @@ public class TreatSelectionManager : MonoBehaviour
     private Vector3 mousePos1;
     private Vector3 mousePos2;
 
-    public Transform SelectedControlPoints;
-    public Transform UnselectedControlPoints;
+    public Transform _selectedControlPoints;
+    public Transform _unselectedControlPoints;
+    [HideInInspector]
+    public GameObject SelectedControlPoints;
+    [HideInInspector]
+    public GameObject UnselectedControlPoints;
 
     public MeshCreateControlPoints meshCreateControlPoints;
     //public Text objectselected;
@@ -30,7 +34,13 @@ public class TreatSelectionManager : MonoBehaviour
     //public Text objectremoved;
     void Start()
     {
+        SelectedControlPoints = new GameObject();
+        SelectedControlPoints.name = "Selected Control Points";
+        _selectedControlPoints = SelectedControlPoints.transform;
 
+        UnselectedControlPoints = new GameObject();
+        UnselectedControlPoints.name = "Unselected Control Points";
+        _unselectedControlPoints = UnselectedControlPoints.transform;
         //Collider boxCol = SelectedControlPoints.AddComponent<BoxCollider>();
         meshCreateControlPoints = GameObject.Find("Selection Manager").GetComponent<MeshCreateControlPoints>();
 
@@ -59,7 +69,7 @@ public class TreatSelectionManager : MonoBehaviour
                     obj = selection.gameObject;
                     var selectionRenderer = selection.GetComponent<Renderer>();
                     obj.transform.parent = null;
-                    obj.transform.parent = SelectedControlPoints;
+                    obj.transform.parent = _selectedControlPoints;
                     Debug.Log(obj + " gameobject is selected");
 
                     //objectselected.text= obj+ "is selected";
@@ -73,9 +83,11 @@ public class TreatSelectionManager : MonoBehaviour
                         selectionList.Add(selection);
                         Debug.Log(obj+" gameobject is stored" );
                         //objectstored.text = obj+"is stored";
-                    }
+                        //CopyComponent(SelectedControlPoints.GetComponentInChildren<Collider>(), SelectedControlPoints);
+                    }                                     
                 }
             }
+            
         }
 
         if (Input.GetMouseButtonUp(0) && Input.GetKey(KeyCode.LeftControl))
@@ -85,7 +97,7 @@ public class TreatSelectionManager : MonoBehaviour
             {
                 Rect selectRect = new Rect(mousePos1.x, mousePos1.y, (mousePos2.x - mousePos1.x), (mousePos2.y - mousePos1.y));
                 ////get the control points positions(inside initializedControlPoints Gameobject) that are inside the rectangle draw with mouse
-                foreach (Transform child in meshCreateControlPoints.InitializedControlPoints)
+                foreach (Transform child in meshCreateControlPoints._initializedControlPoints)
                 {
                     if (selectRect.Contains(Camera.main.WorldToViewportPoint(child.position), true))
                     {
@@ -95,7 +107,7 @@ public class TreatSelectionManager : MonoBehaviour
                     }
                 }
                 ////get the control points positions(inside unSelectedControlPoints Gameobject) that are inside the rectangle draw with mouse
-                foreach (Transform child in UnselectedControlPoints)
+                foreach (Transform child in _unselectedControlPoints)
                 {
                     if (selectRect.Contains(Camera.main.WorldToViewportPoint(child.position), true))
                     {
@@ -108,17 +120,20 @@ public class TreatSelectionManager : MonoBehaviour
                 for (int i = 0; i < interSelectionList.Count; i++)
                 {
                     var child = interSelectionList[i];
-                    child.transform.parent = SelectedControlPoints;
+                    child.transform.parent = _selectedControlPoints;
                     var selectionRenderer = child.GetComponent<Renderer>();
                     if (selectionRenderer != null)
                     {
                         selectionRenderer.material = highlightMaterial;
                     }
                 }
+                
                 interSelectionList.Clear();
             }
-        }
+        }       
     }
+
+
     /// <summary>
     /// delecte and remove gameobject(the control points) function.
     /// </summary>
@@ -143,7 +158,7 @@ public class TreatSelectionManager : MonoBehaviour
                         Debug.Log(obj + " is deleted");
                         //objectdeleted.text = obj + "is deleted";
                         obj.transform.parent = null;
-                        obj.transform.parent = UnselectedControlPoints;
+                        obj.transform.parent = _unselectedControlPoints;
                         selectionList.Remove(selection);
                         Debug.Log(obj + " is removed ");
                         //objectremoved.text = obj + "is removed";
@@ -161,7 +176,7 @@ public class TreatSelectionManager : MonoBehaviour
             {
                 Rect selectRect = new Rect(mousePos1.x, mousePos1.y, (mousePos2.x - mousePos1.x), (mousePos2.y - mousePos1.y));
                 ////get the control points positions(inside initializedControlPoints Gameobject) that are inside the rectangle draw with mouse
-                foreach (Transform child in SelectedControlPoints)
+                foreach (Transform child in _selectedControlPoints)
                 {
                     Debug.Log("selectRect" + selectRect);
                     if (selectRect.Contains(Camera.main.WorldToViewportPoint(child.position), true))
@@ -175,7 +190,7 @@ public class TreatSelectionManager : MonoBehaviour
                 for (int i = 0; i < interSelectionList.Count; i++)
                 {
                     var child = interSelectionList[i];
-                    child.transform.parent = UnselectedControlPoints;
+                    child.transform.parent = _unselectedControlPoints;
                     var selectionRenderer = child.GetComponent<Renderer>();
                     if (selectionRenderer != null)
                     {
@@ -190,24 +205,83 @@ public class TreatSelectionManager : MonoBehaviour
     public void ClearControlPoints()
     {
         ////Reset the color for the selected control points and put them into the initialized Control points parent
-        for (int i = 0; i < SelectedControlPoints.childCount; i++)
+        for (int i = 0; i < _selectedControlPoints.childCount; i++)
         {
-            var child = SelectedControlPoints.GetChild(i);
+            var child = _selectedControlPoints.GetChild(i);
             var selectionRenderer = child.GetComponent<Renderer>();
             selectionRenderer.material = defaultMaterial;
             child.transform.parent = null;
-            child.transform.parent = meshCreateControlPoints.InitializedControlPoints;
+            child.transform.parent = meshCreateControlPoints._initializedControlPoints;
             i--;
         }
         ////Put the control points into the initialized Control points parent
-        for (int i = 0; i < UnselectedControlPoints.childCount; i++)
+        for (int i = 0; i < _unselectedControlPoints.childCount; i++)
         {
-            var child = UnselectedControlPoints.GetChild(i);
+            var child = _unselectedControlPoints.GetChild(i);
             child.transform.parent = null;
-            child.transform.parent = meshCreateControlPoints.InitializedControlPoints;
+            child.transform.parent = meshCreateControlPoints._initializedControlPoints;
             i--;
         }
         selectionList.Clear();
     }
 
+    ///set self adopted colliders for the "selected control points"
+    private void SetColliders()
+    {
+        foreach (Transform child in transform)
+        {
+            if (child.name == "SomeChildObj")
+            {
+                Collider col = child.GetComponent<Collider>();
+                col.enabled = false;
+            }
+        }
+    }
+
+    Component CopyComponent(Component original, GameObject destination)
+    {
+        System.Type type = original.GetType();
+        Component copy = destination.AddComponent(type);
+        // Copied fields can be restricted with BindingFlags
+        System.Reflection.FieldInfo[] fields = type.GetFields();
+        foreach (System.Reflection.FieldInfo field in fields)
+        {
+            field.SetValue(copy, field.GetValue(original));
+            copy.transform.position = new Vector3(2,2,2)/*original.transform.position*/;
+            
+        }
+        
+        return copy;
+    }
+    //T CopyComponent<T>(T original, GameObject destination) where T : Component
+    //{
+    //    System.Type type = original.GetType();
+    //    Component copy = destination.AddComponent(type);
+    //    System.Reflection.FieldInfo[] fields = type.GetFields();
+    //    foreach (System.Reflection.FieldInfo field in fields)
+    //    {
+    //        field.SetValue(copy, field.GetValue(original));
+    //    }
+    //    return copy as T;
+    //}
+ 
+/// <summary>
+/// delete all the collders in the gameobject "Selected Contol Points"
+/// </summary>
+    public void DeleteAllColliders()
+    {
+        foreach (Collider c in SelectedControlPoints.GetComponents<Collider>())
+        {
+            Destroy(c);
+        }
+    }
+
+    public void GetColliderCopy()
+    {
+        foreach (Collider c in SelectedControlPoints.GetComponentsInChildren<Collider>())
+        {
+            Debug.Log("看看进来了几次");
+            CopyComponent(c, SelectedControlPoints); 
+        }
+    }
 }

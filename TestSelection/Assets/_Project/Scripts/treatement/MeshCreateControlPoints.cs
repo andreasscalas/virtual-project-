@@ -33,13 +33,17 @@ public class MeshCreateControlPoints : MonoBehaviour
     List<int> _indexOrder = new List<int>();
     //private List<Vector3> Ceshi1 /*= new List<Vector3>()*/;
     public ReadFileComputeNewcage readFileComputeNewcage;
-    public SelectionManager selectionManager;
-    public Transform InitializedControlPoints;
-
+    public TreatSelectionManager treatSelectionManager;
+    public Transform _initializedControlPoints;
+    [HideInInspector]
+    public GameObject InitializedControlPoints;
     void Start()
     {
+        InitializedControlPoints = new GameObject();
+        InitializedControlPoints.name = "Initialized Control Points";
+        _initializedControlPoints = InitializedControlPoints.transform;
+
         CreateControlPoints();
-        
     }
     /// <summary>
     /// function to create control points
@@ -67,11 +71,12 @@ public class MeshCreateControlPoints : MonoBehaviour
             ControlPoint.tag = selectableTag;
             ControlPoint.name = "\"Control Point\""+ goCounter;
             goCounter++;
-            ControlPoint.transform.parent = InitializedControlPoints;
+            ControlPoint.transform.parent = _initializedControlPoints;
             var controlPointRenderer = ControlPoint.GetComponent<MeshRenderer>();
             controlPointRenderer.material = defaultMaterial;
             newListPositionControlPoints.Add(ControlPoint.transform);
             PositionControlPoints.Add(ControlPoint.transform);
+            //Destroy(ControlPoint.gameObject.GetComponent<Collider>());
         }
         //for (int i = 0; i < newListPositionControlPoints.Count; i++)
         //{
@@ -134,7 +139,12 @@ public class MeshCreateControlPoints : MonoBehaviour
         //Reset Model mesh 
         meshModel.vertices = initialModelVerticesPosition;
         meshModel.triangles = trisModel;
+        
 
+        GameObject cuube;
+        cuube = GameObject.Find("Cube");
+        Destroy(cuube.gameObject.GetComponent<Rigidbody>());
+       
     }
 
     private void ResetCageMesh(Vector3[] vertices, Vector3[] DefaultPosition, Mesh mesh)
