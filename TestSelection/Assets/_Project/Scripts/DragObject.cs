@@ -6,6 +6,13 @@ public class DragObject : MonoBehaviour
 {
     private Vector3 mOffset;
     private float mZCoord;
+    //Rigidbody r;
+
+    //private void Start()
+    //{
+    //    r = gameObject.GetComponent<Rigidbody>();
+ 
+    //}
 
     void OnMouseDown()
     {
@@ -32,6 +39,7 @@ public class DragObject : MonoBehaviour
         if (Input.GetKey(KeyCode.Z))
         {
             transform.position = GetMouseAsWorldPoint() + mOffset;
+            //r.velocity= mOffset*10;
         }
     }
 

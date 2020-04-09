@@ -71,6 +71,7 @@ public class MeshCreateControlPoints : MonoBehaviour
             ControlPoint.tag = selectableTag;
             ControlPoint.name = "\"Control Point\""+ goCounter;
             goCounter++;
+            //ControlPoint.AddComponent<Rigidbody>().useGravity = false;
             ControlPoint.transform.parent = _initializedControlPoints;
             var controlPointRenderer = ControlPoint.GetComponent<MeshRenderer>();
             controlPointRenderer.material = defaultMaterial;
