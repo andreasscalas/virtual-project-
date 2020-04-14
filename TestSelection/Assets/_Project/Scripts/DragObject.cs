@@ -6,13 +6,15 @@ public class DragObject : MonoBehaviour
 {
     private Vector3 mOffset;
     private float mZCoord;
-    //Rigidbody r;
+    Rigidbody r;
 
-    //private void Start()
-    //{
-    //    r = gameObject.GetComponent<Rigidbody>();
- 
-    //}
+    private void Start()
+    {
+        gameObject.AddComponent<Rigidbody>();
+        r = gameObject.GetComponent<Rigidbody>();
+        r.useGravity = false;
+        r.isKinematic=true;
+    }
 
     void OnMouseDown()
     {
@@ -34,13 +36,14 @@ public class DragObject : MonoBehaviour
         return Camera.main.ScreenToWorldPoint(mousePoint);
 
     }
+ 
     void OnMouseDrag()
     {
-        if (Input.GetKey(KeyCode.Z))
+        if (Input.GetKey(KeyCode.Z) && GetMouseAsWorldPoint().z < 4.5)
         {
+            Debug.Log("看看刷新率");
             transform.position = GetMouseAsWorldPoint() + mOffset;
-            //r.velocity= mOffset*10;
         }
     }
-
+    
 }
