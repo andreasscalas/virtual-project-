@@ -351,14 +351,15 @@ public class TreatSelectionManager : MonoBehaviour
 
         Debug.Log("disMax" + disMax);
         //SelectedControlPoints.transform.localScale = new Vector3(2 * disMax, 2 * disMax, 2 * disMax);
-        SelectedControlPoints.GetComponent<MeshRenderer>().material= Selected_Transparent;
+        //SelectedControlPoints.GetComponent<MeshRenderer>().material= Selected_Transparent;
+        SelectedControlPoints.AddComponent<SphereCollider>();
         SelectedControlPoints.GetComponent<SphereCollider>().radius = disMax;
     }
 
     void InitializeSelecObj()
     {  
-        SelectedControlPoints = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-        //SelectedControlPoints = new GameObject();
+        //SelectedControlPoints = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        SelectedControlPoints = new GameObject();
         SelectedControlPoints.name = "Selected Control Points";
         _selectedControlPoints = SelectedControlPoints.transform;
         SelectedControlPoints.AddComponent<DragObject>();
