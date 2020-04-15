@@ -78,8 +78,7 @@ public class SelectionManager : MonoBehaviour
     /// delecte and remove gameobject(the control points) function.
     /// </summary>
     private void deleteGameobject()
-    {
-        
+    {        
         var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
         //这里指的是如果处于退出选中状态，将会赋予初始。我们要做的是退出选中状态之后：我们会把选中的vertices的index从list里面删除）

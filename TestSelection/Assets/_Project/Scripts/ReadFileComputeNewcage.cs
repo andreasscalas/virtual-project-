@@ -267,6 +267,5 @@ public class ReadFileComputeNewcage : MonoBehaviour
             //matrixCage.RemoveRow(j); can be optimized
         }
         return order;
-
     }
 }
