@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -14,22 +15,26 @@ public class DragObject : MonoBehaviour
     private List<Vector3> _resetPosition= new List<Vector3>();
     private Vector3 resetPosition;
 
-
     private void Start()
     {
-        gameObject.AddComponent<Rigidbody>();
-        r = gameObject.GetComponent<Rigidbody>();
-        r.useGravity = false;
-        r.isKinematic=true;
-        r.drag = 1;
-        r.constraints = RigidbodyConstraints.FreezeRotation;
-        state = true; // if the gameobject does not collide with others
-        speed = 20;
+        
+        InitializeDrag();
     }
+
+    void Update()
+    {
+        //if (r == null && rigidbogyState)
+        //{
+        //    InitializeDrag();
+        //}
+    }
+
 
     void OnMouseDown()
     {
-        if (Input.GetKey(KeyCode.Z))
+        Debug.Log("mouse is pressed");
+
+        if (true/*Input.GetKey(KeyCode.Z)*/)
         {
             mZCoord = Camera.main.WorldToScreenPoint(gameObject.transform.position).z;
             // Store offset = gameobject world pos - mouse world pos
@@ -51,7 +56,7 @@ public class DragObject : MonoBehaviour
  
     void OnMouseDrag()
     {
-        if (Input.GetKey(KeyCode.Z) && state)
+        if (/*Input.GetKey(KeyCode.Z) &&*/ state)
         {
             
             //transform.position = GetMouseAsWorldPoint() + mOffset;
@@ -76,9 +81,20 @@ public class DragObject : MonoBehaviour
             state = false;
         }
 
-        resetPosition = _resetPosition[_resetPosition.Count - 3];
+        resetPosition = _resetPosition[_resetPosition.Count-3];
         transform.position = resetPosition;
     }
 
+    private void InitializeDrag()
+    {
+        gameObject.AddComponent<Rigidbody>();
+        r = gameObject.GetComponent<Rigidbody>();
+        r.useGravity = false;
+        r.isKinematic = true;
+        r.drag = 1;
+        r.constraints = RigidbodyConstraints.FreezeRotation;
+        state = true; // if the gameobject does not collide with others
+        speed = 20;
+    }
 
 }

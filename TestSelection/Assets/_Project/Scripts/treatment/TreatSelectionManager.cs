@@ -55,7 +55,7 @@ public class TreatSelectionManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.M))
         {
             ComputeBarCenter();
-            ComputeCreateCollider();
+            //ComputeCreateCollider();
         }
 
     }
@@ -68,6 +68,13 @@ public class TreatSelectionManager : MonoBehaviour
         RaycastHit hit;
         if (Input.GetMouseButtonDown(0))
         {
+            Rigidbody r = SelectedControlPoints.GetComponent<Rigidbody>();
+            if (r == null)
+            {
+                r = SelectedControlPoints.AddComponent<Rigidbody>();
+                r.useGravity = false;
+                r.isKinematic = true;
+            }
             if (Physics.Raycast(ray, out hit) /*&& b == true*/)
             {
                 mousePos1 = Camera.main.ScreenToViewportPoint(Input.mousePosition);
@@ -101,6 +108,13 @@ public class TreatSelectionManager : MonoBehaviour
         if (Input.GetMouseButtonUp(0) && Input.GetKey(KeyCode.LeftControl))
         {
             mousePos2 = Camera.main.ScreenToViewportPoint(Input.mousePosition);
+            Rigidbody r = SelectedControlPoints.GetComponent<Rigidbody>();
+            if (r == null)
+            {
+                r = SelectedControlPoints.AddComponent<Rigidbody>();
+                r.useGravity = false;
+                r.isKinematic = true;
+            }
             if (mousePos1 != mousePos2)
             {
                 Rect selectRect = new Rect(mousePos1.x, mousePos1.y, (mousePos2.x - mousePos1.x), (mousePos2.y - mousePos1.y));
@@ -147,65 +161,66 @@ public class TreatSelectionManager : MonoBehaviour
     /// delecte and remove gameobject(the control points) function.
     /// </summary>
     private void deleteControlPoint()
-    {        
+    {
+        
+        
         var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
         //deselect a control point, and put this control point into the unselected gameobject
         if (Input.GetMouseButtonDown(1))
         {
+            Rigidbody r = SelectedControlPoints.GetComponent<Rigidbody>();
+            Destroy(r);
             //Debug.Log("看哈进来没有");
             if (Physics.Raycast(ray, out hit))
             {
                 //Debug.Log("看哈射线出来没有");
                 mousePos1 = Camera.main.ScreenToViewportPoint(Input.mousePosition);
                 var selection = hit.transform;
-                Debug.Log("看哈闯到没有，闯到的点位置"+ selection.position);
+                //Debug.Log("看哈闯到没有，闯到的点位置"+ selection.position);
 
-                for (int i = 0; i < selection.childCount; i++)    
-                {
-                    var child = selection.GetChild(i);
-                    // do whatever you want with child transform object here
-                    if (child.CompareTag(selectableTag))
-                    {
-                        Debug.Log("看哈撞到可选择没有");
-                        if (selectionList.Contains(child))
-                        {
-                            Debug.Log("看哈撞到在list里的没有");
-                            obj = child.gameObject;
-                            var selectionRenderer = child.GetComponent<Renderer>();
-                            selectionRenderer.material = defaultMaterial;
-                            Debug.Log(obj + " is deleted");
-                            //objectdeleted.text = obj + "is deleted";
-                            obj.transform.parent = null;
-                            obj.transform.parent = _unselectedControlPoints;
-                            selectionList.Remove(child);
-                            Debug.Log(obj + " is removed ");
-                            //objectremoved.text = obj + "is removed";
-                        }
-
-                    }
-
-                }
-
-                //if (selection.CompareTag(selectableTag))
+                //for (int i = 0; i < selection.childCount; i++)    
                 //{
-                //    Debug.Log("看哈撞到可选择没有");
-                //    if (selectionList.Contains(selection))
+                //    var child = selection.GetChild(i);
+                //    // do whatever you want with child transform object here
+                //    if (child.CompareTag(selectableTag))
                 //    {
-                //        Debug.Log("看哈撞到在list里的没有");
-                //        obj = selection.gameObject;
-                //        var selectionRenderer = selection.GetComponent<Renderer>();
-                //        selectionRenderer.material = defaultMaterial;
-                //        Debug.Log(obj + " is deleted");
-                //        //objectdeleted.text = obj + "is deleted";
-                //        obj.transform.parent = null;
-                //        obj.transform.parent = _unselectedControlPoints;
-                //        selectionList.Remove(selection);
-                //        Debug.Log(obj + " is removed ");
-                //        //objectremoved.text = obj + "is removed";
+                //        //Debug.Log("看哈撞到可选择没有");
+                //        if (selectionList.Contains(child))
+                //        {
+                //            //Debug.Log("看哈撞到在list里的没有");
+                //            obj = child.gameObject;
+                //            var selectionRenderer = child.GetComponent<Renderer>();
+                //            selectionRenderer.material = defaultMaterial;
+                //            Debug.Log(obj + " is deleted");
+                //            //objectdeleted.text = obj + "is deleted";
+                //            obj.transform.parent = null;
+                //            obj.transform.parent = _unselectedControlPoints;
+                //            selectionList.Remove(child);
+                //            Debug.Log(obj + " is removed ");
+                //            //objectremoved.text = obj + "is removed";
+                //        }
+
                 //    }
 
                 //}
+                if (selection.CompareTag(selectableTag))
+                {
+                    if (selectionList.Contains(selection))
+                    {
+                        obj = selection.gameObject;
+                        var selectionRenderer = selection.GetComponent<Renderer>();
+                        selectionRenderer.material = defaultMaterial;
+                        Debug.Log(obj + " is deleted");
+                        //objectdeleted.text = obj + "is deleted";
+                        obj.transform.parent = null;
+                        obj.transform.parent = _unselectedControlPoints;
+                        selectionList.Remove(selection);
+                        Debug.Log(obj + " is removed ");
+                        //objectremoved.text = obj + "is removed";
+                    }
+
+                }
 
             }
         }
