@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Accord.Math;
 using UnityEngine;
 using UnityEngine.UI;
+using Vector3 = UnityEngine.Vector3;
 
 public class TreatSelectionManager : MonoBehaviour
 {
@@ -17,17 +19,17 @@ public class TreatSelectionManager : MonoBehaviour
     public GameObject obj;
     public List<Transform> selectionList = new List<Transform>();
     private List<Transform> interSelectionList = new List<Transform>();
-    private List<Vector3> _position = new List<Vector3>(100);
-    private List<Vector3> _scale = new List<Vector3>(100);
+    //private List<Vector3> _position = new List<Vector3>(100);
+    //private List<Vector3> _scale = new List<Vector3>(100);
 
     private Vector3 mousePos1;
     private Vector3 mousePos2;
 
     public Transform _selectedControlPoints;
     public Transform _unselectedControlPoints;
-    [HideInInspector]
+    //[HideInInspector]
     public GameObject SelectedControlPoints;
-    [HideInInspector]
+    //[HideInInspector]
     public GameObject UnselectedControlPoints;
     private Vector3 barCenter = new Vector3();
 
@@ -38,6 +40,7 @@ public class TreatSelectionManager : MonoBehaviour
     //public Text objectremoved;
     void Start()
     {
+        
         InitializeSelecObj();
         InitializeUnselecObj();
     }
@@ -46,16 +49,19 @@ public class TreatSelectionManager : MonoBehaviour
     {
         deleteControlPoint();
         storeControlPoint();
-        for (int i = 0; i < selectionList.Count; i++)
-        {
-            _position.Add(selectionList[i].position);
-            _scale.Add(selectionList[i].localScale);
-        }
+        //for (int i = 0; i < selectionList.Count; i++)
+        //{
+        //    _position.Add(selectionList[i].position);
+        //    _scale.Add(selectionList[i].localScale);
+        //}
 
         if (Input.GetKeyDown(KeyCode.M))
         {
             ComputeBarCenter();
-            //ComputeCreateCollider();
+            DeleteParentCollider();
+            GetColliderCopy();
+            ComputeCreateCollider();
+            
         }
 
     }
@@ -86,6 +92,10 @@ public class TreatSelectionManager : MonoBehaviour
                     obj.transform.parent = null;
                     obj.transform.parent = _selectedControlPoints;
                     Debug.Log(obj + " gameobject is selected");
+
+                    ComputeBarCenter();
+                    DeleteParentCollider();
+                    GetColliderCopy();
 
                     //objectselected.text= obj+ "is selected";
 
@@ -162,52 +172,34 @@ public class TreatSelectionManager : MonoBehaviour
     /// </summary>
     private void deleteControlPoint()
     {
-        
-        
         var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
         //deselect a control point, and put this control point into the unselected gameobject
         if (Input.GetMouseButtonDown(1))
         {
+            DeleteParentCollider();
+            //if rigidbody remains, we can not remove control points from Selected Control Points to other gameobject
             Rigidbody r = SelectedControlPoints.GetComponent<Rigidbody>();
             Destroy(r);
-            //Debug.Log("看哈进来没有");
+        }
+
+        if (Input.GetMouseButtonDown(1))
+        {
             if (Physics.Raycast(ray, out hit))
             {
-                //Debug.Log("看哈射线出来没有");
+                Debug.Log("To see if enter ray.hit");
                 mousePos1 = Camera.main.ScreenToViewportPoint(Input.mousePosition);
+                Debug.Log("To see mousePos1");
                 var selection = hit.transform;
-                //Debug.Log("看哈闯到没有，闯到的点位置"+ selection.position);
-
-                //for (int i = 0; i < selection.childCount; i++)    
-                //{
-                //    var child = selection.GetChild(i);
-                //    // do whatever you want with child transform object here
-                //    if (child.CompareTag(selectableTag))
-                //    {
-                //        //Debug.Log("看哈撞到可选择没有");
-                //        if (selectionList.Contains(child))
-                //        {
-                //            //Debug.Log("看哈撞到在list里的没有");
-                //            obj = child.gameObject;
-                //            var selectionRenderer = child.GetComponent<Renderer>();
-                //            selectionRenderer.material = defaultMaterial;
-                //            Debug.Log(obj + " is deleted");
-                //            //objectdeleted.text = obj + "is deleted";
-                //            obj.transform.parent = null;
-                //            obj.transform.parent = _unselectedControlPoints;
-                //            selectionList.Remove(child);
-                //            Debug.Log(obj + " is removed ");
-                //            //objectremoved.text = obj + "is removed";
-                //        }
-
-                //    }
-
-                //}
+                Debug.Log("To see hit.transform");
+                Debug.Log("To see the selection.CompareTag " + selection.name);
+                Debug.Log("To see selectableTag "+ selectableTag);
                 if (selection.CompareTag(selectableTag))
                 {
+                    Debug.Log("To see if enter compareTag");
                     if (selectionList.Contains(selection))
                     {
+                        Debug.Log("To see if enter contains selection");
                         obj = selection.gameObject;
                         var selectionRenderer = selection.GetComponent<Renderer>();
                         selectionRenderer.material = defaultMaterial;
@@ -221,7 +213,7 @@ public class TreatSelectionManager : MonoBehaviour
                     }
 
                 }
-
+                Debug.Log("end if campareTag");
             }
         }
 
@@ -281,21 +273,21 @@ public class TreatSelectionManager : MonoBehaviour
         selectionList.Clear();
     }
 
-    /////////////////set self adopted colliders for the "selected control points"
+    ///set self adopted colliders for the "selected control points"
 
-    //////////////Component CopyComponent(Component original, GameObject destination)
-    //////////////{
-    //////////////    System.Type type = original.GetType();
-    //////////////    Component copy = destination.AddComponent(type);
-    //////////////    // Copied fields can be restricted with BindingFlags
-    //////////////    System.Reflection.FieldInfo[] fields = type.GetFields();
-    //////////////    foreach (System.Reflection.FieldInfo field in fields)
-    //////////////    {
-    //////////////        field.SetValue(copy, field.GetValue(original));
-    //////////////    }
+    Component CopyComponent(Component original, GameObject destination)
+    {
+        System.Type type = original.GetType();
+        Component copy = destination.AddComponent(type);
+        // Copied fields can be restricted with BindingFlags
+        System.Reflection.FieldInfo[] fields = type.GetFields();
+        foreach (System.Reflection.FieldInfo field in fields)
+        {
+            field.SetValue(copy, field.GetValue(original));
+        }
 
-    //////////////    return copy;
-    //////////////}
+        return copy;
+    }
 
     /// <summary>
     /// delete all the collders in the gameobject "Selected Contol Points"
@@ -305,31 +297,36 @@ public class TreatSelectionManager : MonoBehaviour
         Destroy(SelectedControlPoints);
         InitializeSelecObj();
     }
+    public void DeleteParentCollider ()
+    {
+        Collider[] colliderParent = SelectedControlPoints.GetComponents<Collider>();
+        for (int i = 0; i < colliderParent.Length; i++)
+        { Destroy(colliderParent[i]); }
+    }
+
+    public void GetColliderCopy()
+    {
+        //GetInChildren get all the elements in parent and children
+        Collider[] Cols = SelectedControlPoints.GetComponentsInChildren<Collider>();
+        SphereCollider[] sphereCollider = SelectedControlPoints.GetComponents<SphereCollider>();
+
+        int k = sphereCollider.Length;
+        //To eliminate the elements in parent
+        for (int j = Cols.Length - SelectedControlPoints.transform.childCount; j < Cols.Length; j++)
+        {
+
+            //Debug.Log("the position of the children colliders\t" + col.transform.position);
+            CopyComponent(Cols[j], SelectedControlPoints);
 
 
-    ////////////public void GetColliderCopy()
-    ////////////{
-    ////////////    //GetInChildren get all the elements in parent and children
-    ////////////    Collider[] Cols = SelectedControlPoints.GetComponentsInChildren<Collider>();
-    ////////////    SphereCollider[] sphereCollider = SelectedControlPoints.GetComponents<SphereCollider>();
-    ////////////    
-    ////////////    int k = sphereCollider.Length;
-    ////////////    //To eliminate the elements in parent
-    ////////////    for (int j = Cols.Length - SelectedControlPoints.transform.childCount; j < Cols.Length; j++)
-    ////////////    {
+            sphereCollider = SelectedControlPoints.GetComponents<SphereCollider>();
 
-    ////////////        //Debug.Log("the position of the children colliders\t" + col.transform.position);
-    ////////////        CopyComponent(Cols[j], SelectedControlPoints);
-    ////////////        
+            //delete the offset of transform(remember when move a gameobject, its transfrom changed)
+            sphereCollider[j - (Cols.Length - SelectedControlPoints.transform.childCount) + k].center = Cols[j].transform.position - SelectedControlPoints.transform.position;
+            sphereCollider[j - (Cols.Length - SelectedControlPoints.transform.childCount) + k].radius = 0.48f;
 
-    ////////////        sphereCollider = SelectedControlPoints.GetComponents<SphereCollider>();
-    ////////////       
-    ////////////        //delete the offset of transform(remember when move a gameobject, its transfrom changed)
-    ////////////        sphereCollider[j - (Cols.Length - SelectedControlPoints.transform.childCount) + k].center = Cols[j].transform.position - SelectedControlPoints.transform.position;
-    ////////////        sphereCollider[j - (Cols.Length - SelectedControlPoints.transform.childCount) + k].radius = 0.06f;
-    ////////////        
-    ////////////    }
-    ////////////}
+        }
+    }
 
     public void ComputeBarCenter()
     {
@@ -368,21 +365,23 @@ public class TreatSelectionManager : MonoBehaviour
         //SelectedControlPoints.transform.localScale = new Vector3(2 * disMax, 2 * disMax, 2 * disMax);
         //SelectedControlPoints.GetComponent<MeshRenderer>().material= Selected_Transparent;
         SelectedControlPoints.AddComponent<SphereCollider>();
-        SelectedControlPoints.GetComponent<SphereCollider>().radius = disMax;
+        SelectedControlPoints.GetComponent<SphereCollider>().radius = 0.5f;
+        //SelectedControlPoints.GetComponent<SphereCollider>().center = SelectedControlPoints.transform.position;
     }
 
     void InitializeSelecObj()
     {  
         //SelectedControlPoints = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-        SelectedControlPoints = new GameObject();
+        SelectedControlPoints = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        SelectedControlPoints.transform.localScale = new Vector3(0.1f,0.1f,0.1f);
         SelectedControlPoints.name = "Selected Control Points";
         _selectedControlPoints = SelectedControlPoints.transform;
-        SelectedControlPoints.AddComponent<DragObject>();
+        SelectedControlPoints.AddComponent<MoveObjectUpdate>();
     }
 
     void InitializeUnselecObj()
     {
-        UnselectedControlPoints = new GameObject();
+        UnselectedControlPoints =new GameObject();
         UnselectedControlPoints.name = "Unselected Control Points";
         _unselectedControlPoints = UnselectedControlPoints.transform;
         //Collider boxCol = SelectedControlPoints.AddComponent<BoxCollider>();

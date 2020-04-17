@@ -58,9 +58,9 @@ public class DragObject : MonoBehaviour
     {
         if (/*Input.GetKey(KeyCode.Z) &&*/ state)
         {
-            
+            //mOffset = new Vector3(0,0,0);
             //transform.position = GetMouseAsWorldPoint() + mOffset;
-            
+
             position = (GetMouseAsWorldPoint() + mOffset);
             Debug.Log("position"+ position);
             _resetPosition.Add(position);

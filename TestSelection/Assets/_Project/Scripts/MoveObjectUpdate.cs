@@ -68,7 +68,7 @@ public class MoveObjectUpdate : MonoBehaviour
                 var directionNorm = Vector3.Normalize(direction);
                 var isParall = Vector3.Dot(possibleMoviment, directionNorm);
 
-                if (Math.Abs(isParall + 1) < 0.9)
+                if (Math.Abs(isParall + 1) < 0.2)
                 {
                     move = true;
                     break;
