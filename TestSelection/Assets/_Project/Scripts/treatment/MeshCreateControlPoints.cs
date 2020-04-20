@@ -28,6 +28,7 @@ public class MeshCreateControlPoints : MonoBehaviour
     private List<Transform> newListPositionControlPoints = new List<Transform>();
     
     [SerializeField] private string selectableTag = "Selectable";
+    [SerializeField] private string spawnSelectableTag = "InitializeParent";
     [SerializeField] private Material defaultMaterial;
     int goCounter=1;
     List<int> _indexOrder = new List<int>();
@@ -41,6 +42,7 @@ public class MeshCreateControlPoints : MonoBehaviour
     {
         InitializedControlPoints = new GameObject();
         InitializedControlPoints.name = "Initialized Control Points";
+        InitializedControlPoints.tag = "InitializeParent";
         _initializedControlPoints = InitializedControlPoints.transform;
 
         CreateControlPoints();

@@ -34,6 +34,7 @@ public class DragObject : MonoBehaviour
     {
         Debug.Log("mouse is pressed");
 
+        //deselect a control point, and put this control point into the unselected gameobject
         if (true/*Input.GetKey(KeyCode.Z)*/)
         {
             mZCoord = Camera.main.WorldToScreenPoint(gameObject.transform.position).z;
