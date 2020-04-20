@@ -26,7 +26,7 @@ public class TreatSelectionManager : MonoBehaviour
 
     private Vector3 mousePos1;
     private Vector3 mousePos2;
-    private Vector3 colliderPointion;
+    private Vector3 colliderPosition;
 
     public Transform _selectedControlPoints;
     public Transform _unselectedControlPoints;
@@ -114,19 +114,23 @@ public class TreatSelectionManager : MonoBehaviour
                         //CopyComponent(SelectedControlPoints.GetComponentInChildren<Collider>(), SelectedControlPoints);
                     }
                     Debug.Log("Evenery time click a control point"+ obj.transform.position);
-                    colliderPointion = hit.collider.transform.position;
+                    colliderPosition = hit.collider.transform.position;
                 }
 
                 if (selection.CompareTag(selectedParentTag))
                 {
-                    colliderPointion = hit.collider.transform.position;
-                    Debug.Log("colliderPointion in selection function " + colliderPointion);
+                    colliderPosition = hit.collider.transform.position;
+                    Debug.Log("colliderPointion in selection function " + colliderPosition);
                 }
+                //ComputeBarCenter();
+                //DeleteParentCollider();
+                //GetColliderCopy();
+                //ComputeCreateCollider();
             }
-            
         }
 
-        if (Input.GetMouseButtonUp(0) && Input.GetKey(KeyCode.LeftControl))
+
+        if (Input.GetMouseButtonUp(0) && Input.GetKey(KeyCode.LeftShift))
         {
             mousePos2 = Camera.main.ScreenToViewportPoint(Input.mousePosition);
             Rigidbody r = SelectedControlPoints.GetComponent<Rigidbody>();
@@ -186,31 +190,46 @@ public class TreatSelectionManager : MonoBehaviour
         var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
         //deselect a control point, and put this control point into the unselected gameobject
+
         if (Input.GetMouseButtonDown(1))
         {
             DeleteParentCollider();
             //if rigidbody remains, we can not remove control points from Selected Control Points to other gameobject
             Rigidbody r = SelectedControlPoints.GetComponent<Rigidbody>();
             Destroy(r);
-        }
 
-        if (Input.GetMouseButtonDown(1))
-        {
             if (Physics.Raycast(ray, out hit))
             {
-                Debug.Log("To see if enter ray.hit");
                 mousePos1 = Camera.main.ScreenToViewportPoint(Input.mousePosition);
-                Debug.Log("To see mousePos1");
                 var selection = hit.transform;
-                Debug.Log("To see hit.transform");
-                Debug.Log("To see the selection.CompareTag " + selection.name);
-                Debug.Log("To see selectableTag "+ selectableTag);
+                if (selection.CompareTag(selectedParentTag))
+                {
+                    obj = selection.gameObject;
+                    //get the ray hit position 
+                    Vector3 position = hit.collider.transform.position;
+                    for (int i = 0; i < selection.childCount; i++)
+                    {
+                        Transform child = selection.GetChild(i);
+                        if (Vector3.Distance(position, child.transform.position) < 0.1)
+                        {
+                            var selectionRenderer = child.GetComponent<Renderer>();
+                            selectionRenderer.material = defaultMaterial;
+                            Debug.Log(obj + " is deleted");
+                            //objectdeleted.text = obj + "is deleted";
+                            child.transform.parent = null;
+                            child.transform.parent = _unselectedControlPoints;
+                            selectionList.Remove(selection);
+                            Debug.Log(obj + " is removed ");
+                        }
+                    }
+
+                }
+
                 if (selection.CompareTag(selectableTag))
                 {
                     Debug.Log("To see if enter compareTag");
                     if (selectionList.Contains(selection))
                     {
-                        Debug.Log("To see if enter contains selection");
                         obj = selection.gameObject;
                         var selectionRenderer = selection.GetComponent<Renderer>();
                         selectionRenderer.material = defaultMaterial;
@@ -224,11 +243,11 @@ public class TreatSelectionManager : MonoBehaviour
                     }
 
                 }
-                Debug.Log("end if campareTag");
             }
         }
 
-        if (Input.GetMouseButtonUp(1) && Input.GetKey(KeyCode.LeftControl))
+
+        if (Input.GetMouseButtonUp(1) && Input.GetKey(KeyCode.LeftShift))
         {
             mousePos2 = Camera.main.ScreenToViewportPoint(Input.mousePosition);
             if (mousePos1 != mousePos2)
@@ -240,7 +259,7 @@ public class TreatSelectionManager : MonoBehaviour
                     Debug.Log("selectRect" + selectRect);
                     if (selectRect.Contains(Camera.main.WorldToViewportPoint(child.position), true))
                     {
-                        Debug.Log("Camera.main.WorldToViewportPoint(child.position)" + Camera.main.WorldToViewportPoint(child.position));
+                        //Debug.Log("Camera.main.WorldToViewportPoint(child.position)" + Camera.main.WorldToViewportPoint(child.position));
                         selectionList.Remove(child);
                         interSelectionList.Add(child);
                     }
@@ -349,6 +368,10 @@ public class TreatSelectionManager : MonoBehaviour
         barCenter = (sum / selectionList.Count);
 
     }
+
+    /// <summary>
+    ///Compute the distaces between barcenter and the control points; set the Selected Control Points' transform to the cintrol points we click; apply the offset to the other control points
+    /// </summary>
     public void ComputeCreateCollider()
     {
         float disMax = 0;
@@ -361,9 +384,9 @@ public class TreatSelectionManager : MonoBehaviour
             }
         }
         //set the transform of the Selected Control Points to the barycentric point, compensate the offset to its children. 
-        Vector3 offset = SelectedControlPoints.transform.position - colliderPointion/*barCenter*/;
-        Debug.Log("colliderPointion in Selected Contrpol point transform " + colliderPointion);
-        SelectedControlPoints.transform.position = colliderPointion/*barCenter*/;
+        Vector3 offset = SelectedControlPoints.transform.position - colliderPosition/*barCenter*/;
+        Debug.Log("colliderPointion in Selected Contrpol point transform " + colliderPosition);
+        SelectedControlPoints.transform.position = colliderPosition/*barCenter*/;
 
         for (int i = 0; i < SelectedControlPoints.transform.childCount; i++)
         {
