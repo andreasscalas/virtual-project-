@@ -17,7 +17,7 @@ public class MultiSelectionBox : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if ((Input.GetMouseButtonDown(0) && Input.GetKey(KeyCode.LeftControl)) || (Input.GetMouseButtonDown(1) && Input.GetKey(KeyCode.LeftControl)))
+        if ((Input.GetMouseButtonDown(0) && Input.GetKey(KeyCode.LeftShift)) || (Input.GetMouseButtonDown(1) && Input.GetKey(KeyCode.LeftShift)))
         {
             RaycastHit hit;
             if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, Mathf.Infinity))
@@ -26,12 +26,12 @@ public class MultiSelectionBox : MonoBehaviour
             }
         }
 
-        if ((Input.GetMouseButtonUp(0) && Input.GetKey(KeyCode.LeftControl)) || (Input.GetMouseButtonUp(1) && Input.GetKey(KeyCode.LeftControl)))
+        if ((Input.GetMouseButtonUp(0) && Input.GetKey(KeyCode.LeftShift)) || (Input.GetMouseButtonUp(1) && Input.GetKey(KeyCode.LeftShift)))
         {
             selectSquareImage.gameObject.SetActive(false);
         }
 
-        if ((Input.GetMouseButton(0) && Input.GetKey(KeyCode.LeftControl)) ||(Input.GetMouseButton(1) && Input.GetKey(KeyCode.LeftControl)))
+        if ((Input.GetMouseButton(0) && Input.GetKey(KeyCode.LeftShift)) ||(Input.GetMouseButton(1) && Input.GetKey(KeyCode.LeftShift)))
         {
             if (!selectSquareImage.gameObject.activeInHierarchy)
             {
