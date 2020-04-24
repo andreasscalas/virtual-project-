@@ -21,12 +21,6 @@ public class MoveObjectUpdate : MonoBehaviour
         FreeMovimentState = true;
         impossibleDirections = new List<Vector3>();
     }
-        
-    // Update is called once per frame
-    void Update()
-    {
-    }
-
 
     void OnMouseDown()
     {
@@ -34,22 +28,19 @@ public class MoveObjectUpdate : MonoBehaviour
         mOffSet = gameObject.transform.position - GetMouseWorldPos();
         previousDragPos = GetMouseWorldPos() + mOffSet;
         isMouseCloseObjet = true;
-
     }
 
     void OnMouseDrag()
     {
-
         if (FreeMovimentState)
         {
             transform.position = GetMouseWorldPos() + mOffSet;
         }
-        else if (CollisionState)
+        else if (!FreeMovimentState)
         {
             var possibleMoviment = previousDragPos - GetMouseWorldPos() - mOffSet;
             possibleMoviment = Vector3.Normalize(possibleMoviment);
             previousDragPos = GetMouseWorldPos() + mOffSet;
-
 
             var distance = Vector3.Distance(transform.position, GetMouseWorldPos() + mOffSet);
             if (distance > 0.3)
@@ -61,7 +52,6 @@ public class MoveObjectUpdate : MonoBehaviour
                 isMouseCloseObjet = true;
             }
             
-
             var move = false;
             foreach (var direction in impossibleDirections)
             {
@@ -74,19 +64,18 @@ public class MoveObjectUpdate : MonoBehaviour
                     break;
                 }
             }
-            
+
             if (move && isMouseCloseObjet)
             {
                 transform.position = GetMouseWorldPos() + mOffSet;
             }
-            
         }
     }
 
     void OnCollisionEnter(Collision collision)
     {
         FreeMovimentState = false;
-        CollisionState = true;
+        //CollisionState = true;
 
         foreach (var contact in collision.contacts)
         {
@@ -97,20 +86,19 @@ public class MoveObjectUpdate : MonoBehaviour
     void OnCollisionExit(Collision collision)
     {
         FreeMovimentState = true;
-        CollisionState = false;
+        //CollisionState = false;
     }
 
     void OnCollisionStay(Collision collision)
     {
-        CollisionState = true;
-
+        //CollisionState = true;
+        FreeMovimentState = false;
     }
 
     private Vector3 GetMouseWorldPos()
     {
         Vector3 mousePoint = Input.mousePosition;
         mousePoint.z = mZCoord;
-
         return Camera.main.ScreenToWorldPoint(mousePoint);
     }
 }
