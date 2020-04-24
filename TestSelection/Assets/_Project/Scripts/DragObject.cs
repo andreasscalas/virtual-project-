@@ -38,6 +38,7 @@ public class DragObject : MonoBehaviour
         if (true/*Input.GetKey(KeyCode.Z)*/)
         {
             mZCoord = Camera.main.WorldToScreenPoint(gameObject.transform.position).z;
+            Debug.Log("mZCoord"+ mZCoord);
             // Store offset = gameobject world pos - mouse world pos
             mOffset = gameObject.transform.position - GetMouseAsWorldPoint();
             state = true;
@@ -59,6 +60,8 @@ public class DragObject : MonoBehaviour
     {
         if (/*Input.GetKey(KeyCode.Z) &&*/ state)
         {
+            mZCoord = Camera.main.WorldToScreenPoint(gameObject.transform.position).z;
+            Debug.Log("mZCoord" + mZCoord);
             //mOffset = new Vector3(0,0,0);
             //transform.position = GetMouseAsWorldPoint() + mOffset;
 
@@ -67,7 +70,7 @@ public class DragObject : MonoBehaviour
             _resetPosition.Add(position);
             //transform.Translate(new Vector3(position.x, position.y, position.z) * speed * Time.deltaTime);
             transform.position = Vector3.MoveTowards(transform.position, position, speed * Time.deltaTime);
-            Debug.Log("transform.position/resetPosition"+ transform.position);
+            //Debug.Log("transform.position/resetPosition"+ transform.position);
 
         }
     }
