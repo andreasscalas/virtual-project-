@@ -14,10 +14,15 @@ public class MeshCreateControlPoints : MonoBehaviour
 
     Mesh meshCage;
     Mesh meshModel;
-    Vector3[] cageVertices;
+    [HideInInspector]
+    public Vector3[] cageVertices;
     Vector3[] modelVertices;
+    [HideInInspector]
     public Vector3[] initialControlPointPosition;
+    [HideInInspector]
     public Vector3[] initialModelVerticesPosition;
+    [HideInInspector]
+    private Vector3 barCenter = new Vector3();
 
     public GameObject objCage;
     public GameObject objModel;
@@ -25,11 +30,12 @@ public class MeshCreateControlPoints : MonoBehaviour
     private int[] trisModel;
     double[,] newMatrixPositionModel;
     GameObject ControlPoint /*= new GameObject()*/;
-    private List<Transform> newListPositionControlPoints = new List<Transform>();
+    private List<Transform> _newPositionControlPoints = new List<Transform>();
     
     [SerializeField] private string selectableTag = "Selectable";
     [SerializeField] private string spawnSelectableTag = "InitializeParent";
     [SerializeField] private Material defaultMaterial;
+    [SerializeField] private Material barCenterCage;
     int goCounter=1;
     List<int> _indexOrder = new List<int>();
     //private List<Vector3> Ceshi1 /*= new List<Vector3>()*/;
@@ -77,7 +83,7 @@ public class MeshCreateControlPoints : MonoBehaviour
             ControlPoint.transform.parent = _initializedControlPoints;
             var controlPointRenderer = ControlPoint.GetComponent<MeshRenderer>();
             controlPointRenderer.material = defaultMaterial;
-            newListPositionControlPoints.Add(ControlPoint.transform);
+            _newPositionControlPoints.Add(ControlPoint.transform);
             PositionControlPoints.Add(ControlPoint.transform);
             //Destroy(ControlPoint.gameObject.GetComponent<Collider>());
         }
@@ -104,14 +110,22 @@ public class MeshCreateControlPoints : MonoBehaviour
     {
         //if (Input.GetKeyDown(KeyCode.V))
         //{
-            UpdateCageModification(cageVertices, newListPositionControlPoints, meshCage);
+            UpdateCageModification(cageVertices, _newPositionControlPoints, meshCage);
         //}
-
+        if (Input.GetKeyDown(KeyCode.Y))
+        {
+            ComputeBarCenter(modelVertices);
+            GameObject Bar = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            Bar.transform.position = barCenter;
+            Bar.transform.localScale= new Vector3(0.1f,0.1f,0.1f);
+            MeshRenderer meshBar = Bar.GetComponent<MeshRenderer>();
+            meshBar.material = barCenterCage;
+        }
         //if (Input.GetKeyDown(KeyCode.B))
         //{
-            // assign the moved position of control points to the mesh vertices.
-            double[,] newMatrixPositionControlPoints;
-            newMatrixPositionControlPoints =ConvertListToMatrix(newListPositionControlPoints);
+        // assign the moved position of control points to the mesh vertices.
+        double[,] newMatrixPositionControlPoints;
+            newMatrixPositionControlPoints =ConvertListToMatrix(_newPositionControlPoints);
             
 
             double[,] newMatrixPositionModelVertices = new double[readFileComputeNewcage.columnNumberUpdate,
@@ -120,6 +134,17 @@ public class MeshCreateControlPoints : MonoBehaviour
             newMatrixPositionModelVertices = readFileComputeNewcage.computeProductBG(readFileComputeNewcage.barMatrices, newMatrixPositionControlPoints);
             UpdateModelModification(modelVertices, newMatrixPositionModelVertices, meshModel);
         //}
+    }
+
+    private void ComputeBarCenter(Vector3[] _vec)
+    {
+        Vector3 sum = new Vector3(0, 0, 0);
+        for (int i = 0; i < _vec.Length; i++)
+        {
+            sum = _vec[i] + sum;
+        }
+        barCenter = (sum / _vec.Length);
+        Debug.Log("barcenter  " + barCenter);
     }
 
     private double[,] ConvertListToMatrix(List<Transform> myList)
@@ -156,7 +181,7 @@ public class MeshCreateControlPoints : MonoBehaviour
         for (int i = 0; i < vertices.Length; i++)
         {
             vertices[i] = DefaultPosition[i];
-            newListPositionControlPoints[i].position = initialControlPointPosition[i];
+            _newPositionControlPoints[i].position = initialControlPointPosition[i];
         }
         // assign the local vertices array into the vertices array of the Mesh.
         mesh.vertices = vertices;
@@ -167,8 +192,8 @@ public class MeshCreateControlPoints : MonoBehaviour
 
     private void UpdateModelModification(Vector3[] vertices, double[,] matrixMprime , Mesh mesh)
     {
-        Debug.Log("vertices.Length\t" + vertices.Length);
-        Debug.Log("matrixMprime.count/3\t" + matrixMprime.Length / 3);
+        //Debug.Log("vertices.Length\t" + vertices.Length);
+        //Debug.Log("matrixMprime.count/3\t" + matrixMprime.Length / 3);
         for (int i = 0; i < vertices.Length; i++)
         {
             vertices[i].x = (float)matrixMprime[i, 0];
