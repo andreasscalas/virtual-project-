@@ -730,6 +730,7 @@ GameObject:
   - component: {fileID: 465791284}
   - component: {fileID: 465791283}
   - component: {fileID: 465791282}
+  - component: {fileID: 465791287}
   m_Layer: 0
   m_Name: Sphere(parent)
   m_TagString: Untagged
@@ -744,7 +745,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 465791281}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4799f690f6d3cf24081d8e86a72f6f3f, type: 3}
   m_Name: 
@@ -816,7 +817,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 465791281}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 5.99, y: 1.48, z: 0.31}
+  m_LocalPosition: {x: 8.06, y: 1.48, z: 0.31}
   m_LocalScale: {x: 5, y: 5, z: 5}
   m_Children:
   - {fileID: 833442548}
@@ -824,6 +825,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 21
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &465791287
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 465791281}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0949f1f30ad1bdd47a60151b1a23db47, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &547123091
 GameObject:
   m_ObjectHideFlags: 0
@@ -2092,7 +2105,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1046676089}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 15.4, y: 1, z: -3.5}
+  m_LocalPosition: {x: 15.4, y: 1, z: -9.16}
   m_LocalScale: {x: 5, y: 5, z: 5}
   m_Children:
   - {fileID: 975492683}
@@ -2482,12 +2495,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10f8f1604cf8b16448d3c27ee4a54f1f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cageVertices: []
   initialControlPointPosition: []
   initialModelVerticesPosition: []
   objCage: {fileID: 1644390251}
   objModel: {fileID: 1414137777}
   selectableTag: Selectable
+  spawnSelectableTag: InitializeParent
   defaultMaterial: {fileID: 2100000, guid: 5a21f72b8943e09419e0e25fa746b43e, type: 2}
+  barCenterCage: {fileID: 2100000, guid: 6a6e335514576e3449cf7d76b2ce8087, type: 2}
   readFileComputeNewcage: {fileID: 1550730625}
   treatSelectionManager: {fileID: 0}
   _initializedControlPoints: {fileID: 0}
@@ -2537,8 +2553,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   selectableTag: Selectable
+  selectedParentTag: SelectedParent
+  unselectedParentTag: UnselectedParent
   highlightMaterial: {fileID: 2100000, guid: 76191a502167024488da6dc320d2e35a, type: 2}
   defaultMaterial: {fileID: 2100000, guid: 5a21f72b8943e09419e0e25fa746b43e, type: 2}
+  barMaterial: {fileID: 2100000, guid: 3a9fee0f2476d0a468fd534dbcc5c604, type: 2}
   Selected_Transparent: {fileID: 2100000, guid: e3222326237449c4fb08b4d7470909d3,
     type: 2}
   obj: {fileID: 0}
@@ -2712,7 +2731,7 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
+  m_Size: {x: 0.99999994, y: 1.0000001, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!23 &1821505717
 MeshRenderer:
@@ -2768,7 +2787,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1821505715}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4.6, y: 0, z: -21.3}
+  m_LocalPosition: {x: 0, y: 0, z: -20}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -2783,7 +2802,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1821505715}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4799f690f6d3cf24081d8e86a72f6f3f, type: 3}
+  m_Script: {fileID: 11500000, guid: 5585a5c17d04c1145bbd94cb4fdbc057, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1001 &1849515184
