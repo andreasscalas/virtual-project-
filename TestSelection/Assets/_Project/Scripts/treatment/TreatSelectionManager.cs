@@ -13,6 +13,7 @@ public class TreatSelectionManager : MonoBehaviour
     [SerializeField] private string unselectedParentTag = "UnselectedParent";
     [SerializeField] private Material highlightMaterial;
     [SerializeField] private Material defaultMaterial;
+    [SerializeField] private Material barMaterial;
     [SerializeField] private Material Selected_Transparent;
 
     //Mesh mesh;
@@ -52,20 +53,30 @@ public class TreatSelectionManager : MonoBehaviour
     {
         deleteControlPoint();
         storeControlPoint();
-        //for (int i = 0; i < selectionList.Count; i++)
-        //{
-        //    _position.Add(selectionList[i].position);
-        //    _scale.Add(selectionList[i].localScale);
-        //}
 
-        if (Input.GetKeyDown(KeyCode.M))
+        //Translate the "Selected Control Points gameobject"
+        if (Input.GetKeyDown(KeyCode.T))
         {
-            ComputeBarCenter();
+            Destroy(GetComponent<rotateObj>());
+            ComputeBarCenter(selectionList);
             DeleteParentCollider();
+            ComputeDisSetCPs(colliderPosition);
             GetColliderCopy();
-            ComputeCreateCollider();
-            
+            SelectedControlPoints.AddComponent<MoveObjectUpdate>();
         }
+
+        //Rotate the "Selected Control Points gameobject"
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            Destroy(GetComponent<MoveObjectUpdate>());
+            ComputeBarCenter(selectionList);
+            DeleteParentCollider();
+            ComputeDisSetCPs(barCenter);
+            GetColliderCopy();
+            SelectedControlPoints.AddComponent<rotateObj>();
+        }
+
+  
 
     }
     /// <summary>
@@ -84,6 +95,7 @@ public class TreatSelectionManager : MonoBehaviour
                 r.useGravity = false;
                 r.isKinematic = true;
             }
+
             if (Physics.Raycast(ray, out hit) /*&& b == true*/)
             {
                 mousePos1 = Camera.main.ScreenToViewportPoint(Input.mousePosition);
@@ -96,9 +108,9 @@ public class TreatSelectionManager : MonoBehaviour
                     obj.transform.parent = _selectedControlPoints;
                     Debug.Log(obj + " gameobject is selected");
 
-                    ComputeBarCenter();
-                    DeleteParentCollider();
-                    GetColliderCopy();
+                    //ComputeBarCenter();
+                    //DeleteParentCollider();
+                    //GetColliderCopy();
 
                     //objectselected.text= obj+ "is selected";
 
@@ -338,8 +350,9 @@ public class TreatSelectionManager : MonoBehaviour
     {
         //GetInChildren get all the elements in parent and children
         Collider[] Cols = SelectedControlPoints.GetComponentsInChildren<Collider>();
+        Debug.Log("SelectedControlPoints.GetComponentsInChildren<Collider>()  " + Cols.Length);
         SphereCollider[] sphereCollider = SelectedControlPoints.GetComponents<SphereCollider>();
-
+        Debug.Log("SelectedControlPoints.GetComponents<SphereCollider>()  " + sphereCollider.Length);
         int k = sphereCollider.Length;
         //To eliminate the elements in parent
         for (int j = Cols.Length - SelectedControlPoints.transform.childCount; j < Cols.Length; j++)
@@ -353,26 +366,29 @@ public class TreatSelectionManager : MonoBehaviour
 
             //delete the offset of transform(remember when move a gameobject, its transfrom changed)
             sphereCollider[j - (Cols.Length - SelectedControlPoints.transform.childCount) + k].center = Cols[j].transform.position - SelectedControlPoints.transform.position;
+            Debug.Log("Cols[j].transform.position  "+ Cols[j].transform.position);
+            Debug.Log("SelectedControlPoints.transform.position  " + SelectedControlPoints.transform.position);
             sphereCollider[j - (Cols.Length - SelectedControlPoints.transform.childCount) + k].radius = 0.48f;
 
         }
     }
 
-    public void ComputeBarCenter()
+    public void ComputeBarCenter(List<Transform> Lst)
     {
         Vector3 sum = new Vector3(0, 0, 0);
-        for (int i = 0; i < selectionList.Count; i++)
+        for (int i = 0; i < Lst.Count; i++)
         {
-            sum = selectionList[i].position + sum;
+            sum = Lst[i].position + sum;
         }
-        barCenter = (sum / selectionList.Count);
+        barCenter = (sum / Lst.Count);
+        Debug.Log("barcenter  "+barCenter);
 
     }
 
     /// <summary>
     ///Compute the distaces between barcenter and the control points; set the Selected Control Points' transform to the cintrol points we click; apply the offset to the other control points
     /// </summary>
-    public void ComputeCreateCollider()
+    public void ComputeDisSetCPs(Vector3 positionTransform)
     {
         float disMax = 0;
         for (int i = 0; i < selectionList.Count; i++)
@@ -384,9 +400,9 @@ public class TreatSelectionManager : MonoBehaviour
             }
         }
         //set the transform of the Selected Control Points to the barycentric point, compensate the offset to its children. 
-        Vector3 offset = SelectedControlPoints.transform.position - colliderPosition/*barCenter*/;
+        Vector3 offset = SelectedControlPoints.transform.position - positionTransform/*colliderPosition*//*barCenter*/;
         Debug.Log("colliderPointion in Selected Contrpol point transform " + colliderPosition);
-        SelectedControlPoints.transform.position = colliderPosition/*barCenter*/;
+        SelectedControlPoints.transform.position = positionTransform/*colliderPosition*//*barCenter*/;
 
         for (int i = 0; i < SelectedControlPoints.transform.childCount; i++)
         {
@@ -401,18 +417,24 @@ public class TreatSelectionManager : MonoBehaviour
         //SelectedControlPoints.GetComponent<MeshRenderer>().material= Selected_Transparent;
         SelectedControlPoints.AddComponent<SphereCollider>();
         SelectedControlPoints.GetComponent<SphereCollider>().radius = 2f;
-        //SelectedControlPoints.GetComponent<SphereCollider>().center = SelectedControlPoints.transform.position;
+        SelectedControlPoints.GetComponent<SphereCollider>().center = SelectedControlPoints.transform.position;
     }
 
     void InitializeSelecObj()
-    {  
+    {
         //SelectedControlPoints = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         SelectedControlPoints = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-        SelectedControlPoints.transform.localScale = new Vector3(0.1f,0.1f,0.1f);
+        //GameObject SelectedControlPoints = new GameObject();
+        SelectedControlPoints.transform.localScale = new Vector3(0.11f,0.11f,0.11f);
+        var renderer = SelectedControlPoints.GetComponent<MeshRenderer>();
+        renderer.material = barMaterial;
         SelectedControlPoints.name = "Selected Control Points";
         SelectedControlPoints.tag = "SelectedParent";
         _selectedControlPoints = SelectedControlPoints.transform;
-        SelectedControlPoints.AddComponent<DragObject>();
+        //SelectedControlPoints.AddComponent<MoveObjectUpdate>();
+        //SelectedControlPoints.GetComponent<SphereCollider>().radius=0.048f;
+       
+
     }
 
     void InitializeUnselecObj()
