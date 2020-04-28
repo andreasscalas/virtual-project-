@@ -44,7 +44,6 @@ public class TreatSelectionManager : MonoBehaviour
     //public Text objectremoved;
     void Start()
     {
-        
         InitializeSelecObj();
         InitializeUnselecObj();
     }
@@ -55,29 +54,30 @@ public class TreatSelectionManager : MonoBehaviour
         storeControlPoint();
 
         //Translate the "Selected Control Points gameobject"
-        if (Input.GetKeyDown(KeyCode.T))
-        {
-            Destroy(GetComponent<rotateObj>());
-            ComputeBarCenter(selectionList);
-            DeleteParentCollider();
-            ComputeDisSetCPs(colliderPosition);
-            GetColliderCopy();
-            SelectedControlPoints.AddComponent<MoveObjectUpdate>();
-        }
-
+        //Translation();
         //Rotate the "Selected Control Points gameobject"
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            Destroy(GetComponent<MoveObjectUpdate>());
-            ComputeBarCenter(selectionList);
-            DeleteParentCollider();
-            ComputeDisSetCPs(barCenter);
-            GetColliderCopy();
-            SelectedControlPoints.AddComponent<rotateObj>();
-        }
+        //Rotation();
+    }
 
-  
-
+    public void Rotation()
+    {
+        Destroy(SelectedControlPoints.GetComponent<MoveObjectUpdate>());
+        Destroy(SelectedControlPoints.GetComponent<rotateObj>());
+        ComputeBarCenter(selectionList);
+        DeleteParentCollider();
+        ComputeDisSetCPs(barCenter);
+        GetColliderCopy();
+        SelectedControlPoints.AddComponent<rotateObj>();
+    }
+    public void Translation()
+    {
+        Destroy(SelectedControlPoints.GetComponent<rotateObj>());
+        Destroy(SelectedControlPoints.GetComponent<MoveObjectUpdate>());
+        ComputeBarCenter(selectionList);
+        DeleteParentCollider();
+        ComputeDisSetCPs(colliderPosition);
+        GetColliderCopy();
+        SelectedControlPoints.AddComponent<MoveObjectUpdate>();
     }
     /// <summary>
     /// select and store data of gameobject(the control points) function.

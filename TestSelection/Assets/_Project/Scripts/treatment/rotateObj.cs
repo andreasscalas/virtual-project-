@@ -55,8 +55,8 @@ public class rotateObj : MonoBehaviour
         currentDragPosLst.Remove(currentDragPosLst[0]);
         Debug.Log("dragPosition"+ currentDragPos);
 
-        float rotX = Input.GetAxis("Mouse X") * rotSpeed * Mathf.Deg2Rad;
-        float rotY = Input.GetAxis("Mouse Y") * rotSpeed * Mathf.Deg2Rad;
+        //float rotX = Input.GetAxis("Mouse X") * rotSpeed * Mathf.Deg2Rad;
+        //float rotY = Input.GetAxis("Mouse Y") * rotSpeed * Mathf.Deg2Rad;
 
         //Debug.Log("dragPosition " + dragPosition);
         //Debug.Log("Input.GetAxis(\"Mouse X\") " + Input.GetAxis("Mouse X"));
