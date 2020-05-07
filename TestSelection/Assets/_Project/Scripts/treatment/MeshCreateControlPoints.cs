@@ -24,6 +24,7 @@ public class MeshCreateControlPoints : MonoBehaviour
     [HideInInspector]
     public Vector3[] initialModelVerticesPosition;
     private Vector3 barCenter = new Vector3();
+    public Vector3 scaleCenter = new Vector3();
 
     public GameObject objCage;
     public GameObject objModel;
@@ -49,16 +50,18 @@ public class MeshCreateControlPoints : MonoBehaviour
     [HideInInspector]
     public GameObject InitializedControlPoints;
 
-    [HideInInspector]
-    public GameObject controlPoint;
-    [HideInInspector]
-    public GameObject cage;
+    public Slider slider;
 
     public float scaleRatio;
-    private bool scaleGO;
+    [HideInInspector]
+    public bool scaleGO;
+    public bool colHappen;
+
 
     void Start()
     {
+        scaleRatio = 1;
+        colHappen = false;
         InitializedControlPoints = new GameObject();
         InitializedControlPoints.name = "Initialized Control Points";
         InitializedControlPoints.tag = "InitializeParent";
@@ -72,6 +75,7 @@ public class MeshCreateControlPoints : MonoBehaviour
         //ComputeBarCenter(modelVertices);
         GameObject Bar = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         Bar.transform.position = barCenter;
+        scaleCenter = barCenter;
         Bar.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
         MeshRenderer meshBar = Bar.GetComponent<MeshRenderer>();
         meshBar.material = barCenterCage;
@@ -135,7 +139,7 @@ public class MeshCreateControlPoints : MonoBehaviour
         
         //if (Input.GetKeyDown(KeyCode.V))
         //{
-        UpdateCageModification(cageVertices, _newPosCP, meshCage);
+        UpdateCage(cageVertices, _newPosCP, meshCage);
         //}
 
         ////for (int i = 0; i < meshCage.vertices.Length; i++)
@@ -186,34 +190,51 @@ public class MeshCreateControlPoints : MonoBehaviour
         scaleGO = false;
     }
 
-    private void GetNewPos()
+    public void GetNewPos()
     {
-        //for (int i = 0; i < _distancesBarCagevertices.Count; i++)
-        //{
-        //    Debug.Log("disMousePos "+ scaleObj.disMousePos);
-        //    _ratioBarCagevertices.Add(scaleObj.disMousePos/_distancesBarCagevertices[i]);
-        //    //cageVertices[i] += _ratioBarCagevertices[i] * _distancesBarCagevertices[i];
-        //}
+        //Debug.Log("scalecenter" + scaleCenter);
         _newScalePosCPs.Clear();
+        //for (int i = 0; i < initialControlPointPosition.Length; i++)
+        //{
+        //    double coefA = Math.Pow((initialControlPointPosition[i].x - scaleCenter/*barCenter*/.x), 2) + Math.Pow((initialControlPointPosition[i].y - scaleCenter/*barCenter*/.y), 2) + Math.Pow((initialControlPointPosition[i].z - scaleCenter/*barCenter*/.z), 2);
+        //    double coefC = -Math.Pow(scaleRatio * Vector3.Distance(scaleCenter/*barCenter*/, initialControlPointPosition[i]), 2);
+        //    var t = (Math.Sqrt(-4 * coefA * coefC)) / (2 * coefA);
+        //    //Debug.Log("t " + t);
+        //    _newScalePosCPs.Add(new Vector3((float)(scaleCenter/*barCenter*/.x + (initialControlPointPosition[i].x - scaleCenter/*barCenter*/.x) * t),
+        //        (float)(scaleCenter/*barCenter*/.y + (initialControlPointPosition[i].y - scaleCenter/*barCenter*/.y) * t),
+        //        (float)(scaleCenter/*barCenter*/.z + (initialControlPointPosition[i].z - scaleCenter/*barCenter*/.z) * t)));
+        //    //Debug.Log("_newScalePosCPs "+ _newScalePosCPs[i]);
+        //    _newPosCP[i].transform.position = _newScalePosCPs[i];
+        //}
+
+        List<Vector3> vec = new List<Vector3>();
         for (int i = 0; i < initialControlPointPosition.Length; i++)
         {
-            double coefA = Math.Pow((initialControlPointPosition[i].x - barCenter.x), 2) + Math.Pow((initialControlPointPosition[i].y - barCenter.y), 2) + Math.Pow((initialControlPointPosition[i].z - barCenter.z), 2);
-            double coefC = -Math.Pow(scaleRatio/*scaleObj.disMousePos */* Vector3.Distance(barCenter, initialControlPointPosition[i]),2);
-            var t = (Math.Sqrt(-4 * coefA * coefC)) / (2 * coefA);
-            Debug.Log("t " + t);
-            _newScalePosCPs.Add(new Vector3((float)(barCenter.x + (initialControlPointPosition[i].x - barCenter.x) * t),
-                (float)(barCenter.y + (initialControlPointPosition[i].y - barCenter.y) * t),
-                (float)(barCenter.z + (initialControlPointPosition[i].z - barCenter.z) * t)));
-            Debug.Log("_newScalePosCPs "+ _newScalePosCPs[i]);
+            vec.Add(initialControlPointPosition[i] - scaleCenter);
+        }
+        for (int i = 0; i < vec.Count; i++)
+        {
+            vec[i]*=scaleRatio;
+            _newScalePosCPs.Add(vec[i]+ scaleCenter);
             _newPosCP[i].transform.position = _newScalePosCPs[i];
         }
-        
+
     }
 
-    public void AdjustScaleRatio(Slider slider)
+    public void AdjustScaleRatio()
     {
-        scaleRatio = slider.value;
-        scaleGO = true;
+        if (!colHappen)
+        {
+            scaleRatio = slider.value;
+            scaleGO = true;
+        }
+
+        if (colHappen && slider.value < scaleRatio)
+        {
+            scaleRatio = slider.value;
+            scaleGO = true;
+        }
+
     }
 
 
@@ -248,7 +269,9 @@ public class MeshCreateControlPoints : MonoBehaviour
         //Reset Model mesh 
         meshModel.vertices = initialModelVerticesPosition;
         meshModel.triangles = trisModel;
-        
+        //Reset slider
+        slider.value = 1;
+
     }
 
     private void ResetCageMesh(Vector3[] vertices, Vector3[] DefaultPosition, Mesh mesh)
@@ -283,7 +306,7 @@ public class MeshCreateControlPoints : MonoBehaviour
     /// <summary>
     /// Update modification to the cage.
     /// </summary>
-    private void UpdateCageModification(Vector3[] vertices, List<Transform> newListPosition, Mesh mesh)
+    private void UpdateCage(Vector3[] vertices, List<Transform> newListPosition, Mesh mesh)
     {
 
         for (int i = 0; i < vertices.Length; i++)
