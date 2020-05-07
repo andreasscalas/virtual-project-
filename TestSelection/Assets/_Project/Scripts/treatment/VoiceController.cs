@@ -10,11 +10,15 @@ public class VoiceController : MonoBehaviour
     private KeywordRecognizer keywordRecognizer;
     private Dictionary<string, Action> actions= new Dictionary<string, Action>();
     public TreatSelectionManager treatslectionManager;
+    //public MeshCreateControlPoints meshCreateControlPoints;
 
     void Start()
     {
         actions.Add("translation", treatslectionManager.Translation);
         actions.Add("rotation", treatslectionManager.Rotation);
+        actions.Add("scale", treatslectionManager.Scale);
+        //actions.Add("change scale", treatslectionManager.ChangeScale);
+        
 
         keywordRecognizer = new KeywordRecognizer(actions.Keys.ToArray());
         keywordRecognizer.OnPhraseRecognized += RecognizedSpeech;
@@ -27,13 +31,4 @@ public class VoiceController : MonoBehaviour
         actions[speech.text].Invoke();
     }
 
-    private void forward()
-    {
-        transform.Translate(1, 0, 0);
-    }
-
-    private void backward()
-    {
-        transform.Translate(-1, 0, 0);
-    }
 }
