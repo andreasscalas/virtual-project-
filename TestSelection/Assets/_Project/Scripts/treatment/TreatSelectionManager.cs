@@ -79,6 +79,23 @@ public class TreatSelectionManager : MonoBehaviour
         GetColliderCopy();
         SelectedControlPoints.AddComponent<MoveObjectUpdate>();
     }
+
+    public void Scale()
+    {
+        Destroy(SelectedControlPoints.GetComponent<rotateObj>());
+        Destroy(SelectedControlPoints.GetComponent<MoveObjectUpdate>());
+        DeleteParentCollider();
+        meshCreateControlPoints.scaleCenter = colliderPosition;
+        ComputeDisSetCPs(colliderPosition);
+        Debug.Log("colliderPosition" + colliderPosition);
+        //ComputeDisSetCPs(colliderPosition);
+        //meshCreateControlPoints.GetNewPos();
+        //SelectedControlPoints/*meshCreateControlPoints.InitializedControlPoints*/.AddComponent<DetectScaleCollision>();
+        foreach (Transform child in meshCreateControlPoints._initializedControlPoints)
+        {
+            child.gameObject.AddComponent<DetectScaleCollision>();
+        }
+    }
     /// <summary>
     /// select and store data of gameobject(the control points) function.
     /// </summary>
@@ -366,8 +383,8 @@ public class TreatSelectionManager : MonoBehaviour
 
             //delete the offset of transform(remember when move a gameobject, its transfrom changed)
             sphereCollider[j - (Cols.Length - SelectedControlPoints.transform.childCount) + k].center = Cols[j].transform.position - SelectedControlPoints.transform.position;
-            Debug.Log("Cols[j].transform.position  "+ Cols[j].transform.position);
-            Debug.Log("SelectedControlPoints.transform.position  " + SelectedControlPoints.transform.position);
+            //Debug.Log("Cols[j].transform.position  "+ Cols[j].transform.position);
+            //Debug.Log("SelectedControlPoints.transform.position  " + SelectedControlPoints.transform.position);
             sphereCollider[j - (Cols.Length - SelectedControlPoints.transform.childCount) + k].radius = 0.48f;
 
         }
