@@ -6,7 +6,7 @@ using System.Collections.Generic;
 public class MoveObjectUpdate : MonoBehaviour
 {
     private Transform transform;
-    private bool FreeMovimentState;
+    public bool FreeMovimentState;
     private bool CollisionState;
     private float mZCoord;
     private Vector3 mOffSet;
