@@ -30,11 +30,11 @@ public class TreatSelectionManager : MonoBehaviour
     private Vector3 colliderPosition;
 
     public Transform _selectedControlPoints;
-    public Transform _unselectedControlPoints;
+    //public Transform _unselectedControlPoints;
     //[HideInInspector]
     public GameObject SelectedControlPoints;
     //[HideInInspector]
-    public GameObject UnselectedControlPoints;
+    //public GameObject UnselectedControlPoints;
     private Vector3 barCenter = new Vector3();
 
     public MeshCreateControlPoints meshCreateControlPoints;
@@ -45,7 +45,7 @@ public class TreatSelectionManager : MonoBehaviour
     void Start()
     {
         InitializeSelecObj();
-        InitializeUnselecObj();
+        //InitializeUnselecObj();
     }
 
     private void Update()
@@ -183,15 +183,15 @@ public class TreatSelectionManager : MonoBehaviour
                     }
                 }
                 ////get the control points positions(inside unSelectedControlPoints Gameobject) that are inside the rectangle draw with mouse
-                foreach (Transform child in _unselectedControlPoints)
-                {
-                    if (selectRect.Contains(Camera.main.WorldToViewportPoint(child.position), true))
-                    {
-                        Debug.Log("Camera.main.WorldToViewportPoint(child.position)" + Camera.main.WorldToViewportPoint(child.position));
-                        selectionList.Add(child);
-                        interSelectionList.Add(child);
-                    }
-                }
+                //////foreach (Transform child in _unselectedControlPoints)
+                //////{
+                //////    if (selectRect.Contains(Camera.main.WorldToViewportPoint(child.position), true))
+                //////    {
+                //////        Debug.Log("Camera.main.WorldToViewportPoint(child.position)" + Camera.main.WorldToViewportPoint(child.position));
+                //////        selectionList.Add(child);
+                //////        interSelectionList.Add(child);
+                //////    }
+                //////}
                 ////put the control points into the SelectedControlPoints gameobject
                 for (int i = 0; i < interSelectionList.Count; i++)
                 {
@@ -246,7 +246,7 @@ public class TreatSelectionManager : MonoBehaviour
                             Debug.Log(obj + " is deleted");
                             //objectdeleted.text = obj + "is deleted";
                             child.transform.parent = null;
-                            child.transform.parent = _unselectedControlPoints;
+                            child.transform.parent = meshCreateControlPoints._initializedControlPoints/*_unselectedControlPoints*/;
                             selectionList.Remove(selection);
                             Debug.Log(obj + " is removed ");
                         }
@@ -265,7 +265,7 @@ public class TreatSelectionManager : MonoBehaviour
                         Debug.Log(obj + " is deleted");
                         //objectdeleted.text = obj + "is deleted";
                         obj.transform.parent = null;
-                        obj.transform.parent = _unselectedControlPoints;
+                        obj.transform.parent = meshCreateControlPoints._initializedControlPoints/*_unselectedControlPoints*/;
                         selectionList.Remove(selection);
                         Debug.Log(obj + " is removed ");
                         //objectremoved.text = obj + "is removed";
@@ -297,7 +297,7 @@ public class TreatSelectionManager : MonoBehaviour
                 for (int i = 0; i < interSelectionList.Count; i++)
                 {
                     var child = interSelectionList[i];
-                    child.transform.parent = _unselectedControlPoints;
+                    child.transform.parent = meshCreateControlPoints._initializedControlPoints/*_unselectedControlPoints*/;
                     var selectionRenderer = child.GetComponent<Renderer>();
                     if (selectionRenderer != null)
                     {
@@ -322,13 +322,13 @@ public class TreatSelectionManager : MonoBehaviour
             i--;
         }
         ////Put the control points of Unselected Control Points into the Initialized Control Points parent
-        for (int i = 0; i < _unselectedControlPoints.childCount; i++)
-        {
-            var child = _unselectedControlPoints.GetChild(i);
-            child.transform.parent = null;
-            child.transform.parent = meshCreateControlPoints._initializedControlPoints;
-            i--;
-        }
+        //for (int i = 0; i < meshCreateControlPoints._initializedControlPoints/*_unselectedControlPoints*/.childCount; i++)
+        //{
+        //    var child = meshCreateControlPoints._initializedControlPoints/*_unselectedControlPoints*/.GetChild(i);
+        //    child.transform.parent = null;
+        //    child.transform.parent = meshCreateControlPoints._initializedControlPoints;
+        //    i--;
+        //}
         selectionList.Clear();
     }
 
@@ -454,14 +454,14 @@ public class TreatSelectionManager : MonoBehaviour
 
     }
 
-    void InitializeUnselecObj()
-    {
-        UnselectedControlPoints =new GameObject();
-        UnselectedControlPoints.name = "Unselected Control Points";
-        UnselectedControlPoints.tag = "UnselectedParent";
+    //void InitializeUnselecObj()
+    //{
+    //    UnselectedControlPoints =new GameObject();
+    //    UnselectedControlPoints.name = "Unselected Control Points";
+    //    UnselectedControlPoints.tag = "UnselectedParent";
 
-        _unselectedControlPoints = UnselectedControlPoints.transform;
-        //Collider boxCol = SelectedControlPoints.AddComponent<BoxCollider>();
-        meshCreateControlPoints = GameObject.Find("Selection Manager").GetComponent<MeshCreateControlPoints>();
-    }
+    //    _unselectedControlPoints = UnselectedControlPoints.transform;
+    //    //Collider boxCol = SelectedControlPoints.AddComponent<BoxCollider>();
+    //    meshCreateControlPoints = GameObject.Find("Selection Manager").GetComponent<MeshCreateControlPoints>();
+    //}
 }
