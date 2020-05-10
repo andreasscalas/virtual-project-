@@ -418,7 +418,7 @@ public class TreatSelectionManager : MonoBehaviour
         }
         //set the transform of the Selected Control Points to the barycentric point, compensate the offset to its children. 
         Vector3 offset = SelectedControlPoints.transform.position - positionTransform/*colliderPosition*//*barCenter*/;
-        Debug.Log("colliderPointion in Selected Contrpol point transform " + colliderPosition);
+        Debug.Log("colliderPosition in Selected Control point transform " + colliderPosition);
         SelectedControlPoints.transform.position = positionTransform/*colliderPosition*//*barCenter*/;
 
         for (int i = 0; i < SelectedControlPoints.transform.childCount; i++)
