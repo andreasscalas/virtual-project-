@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Accord.Math;
 using TMPro;
-using Unity.Collections.LowLevel.Unsafe;
-using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 using UnityEngine.UI;
 using Vector3 = UnityEngine.Vector3;
@@ -56,15 +54,17 @@ public class MeshCreateControlPoints : MonoBehaviour
     public float sliderValue;
 
     [HideInInspector]
-    public float scaleRatio;
+    public float scale;
     [HideInInspector]
     public bool scaleGO;
     public bool collision;
 
+    float collisionSliVal = new float();
+    float sliValCol = new float();
 
     void Start()
     {
-        scaleRatio = 1;
+        scale = 1;
         collision = false;
         InitializedControlPoints = new GameObject();
         InitializedControlPoints.name = "Initialized Control Points";
@@ -77,12 +77,12 @@ public class MeshCreateControlPoints : MonoBehaviour
         //VectorBarCagevertices();
 
         //ComputeBarCenter(modelVertices);
-        GameObject Bar = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-        Bar.transform.position = barCenter;
+        //GameObject Bar = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        //Bar.transform.position = barCenter;
         scaleCenter = barCenter;
-        Bar.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
-        MeshRenderer meshBar = Bar.GetComponent<MeshRenderer>();
-        meshBar.material = barCenterCage;
+        //Bar.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
+        //MeshRenderer meshBar = Bar.GetComponent<MeshRenderer>();
+        //meshBar.material = barCenterCage;
 
     }
     /// <summary>
@@ -188,7 +188,7 @@ public class MeshCreateControlPoints : MonoBehaviour
         }
         for (int i = 0; i < vec.Count; i++)
         {
-            vec[i]*=scaleRatio;
+            vec[i]*=scale;
             _newScalePosCPs.Add(vec[i]+ scaleCenter);
             _newPosCP[i].transform.position = _newScalePosCPs[i];
         }
@@ -197,16 +197,25 @@ public class MeshCreateControlPoints : MonoBehaviour
 
     public void AdjustScaleRatio()
     {
+
         if (!collision)
         {
             //to avoid the cumulative scale, the ratio should be divided by the previous slider value
-            scaleRatio = slider.value / sliderValue;
+            scale = slider.value / sliderValue;
+            //record the slider value until collision happens
+            sliValCol = sliderValue;
             scaleGO = true;
         }
 
-        if (collision && slider.value < scaleRatio )
+        if (collision)
         {
-            scaleRatio = slider.value / sliderValue;
+            //Debug.Log("scaleRatio " + scaleRatio);
+            //Debug.Log("scaleRatio * sliValCol " + scaleRatio * sliValCol);
+        }
+
+        if (collision && slider.value < scale * sliValCol)
+        {
+            scale = slider.value / sliderValue;
             scaleGO = true;
         }
 
@@ -246,7 +255,7 @@ public class MeshCreateControlPoints : MonoBehaviour
         meshModel.triangles = trisModel;
         //Reset slider
         slider.value = 1;
-        scaleRatio = 1;
+        scale = 1;
 
     }
 
