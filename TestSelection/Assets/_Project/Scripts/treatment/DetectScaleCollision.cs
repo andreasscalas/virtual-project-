@@ -17,13 +17,13 @@ public class DetectScaleCollision : MonoBehaviour
     void OnCollisionEnter(Collision collision)
     {
         Debug.Log("Collision !!!!!!");
-        K = meshCreateControlPoints.scaleRatio;
+        K = meshCreateControlPoints.scale;
         meshCreateControlPoints.collision = true; 
     }
 
     void OnCollisionExit(Collision collision)
     {
-        Debug.Log("Collision !!!!!!");
+        Debug.Log("Collision exit  !!!!!!");
         //K = meshCreateControlPoints.scaleRatio;
         meshCreateControlPoints.collision = false;
     }

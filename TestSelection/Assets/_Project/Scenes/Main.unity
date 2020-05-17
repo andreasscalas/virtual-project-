@@ -2768,10 +2768,8 @@ MonoBehaviour:
   obj: {fileID: 0}
   selectionList: []
   _selectedControlPoints: {fileID: 0}
-  _unselectedControlPoints: {fileID: 0}
   SelectedControlPoints: {fileID: 0}
-  UnselectedControlPoints: {fileID: 0}
-  meshCreateControlPoints: {fileID: 0}
+  meshCreateControlPoints: {fileID: 1550730627}
 --- !u!4 &1550730621
 Transform:
   m_ObjectHideFlags: 0
@@ -2860,7 +2858,7 @@ MonoBehaviour:
   sliderValue: 0
   scaleRatio: 0
   scaleGO: 0
-  colHappen: 0
+  collision: 0
 --- !u!1 &1644390251 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2534866581884222612, guid: 88a22e320579bda45b6ddfeffe422254,
