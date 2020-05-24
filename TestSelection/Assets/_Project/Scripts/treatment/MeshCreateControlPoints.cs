@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Accord.Math;
+using Leap.Unity.Interaction;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -23,8 +24,8 @@ public class MeshCreateControlPoints : MonoBehaviour
     public Vector3[] initialModelVerticesPosition;
     [HideInInspector]
     List<Transform> PositionControlPoints;
-    private Vector3 barCenter = new Vector3();
-    public Vector3 scaleCenter = new Vector3();
+    private Vector3 barCenter;
+    public Vector3 scaleCenter;
 
     public GameObject objCage;
     public GameObject objModel;
@@ -40,8 +41,7 @@ public class MeshCreateControlPoints : MonoBehaviour
     [SerializeField] private Material defaultMaterial;
     [SerializeField] private Material barCenterCage;
     int goCounter=1;
-    //List<int> _indexOrder = new List<int>();
-    private List<float> _ratioBarCagevertices = new List<float>();
+
     public ReadFileComputeNewcage readFileComputeNewcage;
     //public TreatSelectionManager treatSelectionManager;
    
@@ -60,7 +60,10 @@ public class MeshCreateControlPoints : MonoBehaviour
     public bool collision;
 
     float collisionSliVal = new float();
-    float sliValCol = new float();
+    float sliValCol;
+
+    [HideInInspector]
+    public List<InteractionBehaviour> interactCP = new List<InteractionBehaviour>();
 
     void Start()
     {
@@ -70,7 +73,8 @@ public class MeshCreateControlPoints : MonoBehaviour
         InitializedControlPoints.name = "Initialized Control Points";
         InitializedControlPoints.tag = "InitializeParent";
         _initializedControlPoints = InitializedControlPoints.transform;
-
+        //InitializedControlPoints.AddComponent<InteractionBehaviour>();
+        //InitializedControlPoints.GetComponent<Rigidbody>().useGravity = false;
         CreateControlPoints();
 
         ComputeBarCenter(modelVertices);
@@ -111,6 +115,10 @@ public class MeshCreateControlPoints : MonoBehaviour
             ControlPoint.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
             ControlPoint.tag = selectableTag;
             ControlPoint.name = "Control Point "+ goCounter;
+            interactCP.Add( ControlPoint.AddComponent<InteractionBehaviour>());
+            ControlPoint.GetComponent<Rigidbody>().useGravity = false;
+            ControlPoint.GetComponent<Rigidbody>().isKinematic = true;
+
             goCounter++;
             //ControlPoint.AddComponent<Rigidbody>().useGravity = false;
             ControlPoint.transform.parent = _initializedControlPoints;
@@ -118,6 +126,7 @@ public class MeshCreateControlPoints : MonoBehaviour
             controlPointRenderer.material = defaultMaterial;
             _newPosCP.Add(ControlPoint.transform);
             PositionControlPoints.Add(ControlPoint.transform);
+            
             //Destroy(ControlPoint.gameObject.GetComponent<Collider>());
         }
         //for (int i = 0; i < newListPositionControlPoints.Count; i++)
@@ -197,7 +206,7 @@ public class MeshCreateControlPoints : MonoBehaviour
 
     public void AdjustScaleRatio()
     {
-
+        var newColorBlock = slider.colors;
         if (!collision)
         {
             //to avoid the cumulative scale, the ratio should be divided by the previous slider value
@@ -211,12 +220,20 @@ public class MeshCreateControlPoints : MonoBehaviour
         {
             //Debug.Log("scaleRatio " + scaleRatio);
             //Debug.Log("scaleRatio * sliValCol " + scaleRatio * sliValCol);
+            //slider.colors= ColorBlock.defaultColorBlock;
+            Debug.Log("collision, color change!");
+            newColorBlock.pressedColor = Color.red;
+            newColorBlock.selectedColor = Color.red;
+            slider.colors = newColorBlock;
         }
 
         if (collision && slider.value < scale * sliValCol)
         {
             scale = slider.value / sliderValue;
             scaleGO = true;
+            newColorBlock.pressedColor = Color.white;
+            newColorBlock.selectedColor = Color.white;
+            slider.colors = newColorBlock;
         }
 
     }
