@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Text;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,7 +32,7 @@ public class MeshCreateControlPoints : MonoBehaviour
     public GameObject objCage;
     public GameObject objModel;
     private int[] trisCage;
-    private int[] trisModel;
+    public int[] trisModel;
     double[,] newMatrixPositionModel;
     GameObject ControlPoint /*= new GameObject()*/;
     private List<Transform> _newPosCP = new List<Transform>();
@@ -88,6 +90,20 @@ public class MeshCreateControlPoints : MonoBehaviour
         //MeshRenderer meshBar = Bar.GetComponent<MeshRenderer>();
         //meshBar.material = barCenterCage;
 
+        for (int i = 0; i < modelVertices.Length; i++)
+        {
+            Debug.Log(modelVertices[i]);
+        }
+
+
+        //for (int i = 0; i < trisModel.Length; i++)
+        //{
+        //    //Debug.Log(trisModel[i]);
+
+        //    File.AppendAllText("C:\\Users\\DELL\\Documents\\new ModelDeformationVR\\TestSelection\\Assets\\_Project\\prefabs\\hand\\hand_triangles.txt",trisModel[i]+"\n", Encoding.Default);
+        //}
+        //Debug.Log("trisModel.Length "+trisModel.Length);
+
     }
     /// <summary>
     /// function to create control points
@@ -118,6 +134,7 @@ public class MeshCreateControlPoints : MonoBehaviour
             interactCP.Add( ControlPoint.AddComponent<InteractionBehaviour>());
             ControlPoint.GetComponent<Rigidbody>().useGravity = false;
             ControlPoint.GetComponent<Rigidbody>().isKinematic = true;
+            ControlPoint.AddComponent<ChangeColor>();
 
             goCounter++;
             //ControlPoint.AddComponent<Rigidbody>().useGravity = false;
