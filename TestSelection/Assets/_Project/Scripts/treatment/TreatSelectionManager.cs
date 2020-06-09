@@ -75,20 +75,15 @@ public class TreatSelectionManager : MonoBehaviour
 
         //////////////    //Translation();
         //////////////};
-        for (int i = 0; i < meshCreateControlPoints.interactCP.Count; i++)
-        {
-            meshCreateControlPoints.interactCP[i].OnContactBegin = () =>
-            {
-                Debug.Log("Leap hand touched with a CP!");
-            };
-        }
-       
-
+        //bool contact=false;
+        int k = new int();
+        
         //Translate the "Selected Control Points gameobject"
         //Translation();
         //Rotate the "Selected Control Points gameobject"
         //Rotation();
     }
+
 
     public void Rotation()
     {

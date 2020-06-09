@@ -1579,8 +1579,9 @@ namespace Leap.Unity.Interaction {
 
     [SerializeField]
     private EnumEventTable _eventTable;
+        internal object AddNewEventType;
 
-    public enum EventType {
+        public enum EventType {
       HoverBegin = 100,
       HoverEnd = 101,
       HoverStay = 102,

@@ -4,6 +4,7 @@ using UnityEngine;
 using Accord;
 using System.IO;
 using System;
+using System.Globalization;
 using Accord.Math;
 using System.Linq;
 using System.Transactions;
@@ -17,6 +18,7 @@ public class ReadFileComputeNewcage : MonoBehaviour
     public string modelFileName;
     public string cageFileName;
     public string barCoordFileName;
+    //public string annotationFileName;
 
     [HideInInspector]
     public double[,] modelMatrices;
@@ -27,8 +29,8 @@ public class ReadFileComputeNewcage : MonoBehaviour
     public MeshCreateControlPoints meshCreateControlPoints;
 
     //public List<Transform> lst = new List<Transform>();
-    /*public*/
-    int columnNumber;
+    [HideInInspector]
+    public int columnNumber;
     public int rowNumberUpdate;
     public int columnNumberUpdate;
     [HideInInspector]
@@ -45,6 +47,8 @@ public class ReadFileComputeNewcage : MonoBehaviour
 
         barMatrices = ReadMatrixFromFile(barCoordFileName, true);
         //Debug.Log("load matrix 3");
+
+        //ReadAnnotationFromFile(annotationFileName);
 
         order = mapping(meshCreateControlPoints.initialControlPointPosition, cageMatrices);
         //Debug.Log("this is cage mapping rule start");
@@ -236,6 +240,86 @@ public class ReadFileComputeNewcage : MonoBehaviour
 
         return MatrixMandG;
     }
+
+    //public void ReadAnnotationFromFile(string fileName)
+    //{
+    //    var r = readFile(fileName);
+    //    var fileContent = r.ReadToEnd();
+    //    var fileLine = fileContent.Split('\n');
+
+    //    string segmentName;
+    //    //We set the number of row and column according to the file we are reading.
+
+    //    var forthFileLine = fileLine.Get(3);
+    //    //Read the number of rows and columns from the second line of the file
+    //    string[] segmentNameData = forthFileLine.Split('"');
+    //    segmentName = segmentNameData.Get(3);
+    //    //Debug.Log("The forth line "+ forthFileLine);
+        
+    //    //Debug.Log("segmentName start");
+    //    //Debug.Log("segmentName " + segmentName);
+
+    //    //var sixthFileLine = fileLine.Get(5);
+    //    //string[] indexData = sixthFileLine.Split(' ');
+    //    //Debug.Log("indexData start");
+    //    //Debug.Log("indexData 16 " + indexData.Get(16));
+
+    //    //Debug.Log("the last number start");
+    //    //Debug.Log("the last number " + fileLine.Get(fileLine.Length - 5));
+
+    //    for (int i = 5; i < fileLine.Length - 4; i++)
+    //    {
+    //        double d;
+    //        var line = fileLine.Get(i);
+    //        //Debug.Log("line "+ line);
+    //        string[] indexDat = line.Split(' ');
+    //        //Debug.Log("indexDat " + indexDat[16]);
+    //        if (indexDat.Length == 17)
+    //        {
+    //            Debug.Log("line "+ line);
+    //            //Debug.Log("indexDat.length " + indexDat.Length);
+
+    //            string indeDa = "";
+    //            if (indexDat != null)
+    //            {
+    //                indeDa = indexDat.Get(16);
+    //            }
+
+    //            if (Double.TryParse(indeDa, out d))
+    //            {
+    //                //display number
+    //                Debug.Log("The 16th data(no , at the end)"+indeDa);
+    //            }
+    //            else
+    //            {
+    //                //display string
+    //                string[] indeD = indeDa.Split(',');
+    //                if (indeD != null)
+    //                    Debug.Log(", at the end, but not dis played"+indeD.Get(0));
+    //                else
+    //                {
+    //                }
+    //            }
+    //        }
+    //    }
+
+    //    //    int k = i - 1;
+    //    //    //Debug.Log("To see the " + k + "th " + "row:" + line);
+    //    //    var eachData = line.Split(' ');
+    //    //    for (int j = 0; j < columnNumber; j++)
+    //    //    {
+    //    //        Barycentric[i - 2, j] = float.Parse(eachData.Get(j));
+    //    //        int l = j + 1;
+    //    //        //Debug.Log("To see [" + k + "," + l + "] element in Matrix B:" + Barycentric[i - 2, j].ToString("F11"));
+    //    //    }
+    //    //}
+    //    //return Barycentric;
+    //}
+
+
+
+
+
 
     List<int> mapping(Vector3[] positionInUnity, double[,] matrixCage)
     {

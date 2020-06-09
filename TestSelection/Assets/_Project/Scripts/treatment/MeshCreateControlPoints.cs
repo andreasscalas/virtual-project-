@@ -90,10 +90,10 @@ public class MeshCreateControlPoints : MonoBehaviour
         //MeshRenderer meshBar = Bar.GetComponent<MeshRenderer>();
         //meshBar.material = barCenterCage;
 
-        for (int i = 0; i < modelVertices.Length; i++)
-        {
-            Debug.Log(modelVertices[i]);
-        }
+        //for (int i = 0; i < modelVertices.Length; i++)
+        //{
+        //    Debug.Log(modelVertices[i]);
+        //}
 
 
         //for (int i = 0; i < trisModel.Length; i++)
