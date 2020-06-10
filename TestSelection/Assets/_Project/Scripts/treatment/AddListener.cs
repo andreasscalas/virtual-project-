@@ -18,7 +18,7 @@ public class AddListener : MonoBehaviour
     void Start()
     {
         meshCreateControlPoints = GameObject.Find("Selection Manager").GetComponent<MeshCreateControlPoints>();
-        Debug.Log("meshCreateControlPoints._initializedControlPoints.childCount " + meshCreateControlPoints._initializedControlPoints.childCount);
+        //Debug.Log("meshCreateControlPoints._initializedControlPoints.childCount " + meshCreateControlPoints._initializedControlPoints.childCount);
 
         for (int i = 0; i < meshCreateControlPoints._initializedControlPoints.childCount; i++)
         {
