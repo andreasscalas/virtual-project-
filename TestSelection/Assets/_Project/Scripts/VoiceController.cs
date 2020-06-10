@@ -10,13 +10,12 @@ public class VoiceController : MonoBehaviour
     private KeywordRecognizer keywordRecognizer;
     private Dictionary<string, Action> actions= new Dictionary<string, Action>();
     public TreatSelectionManager treatslectionManager;
-    public HandRaySelect handRaySelect;
     //public MeshCreateControlPoints meshCreateControlPoints;
 
     void Start()
     {
-        actions.Add("select", handRaySelect.OnSelect);
-        actions.Add("delete", handRaySelect.OnDelete);
+        actions.Add("select", treatslectionManager.OnSelect);
+        actions.Add("delete", treatslectionManager.OnDelete);
         actions.Add("translate", treatslectionManager.Translation);
         actions.Add("rotate", treatslectionManager.Rotation);
         actions.Add("scale", treatslectionManager.Scale);
