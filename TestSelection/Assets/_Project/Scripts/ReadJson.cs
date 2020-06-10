@@ -19,7 +19,11 @@ public class ReadJson : MonoBehaviour
     private ReadFileComputeNewcage readFileComputeNewcage;
     List<int> trianModelSegmented = new List<int>();
     List<int> trianCageSegmented = new List<int>();
-    public double thresHold; 
+    [Range(-0.1f,1.0f)]
+    public double threshold;
+    private double thresholdPrime;
+    [SerializeField] private Material segmentmMaterial;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -29,7 +33,7 @@ public class ReadJson : MonoBehaviour
 
         data = JsonMapper.ToObject(jsonString);
 
-        Debug.Log(data["annotations"][0]["triangles"]);
+        //Debug.Log(data["annotations"][0]["triangles"]);
         GetDataToLst(data["annotations"][0]["triangles"], littleFinger);
         GetDataToLst(data["annotations"][1]["triangles"], ringFinger);
         GetDataToLst(data["annotations"][2]["triangles"], mediumFinger);
@@ -39,10 +43,56 @@ public class ReadJson : MonoBehaviour
         GetDataToLst(data["annotations"][6]["triangles"], palm);
         int k = littleFinger.Count + ringFinger.Count + mediumFinger.Count + indexFinger.Count + thumb.Count +
                 wrist.Count + palm.Count;
-        Debug.Log("total length "+ k);
-        MapSegModel(littleFinger);
-        filterBarMatrix(thresHold);
+        //Debug.Log("total length "+ k);
+        //MapSegModel(littleFinger);
+        //filterBarMatrix(threshold);
+        //foreach (var VARIABLE in littleFinger)
+        //{
+        //    Debug.Log("littleFinger " + VARIABLE);
+        //}
+        //DrawFilter(trianCageSegmented);
+        thresholdPrime = 1.1f;
     }
+
+    void Update()
+    {
+        Debug.Log("threshold value "+ threshold);
+        if (thresholdPrime != threshold)
+        {
+            MapSegModel(ringFinger);
+            filterBarMatrix(threshold);
+            deleteFilter();
+            DrawFilter(trianCageSegmented);
+        }
+        thresholdPrime = threshold;
+    }
+
+    private void deleteFilter()
+    {
+        //destroy the previous segment.
+        GameObject[] objs = GameObject.FindGameObjectsWithTag("Segment");
+        for (int i = 0; i < objs.Length; i++)
+        {
+            Destroy(objs[i]);
+        }
+    }
+
+    private void DrawFilter(List<int> trianCageSegmented)
+    {
+
+        //draw new segment
+        for (int i = 0; i < trianCageSegmented.Count; i++)
+        {
+            var obj = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            obj.GetComponent<MeshRenderer>().material = segmentmMaterial;
+            obj.transform.position = meshCreateControlPoints.cageVertices[trianCageSegmented[i]];
+            obj.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
+            obj.tag = "Segment";
+        }
+       
+    }
+
+
 
     private void GetDataToLst(JsonData jsonData, List<int> Mylist)
     {
@@ -76,22 +126,28 @@ public class ReadJson : MonoBehaviour
     /// <param name="thresHold"></param>
     private void filterBarMatrix(double thres)
     {
-        Debug.Log("this is the a string inside filter");
+        //Debug.Log("this is the a string inside filter");
+        trianCageSegmented.Clear();
         for (int i = 0; i < trianModelSegmented.Count; i++)
         {
-            Debug.Log("this is the a string inside for loop trianModelSegmented.Count");
-            Debug.Log("this is the a string before the loop readFileComputeNewcage.rowNumberUpdate " + readFileComputeNewcage.rowNumberUpdate);
-            for (int j = 0; j < readFileComputeNewcage.rowNumberUpdate; j++)
+            //Debug.Log("this is the a string inside for loop trianModelSegmented.Count");
+            //Debug.Log("this is the a string before the loop readFileComputeNewcage.rowNumberUpdate " + readFileComputeNewcage.rowNumberUpdate);
+            for (int j = 0; j < readFileComputeNewcage.columnNumberUpdate; j++)
             {
 
                 if (readFileComputeNewcage.barMatrices[trianModelSegmented[i], j] > thres)
                 {
-                    trianCageSegmented.Add(j);
-                    Debug.Log("this is the positions of the elements less than threshold "+j );
-                    
+                    Debug.Log("readFileComputeNewcage.barMatrices " +j +" "+ readFileComputeNewcage.barMatrices[trianModelSegmented[i], j]);
+                    if (!trianCageSegmented.Contains(j))
+                    {
+                        trianCageSegmented.Add(j);
+                        Debug.Log("this is the positions of the elements less than threshold " + j);
+                    }
+
                 }
             }
         }
+        Debug.Log("The related cage vertices amount: "+ trianCageSegmented.Count);
     }
 
 }
