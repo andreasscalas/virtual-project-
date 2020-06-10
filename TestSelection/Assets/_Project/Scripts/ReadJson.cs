@@ -56,7 +56,6 @@ public class ReadJson : MonoBehaviour
 
     void Update()
     {
-        Debug.Log("threshold value "+ threshold);
         if (thresholdPrime != threshold)
         {
             MapSegModel(ringFinger);
