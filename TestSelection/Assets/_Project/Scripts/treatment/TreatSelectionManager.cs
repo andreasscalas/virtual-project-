@@ -8,6 +8,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using Leap;
 using Vector3 = UnityEngine.Vector3;
 
 public class TreatSelectionManager : MonoBehaviour
@@ -47,6 +48,11 @@ public class TreatSelectionManager : MonoBehaviour
     //UnityEvent m_MyEvent;
     public Text voiceControlCommand;
 
+    public HandModelBase rightHandModel;
+    private bool select;
+    private bool delete;
+
+
     //public Text objectselected;
     //public Text objectstored;
     //public Text objectdeleted;
@@ -55,91 +61,32 @@ public class TreatSelectionManager : MonoBehaviour
     {
         InitializeSelecObj();
         //InitializeUnselecObj();
+        select = false;
+        delete = false;
     }
 
     private void Update()
     {
         deleteControlPoint();
         storeControlPoint();
-
-        //////////////if (interactionBehaviour == null)
-        //////////////{
-        //////////////    interactionBehaviour = SelectedControlPoints.AddComponent<InteractionBehaviour>();
-        //////////////    SelectedControlPoints.GetComponent<Rigidbody>().useGravity = false;
-        //////////////    SelectedControlPoints.GetComponent<Rigidbody>().isKinematic = true;
-        //////////////}
-
-        //////////////interactionSCPs.OnContactBegin = () =>
-        //////////////{
-        //////////////    //Debug.Log("translate mode activated!");
-
-        //////////////    //Translation();
-        //////////////};
-        //bool contact=false;
-        int k = new int();
-        
-        //Translate the "Selected Control Points gameobject"
-        //Translation();
-        //Rotate the "Selected Control Points gameobject"
-        //Rotation();
+        if (select)
+        { CastSelectRay(select); }
+        if (delete)
+        { CastSelectRay(delete); }
     }
 
 
-    public void Rotation()
+    public void OnSelect()
     {
-        Destroy(SelectedControlPoints.GetComponent<MoveObjectUpdate>());
-        Destroy(SelectedControlPoints.GetComponent<rotateObj>());
-        ComputeBarCenter(selectionList);
-        //DeleteParentCollider();
-        ComputeDisSetCPs(barCenter);
-        //GetColliderCopy();
-        SelectedControlPoints.AddComponent<rotateObj>();
-        voiceControlCommand.text = "Rotation";
+        delete = false;
+        select = true;
     }
-    public void Translation()
+    public void OnDelete()
     {
-        Destroy(SelectedControlPoints.GetComponent<rotateObj>());
-        Destroy(SelectedControlPoints.GetComponent<MoveObjectUpdate>());
-        Destroy(SelectedControlPoints.GetComponent<InteractionBehaviour>());
-        ComputeBarCenter(selectionList);
-        //DeleteParentCollider();
-        ComputeDisSetCPs(colliderPosition);
-        //GetColliderCopy();
-
-        SelectedControlPoints.AddComponent<MoveObjectUpdate>();
-        interactionSCPs = SelectedControlPoints.AddComponent<InteractionBehaviour>();
-        interactionSCPs.OnContactBegin = () => { Debug.Log("hand touch SelecCPs..."); };
-
-        //if (m_MyEvent == null)
-        //    m_MyEvent = new UnityEvent();
-        //m_MyEvent.AddListener(Ping);
-
-        //SelectedControlPoints.GetComponent<InteractionBehaviour>();
-        voiceControlCommand.text = "Translation";
+        select = false;
+        delete = true;
     }
 
-
-
-    public void Scale()
-    {
-        Destroy(SelectedControlPoints.GetComponent<rotateObj>());
-        Destroy(SelectedControlPoints.GetComponent<MoveObjectUpdate>());
-        //DeleteParentCollider();
-        meshCreateControlPoints.scaleCenter = colliderPosition;
-        ComputeDisSetCPs(colliderPosition);
-        Debug.Log("colliderPosition" + colliderPosition);
-        //ComputeDisSetCPs(colliderPosition);
-        //meshCreateControlPoints.GetNewPos();
-        //SelectedControlPoints/*meshCreateControlPoints.InitializedControlPoints*/.AddComponent<DetectScaleCollision>();
-        foreach (Transform child in meshCreateControlPoints._initializedControlPoints)
-        {
-            child.gameObject.AddComponent<DetectScaleCollision>();
-        }
-        voiceControlCommand.text = "Scale";
-    }
-    /// <summary>
-    /// select and store data of gameobject(the control points) function.
-    /// </summary>
     private void storeControlPoint()
     {
         var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -166,11 +113,6 @@ public class TreatSelectionManager : MonoBehaviour
                     obj.transform.parent = _selectedControlPoints;
                     Debug.Log(obj + " gameobject is selected");
 
-                    //ComputeBarCenter();
-                    //DeleteParentCollider();
-                    //GetColliderCopy();
-
-                    //objectselected.text= obj+ "is selected";
 
                     if (selectionRenderer != null)
                     {
@@ -183,7 +125,7 @@ public class TreatSelectionManager : MonoBehaviour
                         //objectstored.text = obj+"is stored";
                         //CopyComponent(SelectedControlPoints.GetComponentInChildren<Collider>(), SelectedControlPoints);
                     }
-                    Debug.Log("Evenery time click a control point"+ obj.transform.position);
+                    Debug.Log("Evenery time click a control point" + obj.transform.position);
                     colliderPosition = hit.collider.transform.position;
                 }
 
@@ -192,70 +134,54 @@ public class TreatSelectionManager : MonoBehaviour
                     colliderPosition = hit.collider.transform.position;
                     Debug.Log("collider Position in selection function " + colliderPosition);
                 }
-                //ComputeBarCenter();
-                //DeleteParentCollider();
-                //GetColliderCopy();
-                //ComputeCreateCollider();
+
                 Destroy(selection.GetComponent<InteractionBehaviour>());
             }
         }
 
 
-        if (Input.GetMouseButtonUp(0) && Input.GetKey(KeyCode.LeftShift))
-        {
-            mousePos2 = Camera.main.ScreenToViewportPoint(Input.mousePosition);
-            Rigidbody r = SelectedControlPoints.GetComponent<Rigidbody>();
-            if (r == null)
-            {
-                r = SelectedControlPoints.AddComponent<Rigidbody>();
-                r.useGravity = false;
-                r.isKinematic = true;
-            }
-            if (mousePos1 != mousePos2)
-            {
-                Rect selectRect = new Rect(mousePos1.x, mousePos1.y, (mousePos2.x - mousePos1.x), (mousePos2.y - mousePos1.y));
-                ////get the control points positions(inside initializedControlPoints Gameobject) that are inside the rectangle draw with mouse
-                foreach (Transform child in meshCreateControlPoints._initializedControlPoints)
-                {
-                    if (selectRect.Contains(Camera.main.WorldToViewportPoint(child.position), true))
-                    {
-                        Debug.Log("Camera.main.WorldToViewportPoint(child.position)" + Camera.main.WorldToViewportPoint(child.position));
-                        selectionList.Add(child);
-                        interSelectionList.Add(child);
-                    }
-                }
-                ////get the control points positions(inside unSelectedControlPoints Gameobject) that are inside the rectangle draw with mouse
-                //////foreach (Transform child in _unselectedControlPoints)
-                //////{
-                //////    if (selectRect.Contains(Camera.main.WorldToViewportPoint(child.position), true))
-                //////    {
-                //////        Debug.Log("Camera.main.WorldToViewportPoint(child.position)" + Camera.main.WorldToViewportPoint(child.position));
-                //////        selectionList.Add(child);
-                //////        interSelectionList.Add(child);
-                //////    }
-                //////}
-                ////put the control points into the SelectedControlPoints gameobject
-                for (int i = 0; i < interSelectionList.Count; i++)
-                {
-                    var child = interSelectionList[i];
-                    child.transform.parent = _selectedControlPoints;
-                    var selectionRenderer = child.GetComponent<Renderer>();
+        //if (Input.GetMouseButtonUp(0) && Input.GetKey(KeyCode.LeftShift))
+        //{
+        //    mousePos2 = Camera.main.ScreenToViewportPoint(Input.mousePosition);
+        //    Rigidbody r = SelectedControlPoints.GetComponent<Rigidbody>();
+        //    if (r == null)
+        //    {
+        //        r = SelectedControlPoints.AddComponent<Rigidbody>();
+        //        r.useGravity = false;
+        //        r.isKinematic = true;
+        //    }
+        //    if (mousePos1 != mousePos2)
+        //    {
+        //        Rect selectRect = new Rect(mousePos1.x, mousePos1.y, (mousePos2.x - mousePos1.x), (mousePos2.y - mousePos1.y));
+        //        ////get the control points positions(inside initializedControlPoints Gameobject) that are inside the rectangle draw with mouse
+        //        foreach (Transform child in meshCreateControlPoints._initializedControlPoints)
+        //        {
+        //            if (selectRect.Contains(Camera.main.WorldToViewportPoint(child.position), true))
+        //            {
+        //                Debug.Log("Camera.main.WorldToViewportPoint(child.position)" + Camera.main.WorldToViewportPoint(child.position));
+        //                selectionList.Add(child);
+        //                interSelectionList.Add(child);
+        //            }
+        //        }
 
-                    if (selectionRenderer != null)
-                    {
-                        selectionRenderer.material = highlightMaterial;
-                    }
-                }
+        //        ////put the control points into the SelectedControlPoints gameobject
+        //        for (int i = 0; i < interSelectionList.Count; i++)
+        //        {
+        //            var child = interSelectionList[i];
+        //            child.transform.parent = _selectedControlPoints;
+        //            var selectionRenderer = child.GetComponent<Renderer>();
 
-                interSelectionList.Clear();
-            }
-        }
+        //            if (selectionRenderer != null)
+        //            {
+        //                selectionRenderer.material = highlightMaterial;
+        //            }
+        //        }
+
+        //        interSelectionList.Clear();
+        //    }
+        //}
     }
 
-
-    /// <summary>
-    /// delecte and remove gameobject(the control points) function.
-    /// </summary>
     private void deleteControlPoint()
     {
         var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -319,38 +245,221 @@ public class TreatSelectionManager : MonoBehaviour
         }
 
 
-        if (Input.GetMouseButtonUp(1) && Input.GetKey(KeyCode.LeftShift))
+        //if (Input.GetMouseButtonUp(1) && Input.GetKey(KeyCode.LeftShift))
+        //{
+        //    mousePos2 = Camera.main.ScreenToViewportPoint(Input.mousePosition);
+        //    if (mousePos1 != mousePos2)
+        //    {
+        //        Rect selectRect = new Rect(mousePos1.x, mousePos1.y, (mousePos2.x - mousePos1.x), (mousePos2.y - mousePos1.y));
+        //        ////get the control points positions(inside initializedControlPoints Gameobject) that are inside the rectangle draw with mouse
+        //        foreach (Transform child in _selectedControlPoints)
+        //        {
+        //            Debug.Log("selectRect" + selectRect);
+        //            if (selectRect.Contains(Camera.main.WorldToViewportPoint(child.position), true))
+        //            {
+        //                //Debug.Log("Camera.main.WorldToViewportPoint(child.position)" + Camera.main.WorldToViewportPoint(child.position));
+        //                selectionList.Remove(child);
+        //                interSelectionList.Add(child);
+        //            }
+        //        }
+        //        ////put the control points into the SelectedControlPoints gameobject
+        //        for (int i = 0; i < interSelectionList.Count; i++)
+        //        {
+        //            var child = interSelectionList[i];
+        //            child.transform.parent = meshCreateControlPoints._initializedControlPoints/*_unselectedControlPoints*/;
+        //            var selectionRenderer = child.GetComponent<Renderer>();
+        //            if (selectionRenderer != null)
+        //            {
+        //                selectionRenderer.material = defaultMaterial;
+        //            }
+        //        }
+        //        interSelectionList.Clear();
+        //    }
+        //}
+    }
+
+
+    private void CastSelectRay(bool act)
+    {
+        if (rightHandModel.IsTracked)
         {
-            mousePos2 = Camera.main.ScreenToViewportPoint(Input.mousePosition);
-            if (mousePos1 != mousePos2)
+            Hand rightHand = rightHandModel.GetLeapHand();
+            if (act == select)
+            { Debug.DrawRay(rightHand.Fingers[1].TipPosition.ToVector3(), 1000 * rightHand.Fingers[1].Direction.ToVector3(), Color.red); }
+            if (act == delete)
+            { Debug.DrawRay(rightHand.Fingers[1].TipPosition.ToVector3(), 1000 * rightHand.Fingers[1].Direction.ToVector3(), Color.green); }
+
+            Ray ray = new Ray(rightHand.Fingers[1].TipPosition.ToVector3(), rightHand.Fingers[1].Direction.ToVector3());
+            RaycastHit hit;
+            if (Physics.Raycast(ray, out hit))
             {
-                Rect selectRect = new Rect(mousePos1.x, mousePos1.y, (mousePos2.x - mousePos1.x), (mousePos2.y - mousePos1.y));
-                ////get the control points positions(inside initializedControlPoints Gameobject) that are inside the rectangle draw with mouse
-                foreach (Transform child in _selectedControlPoints)
+                Debug.Log("this is a string in once hit happens");
+                if (hit.transform.tag == "Selectable")
                 {
-                    Debug.Log("selectRect" + selectRect);
-                    if (selectRect.Contains(Camera.main.WorldToViewportPoint(child.position), true))
+                    if (select)
                     {
-                        //Debug.Log("Camera.main.WorldToViewportPoint(child.position)" + Camera.main.WorldToViewportPoint(child.position));
-                        selectionList.Remove(child);
-                        interSelectionList.Add(child);
+                        Debug.Log("select hit");/*hit.transform.gameObject.GetComponent<ChangeColor>().SetColor();*/
+                        var selection = hit.transform;
+                        if (selection.CompareTag(selectableTag))
+                        {
+                            obj = selection.gameObject;
+                            var selectionRenderer = selection.GetComponent<Renderer>();
+                            obj.transform.parent = null;
+                            obj.transform.parent = _selectedControlPoints;
+                            Debug.Log(obj + " gameobject is selected");
+
+                            if (selectionRenderer != null)
+                            {
+                                selectionRenderer.material = highlightMaterial;
+                            }
+                            if (selectionList.Contains(selection) == false)
+                            {
+                                selectionList.Add(selection);
+                                Debug.Log(obj + " gameobject is stored");
+                                //objectstored.text = obj+"is stored";
+                                //CopyComponent(SelectedControlPoints.GetComponentInChildren<Collider>(), SelectedControlPoints);
+                            }
+                            Debug.Log("Evenery time click a control point" + obj.transform.position);
+                            colliderPosition = hit.collider.transform.position;
+                        }
+
+                        if (selection.CompareTag(selectedParentTag))
+                        {
+                            colliderPosition = hit.collider.transform.position;
+                            Debug.Log("collider Position in selection function " + colliderPosition);
+                        }
+
+                        Destroy(selection.GetComponent<InteractionBehaviour>());
+                        
+                    }
+
+                    if (delete)
+                    {
+                        Debug.Log("delete hit");/*hit.transform.gameObject.GetComponent<ChangeColor>().ResetColor();*/
+                        DeleteParentCollider();
+                        //if rigidbody remains, we can not remove control points from Selected Control Points to other gameobject
+                        Rigidbody r = SelectedControlPoints.GetComponent<Rigidbody>();
+                        Destroy(r);
+
+                        if (Physics.Raycast(ray, out hit))
+                        {
+                            var selection = hit.transform;
+                            if (selection.CompareTag(selectedParentTag))
+                            {
+                                obj = selection.gameObject;
+                                //get the ray hit position 
+                                Vector3 position = hit.collider.transform.position;
+                                for (int i = 0; i < selection.childCount; i++)
+                                {
+                                    Transform child = selection.GetChild(i);
+                                    if (Vector3.Distance(position, child.transform.position) < 0.1)
+                                    {
+                                        var selectionRenderer = child.GetComponent<Renderer>();
+                                        selectionRenderer.material = defaultMaterial;
+                                        Debug.Log(obj + " is deleted");
+                                        //objectdeleted.text = obj + "is deleted";
+                                        child.transform.parent = null;
+                                        child.transform.parent = meshCreateControlPoints._initializedControlPoints/*_unselectedControlPoints*/;
+                                        selectionList.Remove(selection);
+                                        Debug.Log(obj + " is removed ");
+                                    }
+                                }
+
+                            }
+
+                            if (selection.CompareTag(selectableTag))
+                            {
+                                Debug.Log("To see if enter compareTag");
+                                if (selectionList.Contains(selection))
+                                {
+                                    obj = selection.gameObject;
+                                    var selectionRenderer = selection.GetComponent<Renderer>();
+                                    selectionRenderer.material = defaultMaterial;
+                                    Debug.Log(obj + " is deleted");
+                                    //objectdeleted.text = obj + "is deleted";
+                                    obj.transform.parent = null;
+                                    obj.transform.parent = meshCreateControlPoints._initializedControlPoints/*_unselectedControlPoints*/;
+                                    selectionList.Remove(selection);
+                                    Debug.Log(obj + " is removed ");
+                                    obj.AddComponent<InteractionBehaviour>();
+                                    //objectremoved.text = obj + "is removed";
+                                }
+
+                            }
+                        }
+                        
+
                     }
                 }
-                ////put the control points into the SelectedControlPoints gameobject
-                for (int i = 0; i < interSelectionList.Count; i++)
-                {
-                    var child = interSelectionList[i];
-                    child.transform.parent = meshCreateControlPoints._initializedControlPoints/*_unselectedControlPoints*/;
-                    var selectionRenderer = child.GetComponent<Renderer>();
-                    if (selectionRenderer != null)
-                    {
-                        selectionRenderer.material = defaultMaterial;
-                    }
-                }
-                interSelectionList.Clear();
             }
+
         }
     }
+
+
+
+    public void Rotation()
+    {
+        Destroy(SelectedControlPoints.GetComponent<MoveObjectUpdate>());
+        Destroy(SelectedControlPoints.GetComponent<rotateObj>());
+        ComputeBarCenter(selectionList);
+        //DeleteParentCollider();
+        ComputeDisSetCPs(barCenter);
+        //GetColliderCopy();
+        SelectedControlPoints.AddComponent<rotateObj>();
+        voiceControlCommand.text = "Rotation";
+    }
+    public void Translation()
+    {
+        Destroy(SelectedControlPoints.GetComponent<rotateObj>());
+        Destroy(SelectedControlPoints.GetComponent<MoveObjectUpdate>());
+        Destroy(SelectedControlPoints.GetComponent<InteractionBehaviour>());
+        ComputeBarCenter(selectionList);
+        //DeleteParentCollider();
+        ComputeDisSetCPs(colliderPosition);
+        //GetColliderCopy();
+
+        SelectedControlPoints.AddComponent<MoveObjectUpdate>();
+        interactionSCPs = SelectedControlPoints.AddComponent<InteractionBehaviour>();
+        interactionSCPs.OnContactBegin = () => { Debug.Log("hand touch SelecCPs..."); };
+
+        //if (m_MyEvent == null)
+        //    m_MyEvent = new UnityEvent();
+        //m_MyEvent.AddListener(Ping);
+
+        //SelectedControlPoints.GetComponent<InteractionBehaviour>();
+        voiceControlCommand.text = "Translation";
+    }
+
+
+
+    public void Scale()
+    {
+        Destroy(SelectedControlPoints.GetComponent<rotateObj>());
+        Destroy(SelectedControlPoints.GetComponent<MoveObjectUpdate>());
+        //DeleteParentCollider();
+        meshCreateControlPoints.scaleCenter = colliderPosition;
+        ComputeDisSetCPs(colliderPosition);
+        Debug.Log("colliderPosition" + colliderPosition);
+        //ComputeDisSetCPs(colliderPosition);
+        //meshCreateControlPoints.GetNewPos();
+        //SelectedControlPoints/*meshCreateControlPoints.InitializedControlPoints*/.AddComponent<DetectScaleCollision>();
+        foreach (Transform child in meshCreateControlPoints._initializedControlPoints)
+        {
+            child.gameObject.AddComponent<DetectScaleCollision>();
+        }
+        voiceControlCommand.text = "Scale";
+    }
+    /// <summary>
+    /// select and store data of gameobject(the control points) function.
+    /// </summary>
+   
+
+
+    /// <summary>
+    /// delecte and remove gameobject(the control points) function.
+    /// </summary>
+    
 
     public void ClearControlPoints()
     {
