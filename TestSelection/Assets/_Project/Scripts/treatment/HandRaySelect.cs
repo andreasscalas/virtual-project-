@@ -12,7 +12,7 @@ public class HandRaySelect : MonoBehaviour
     public HandModelBase rightHandModel;
     //public ControllerColliderHit hit=new ControllerColliderHit();
     float twoFingerDistance = 0.03f;
-    public GameObject Obj;
+    //public GameObject Obj;
     private bool select;
     private bool delete;
 
@@ -55,13 +55,13 @@ public class HandRaySelect : MonoBehaviour
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit))
             {
-                if (hit.transform.name != "ground")
+                Debug.Log("this is a string in once hit happens");
+                if (hit.transform.tag == "Selectable")
                 {
-                    Debug.Log("hit.transform.gameObject.GetComponent<ChangeColor>() != null ");
                     if (select) 
-                    { Debug.Log("select");/*hit.transform.gameObject.GetComponent<ChangeColor>().SetColor();*/}
+                    { Debug.Log("select hit");/*hit.transform.gameObject.GetComponent<ChangeColor>().SetColor();*/}
                     if (delete)
-                    { Debug.Log("delete");/*hit.transform.gameObject.GetComponent<ChangeColor>().ResetColor();*/ }
+                    { Debug.Log("delete hit");/*hit.transform.gameObject.GetComponent<ChangeColor>().ResetColor();*/ }
                 }
             }
 
