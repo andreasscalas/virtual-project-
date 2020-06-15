@@ -231,6 +231,7 @@ public class TreatSelectionManager : MonoBehaviour
 
                             }
                         }
+                        delete = false;
                     }
                     _outline = selection;
                 }
