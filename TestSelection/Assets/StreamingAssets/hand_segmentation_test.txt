@@ -3,7 +3,7 @@
         {
             "tag": "Little finger",
             "triangles": [
-                483
+                5097
             ]
         },
         {
