@@ -15,10 +15,10 @@ public class VoiceController : MonoBehaviour
     void Start()
     {
         actions.Add("select", treatslectionManager.OnSelect);
-        actions.Add("delete", treatslectionManager.OnDelete);
-        actions.Add("translate", treatslectionManager.Translation);
-        actions.Add("rotate", treatslectionManager.Rotation);
-        actions.Add("scale", treatslectionManager.Scale);
+        actions.Add("remove", treatslectionManager.OnDelete);
+        //actions.Add("translate", treatslectionManager.Translation);
+        //actions.Add("rotate", treatslectionManager.Rotation);
+        //actions.Add("scale", treatslectionManager.Scale);
         //actions.Add("change scale", treatslectionManager.ChangeScale);
         
 

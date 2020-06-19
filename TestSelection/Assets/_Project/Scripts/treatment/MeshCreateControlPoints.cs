@@ -19,7 +19,7 @@ public class MeshCreateControlPoints : MonoBehaviour
     Mesh meshModel;
     [HideInInspector]
     public Vector3[] cageVertices;
-    Vector3[] modelVertices;
+    public Vector3[] modelVertices;
     [HideInInspector]
     public Vector3[] initialControlPointPosition;
     [HideInInspector]
@@ -92,17 +92,20 @@ public class MeshCreateControlPoints : MonoBehaviour
 
         //for (int i = 0; i < modelVertices.Length; i++)
         //{
-        //    Debug.Log(modelVertices[i]);
+        //    Debug.Log(i + " " + modelVertices[i].ToString("F6"));
         //}
 
 
-        //for (int i = 0; i < trisModel.Length; i++)
+        //for (int i = 0; i < modelVertices.Length; i++)
         //{
         //    //Debug.Log(trisModel[i]);
 
-        //    File.AppendAllText("C:\\Users\\DELL\\Documents\\new ModelDeformationVR\\TestSelection\\Assets\\_Project\\prefabs\\hand\\hand_triangles.txt",trisModel[i]+"\n", Encoding.Default);
+        //    File.AppendAllText("C:\\Users\\DELL\\Documents\\new ModelDeformationVR\\TestSelection\\Assets\\_Project\\prefabs\\hand git\\hand_vertices.txt", " "+ modelVertices[i].ToString("F6")+" " + "\n", Encoding.Default);
         //}
-        //Debug.Log("trisModel.Length "+trisModel.Length);
+        //Debug.Log("triangle[0] " + trisModel[0]+" "+ trisModel[1]+" "+ trisModel[2]);
+        //Debug.Log("Vertex of triangle[0].1 " + modelVertices[trisModel[0]].ToString("F6"));
+        //Debug.Log("Vertex of triangle[0].2 " + modelVertices[trisModel[1]].ToString("F6"));
+        //Debug.Log("Vertex of triangle[0].3 " + modelVertices[trisModel[2]].ToString("F6"));
 
     }
     /// <summary>
@@ -264,7 +267,7 @@ public class MeshCreateControlPoints : MonoBehaviour
             sum = _vec[i] + sum;
         }
         barCenter = (sum / _vec.Length);
-        Debug.Log("barcenter  " + barCenter);
+        //Debug.Log("barcenter  " + barCenter);
     }
 
     private double[,] ConvertListToMatrix(List<Transform> myList)
