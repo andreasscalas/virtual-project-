@@ -45,6 +45,7 @@ public class MeshCreateControlPoints : MonoBehaviour
     int goCounter=1;
 
     public ReadFileComputeNewcage readFileComputeNewcage;
+    public ReadJson readJson;
     //public TreatSelectionManager treatSelectionManager;
    
     
@@ -315,15 +316,36 @@ public class MeshCreateControlPoints : MonoBehaviour
     {
         //Debug.Log("vertices.Length\t" + vertices.Length);
         //Debug.Log("matrixMprime.count/3\t" + matrixMprime.Length / 3);
+        Color[] colors = new Color[vertices.Length];
         for (int i = 0; i < vertices.Length; i++)
         {
             vertices[i].x = (float)matrixMprime[i, 0];
             vertices[i].y = (float)matrixMprime[i, 1];
             vertices[i].z = (float)matrixMprime[i, 2];
+            //colors[i] = Color.red;
         }
+
+        int colorCorrector = 0;
+        for (int i = 0; i < readJson.AllSegVertsIndexes.Count; i++)
+        {
+            //Debug.Log("readJson.AllSegVertsIndexes.Count "+ readJson.AllSegVertsIndexes.Count);
+            for (int j = 0; j < readJson.AllSegVertsIndexes[i].Count; j++)
+            {
+                //Debug.Log("this is a string inside j 1");
+                List<int> colorFromJson = readJson.AllSegColors[i];
+                colors[readJson.AllSegVertsIndexes[i][j]] = new Color(colorFromJson[0], colorFromJson[1], colorFromJson[2])/255;
+                //Debug.Log("this is a string inside j 2");
+                //Debug.Log(j + colorCorrector);
+            }
+            Debug.Log(Color.red);
+        //Debug.Log("the colors "+ readJson.AllSegColors[i][0]+" "+ readJson.AllSegColors[i][1]+" "+ readJson.AllSegColors[i][2]);
+        //colorCorrector += readJson.AllSegVertsIndexAmounts[i];
+        }
+
         mesh.vertices = vertices;
         mesh.RecalculateBounds();
         mesh.triangles = trisModel;
+        mesh.colors = colors;
     }
     /// <summary>
     /// Update modification to the cage.
