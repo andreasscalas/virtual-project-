@@ -25,8 +25,19 @@ public class ReadJson : MonoBehaviour
     public List<int> wrist = new List<int>();
     [HideInInspector]
     public List<int> palm = new List<int>();
+
+    public List<List<int>> AllSegtrianIndexes = new List<List<int>>();
+    public List<List<int>> AllSegVertsIndexes = new List<List<int>>();
+    public List<int> AllSegtriansIndexAmounts = new List<int>();
+    public List<int> AllSegVertsIndexAmounts = new List<int>();
+    public List<List<int>> AllSegColors = new List<List<int>>();
+    //public List<int> interSegTrianLists = new List<int>();
+    //public List<int> interSegVertLists = new List<int>();
+    [HideInInspector]
     private MeshCreateControlPoints meshCreateControlPoints;
+    [HideInInspector]
     private ReadFileComputeNewcage readFileComputeNewcage;
+
     [HideInInspector]
     public List<int> trianModelSegmented = new List<int>();
     [HideInInspector]
@@ -41,10 +52,10 @@ public class ReadJson : MonoBehaviour
     [HideInInspector]
     List<int> Lst = new List<int>();
 
+    public Color[] colors ;
     // Start is called before the first frame update
     void Start()
     {
-        
         meshCreateControlPoints = GameObject.Find("Selection Manager").GetComponent<MeshCreateControlPoints>();
         readFileComputeNewcage = GameObject.Find("Selection Manager").GetComponent<ReadFileComputeNewcage>();
         jsonString = File.ReadAllText(Application.streamingAssetsPath + "/" + "hand_segmentation_correct.txt");
@@ -52,6 +63,7 @@ public class ReadJson : MonoBehaviour
         data = JsonMapper.ToObject(jsonString);
 
         //Debug.Log(data["annotations"][0]["triangles"]);
+
         GetDataToLst(data["annotations"][0]["triangles"], littleFinger);
         GetDataToLst(data["annotations"][1]["triangles"], ringFinger);
         GetDataToLst(data["annotations"][2]["triangles"], mediumFinger);
@@ -59,8 +71,47 @@ public class ReadJson : MonoBehaviour
         GetDataToLst(data["annotations"][4]["triangles"], thumb);
         GetDataToLst(data["annotations"][5]["triangles"], wrist);
         GetDataToLst(data["annotations"][6]["triangles"], palm);
+
         int k = littleFinger.Count + ringFinger.Count + mediumFinger.Count + indexFinger.Count + thumb.Count +
                 wrist.Count + palm.Count;
+
+        //Debug.Log(littleFinger.Count);
+        //Debug.Log(ringFinger.Count);
+        //Debug.Log(wrist.Count);
+        //Debug.Log(palm.Count);
+
+        for (int i = 0; i < data["annotations"].Count; i++)
+        {
+            List<int> interSegTrianLists = new List<int>();
+            List<int> interSegColors = new List<int>();
+            interSegTrianLists.Clear();
+            interSegColors.Clear();
+            GetDataToLst(data["annotations"][i]["triangles"], interSegTrianLists);
+            GetDataToLst(data["annotations"][i]["color"], interSegColors);
+
+            //for (int j = 0; j < interSegTrianLists.Count; j++)
+            //{
+            //    Debug.Log(interSegTrianLists[j]);
+            //}
+            AllSegtrianIndexes.Add(interSegTrianLists);
+            AllSegColors.Add(interSegColors);
+            AllSegtriansIndexAmounts.Add(interSegTrianLists.Count);
+        }
+
+        //for (int i = 0; i < AllSegtrianIndexes.Count; i++)
+        //{
+        //    Debug.Log("this is a separator for different segments**********************************");
+        //    for (int j = 0; j < AllSegtrianIndexes[i].Count; j++)
+        //    {
+        //        Debug.Log(AllSegtrianIndexes[i][j]);
+        //    }
+        //}
+
+        //for (int i = 0; i < AllSegtrianIndexes[0].Count; i++)
+        //{
+        //    Debug.Log(AllSegtrianIndexes[0][i]);
+        //}
+
         //Debug.Log("total length "+ k);
         //MapSegModel(littleFinger);
         //filterBarMatrix(threshold);
@@ -71,6 +122,43 @@ public class ReadJson : MonoBehaviour
         //DrawFilter(trianCageSegmented);
         thresholdPrime = 1.1f;
         switchSegment = false;
+
+        for (int j = 0; j < AllSegtrianIndexes.Count; j++)
+        {
+            List<int> interSegVertLists = new List<int>();
+            interSegVertLists.Clear();
+            
+            for (int i = 0; i < AllSegtrianIndexes[j].Count; i++)
+            {
+                //Debug.Log("littleFinger " +littleFinger[i] );
+                if (!interSegVertLists.Contains(meshCreateControlPoints.trisModel[(AllSegtrianIndexes[j][i] - 1) * 3]))
+                { interSegVertLists.Add(meshCreateControlPoints.trisModel[(AllSegtrianIndexes[j][i] - 1) * 3]); }
+                //Debug.Log("vertex 1 " + meshCreateControlPoints.trisModel[littleFinger[i] * 3]);
+
+                if (!interSegVertLists.Contains(meshCreateControlPoints.trisModel[(AllSegtrianIndexes[j][i] - 1) * 3 + 1]))
+                { interSegVertLists.Add(meshCreateControlPoints.trisModel[(AllSegtrianIndexes[j][i] - 1) * 3 + 1]); }
+                //Debug.Log("vertex 3 " + meshCreateControlPoints.trisModel[littleFinger[i] * 3 + 1]);
+
+
+                if (!interSegVertLists.Contains(meshCreateControlPoints.trisModel[(AllSegtrianIndexes[j][i] - 1) * 3 + 2]))
+                { interSegVertLists.Add(meshCreateControlPoints.trisModel[(AllSegtrianIndexes[j][i] - 1) * 3 + 2]); }
+                //Debug.Log("vertex 2 " + meshCreateControlPoints.trisModel[littleFinger[i] * 3+2]);
+                //Debug.Log("little finger triangle index " + i + " " + littleFinger[i]);
+            }
+            AllSegVertsIndexes.Add(interSegVertLists);
+            AllSegVertsIndexAmounts.Add(interSegVertLists.Count);
+        }
+        
+        //for (int i = 0; i < AllSegVertsIndexes[0].Count; i++)
+        //{
+        //    var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        //    var renderer = cube.GetComponent<MeshRenderer>().material = segmentmMaterial;
+        //    cube.transform.position = meshCreateControlPoints.modelVertices[AllSegVertsIndexes[0][i]];
+        //    //Debug.Log("little finger Vertices " + i+" " + meshCreateControlPoints.modelVertices[Lst[i]].ToString(("F6")));
+
+        //    cube.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
+        //}
+        //Debug.Log("first triangle " + Lst[0] + " " + Lst[1] + " " + Lst[2]);
 
 
         for (int i = 0; i < littleFinger.Count; i++)
@@ -89,28 +177,32 @@ public class ReadJson : MonoBehaviour
             { Lst.Add(meshCreateControlPoints.trisModel[(littleFinger[i] - 1) * 3 + 2]); }
             //Debug.Log("vertex 2 " + meshCreateControlPoints.trisModel[littleFinger[i] * 3+2]);
             //Debug.Log("little finger triangle index " + i + " " + littleFinger[i]);
-
-            //Lst2.Add(meshCreateControlPoints.trisModel[littleFinger[i] * 3];
-            //Lst2.Add(meshCreateControlPoints.trisModel[littleFinger[i] * 3 + 1];
-            //Lst2.Add(meshCreateControlPoints.trisModel[littleFinger[i] * 3 + 2];
-
-
-
         }
 
+        //int colorCorrector = 0;
+        //for (int i = 0; i < AllSegVertsIndexAmounts.Count; i++)
+        //{
+        //    for (int j = 0; j < AllSegVertsIndexAmounts[i]; j++)
+        //    {
+        //        Debug.Log("this is a string inside j 1");
+        //        colors[i + colorCorrector] = Color.red;
+        //        Debug.Log("this is a string inside j 2");
+        //    }
 
-        
-        ////for (int i = 0; i < Lst.Count; i++)
-        ////{
-        ////    var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        ////    var renderer = cube.GetComponent<MeshRenderer>().material = segmentmMaterial;
-        ////    cube.transform.position = meshCreateControlPoints.modelVertices[Lst[i]];
-        ////    //Debug.Log("little finger Vertices " + i+" " + meshCreateControlPoints.modelVertices[Lst[i]].ToString(("F6")));
+        //    colorCorrector += AllSegVertsIndexAmounts[i];
+        //}
 
-        ////    cube.transform.localScale = new Vector3(0.01f, 0.01f, 0.01f);
-        ////}
+        //////for (int i = 0; i < Lst.Count; i++)
+        //////{
+        //////    var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        //////    var renderer = cube.GetComponent<MeshRenderer>().material = segmentmMaterial;
+        //////    cube.transform.position = meshCreateControlPoints.modelVertices[Lst[i]];
+        //////    Debug.Log("little finger Vertices " + i + " " + meshCreateControlPoints.modelVertices[Lst[i]].ToString(("F6")));
+
+        //////    cube.transform.localScale = new Vector3(0.01f, 0.01f, 0.01f);
+        //////}
         //Debug.Log("first triangle " + Lst[0] + " "+Lst[1]+ " "+ Lst[2]);
-        
+
     }
 
     void Update()
@@ -151,7 +243,6 @@ public class ReadJson : MonoBehaviour
         }
        
     }
-
 
 
     private void GetDataToLst(JsonData jsonData, List<int> Mylist)
