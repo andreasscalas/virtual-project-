@@ -1,74 +1,71 @@
-﻿using System;
-using System.IO;
-using System.Text;
-using System.Collections;
+﻿using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Linq;
-using Accord.Math;
+using Assets._Project.Scripts.treatment;
 using Leap.Unity.Interaction;
-using TMPro;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
-using Vector3 = UnityEngine.Vector3;
-
 
 public class MeshCreateControlPoints : MonoBehaviour
 {
-
-    Mesh meshCage;
-    Mesh meshModel;
-    [HideInInspector]
-    public Vector3[] cageVertices;
-    public Vector3[] modelVertices;
-    [HideInInspector]
-    public Vector3[] initialControlPointPosition;
-    [HideInInspector]
-    public Vector3[] initialModelVerticesPosition;
-    [HideInInspector]
-    List<Transform> PositionControlPoints;
+    //public TreatSelectionManager treatSelectionManager;
+    public Transform _initializedControlPoints;
+    private readonly List<Transform> _newPosCP = new List<Transform>();
+    private readonly List<Vector3> _newScalePosCPs = new List<Vector3>();
     private Vector3 barCenter;
-    public Vector3 scaleCenter;
+    [SerializeField] private Material barCenterCage;
+
+    [HideInInspector] public Vector3[] cageVertices;
+
+    public bool collision;
+
+    private float collisionSliVal = new float();
+    private GameObject ControlPoint /*= new GameObject()*/;
+    [SerializeField] private Material defaultMaterial;
+    private int goCounter = 1;
+
+    [HideInInspector] public Vector3[] initialControlPointPosition;
+
+    [HideInInspector] public GameObject InitializedControlPoints;
+
+    [HideInInspector] public Vector3[] initialModelVerticesPosition;
+
+    [HideInInspector] public List<InteractionBehaviour> interactCP = new List<InteractionBehaviour>();
+
+    private Mesh meshCage;
+    private Mesh meshModel;
+    public Vector3[] modelVertices;
+    private double[,] newMatrixPositionModel;
 
     public GameObject objCage;
     public GameObject objModel;
-    private int[] trisCage;
-    public int[] trisModel;
-    double[,] newMatrixPositionModel;
-    GameObject ControlPoint /*= new GameObject()*/;
-    private List<Transform> _newPosCP = new List<Transform>();
-    private List<Vector3> _newScalePosCPs = new List<Vector3>();
-    
-    [SerializeField] private string selectableTag = "Selectable";
-    [SerializeField] private string spawnSelectableTag = "InitializeParent";
-    [SerializeField] private Material defaultMaterial;
-    [SerializeField] private Material barCenterCage;
-    int goCounter=1;
+
+    [HideInInspector] private List<Transform> PositionControlPoints;
 
     public ReadFileComputeNewcage readFileComputeNewcage;
     public ReadJson readJson;
-    //public TreatSelectionManager treatSelectionManager;
-   
-    
-    public Transform _initializedControlPoints;
-    [HideInInspector]
-    public GameObject InitializedControlPoints;
+
+    [HideInInspector] public float scale;
+
+    public Vector3 scaleCenter;
+
+    [HideInInspector] public bool scaleGO;
+
+    [SerializeField] private readonly string selectableTag = "Selectable";
 
     public Slider slider;
     public float sliderValue;
+    private float sliValCol;
+    [SerializeField] private string spawnSelectableTag = "InitializeParent";
+    private int[] trisCage;
+    public int[] trisModel;
+    public List<Material> materialControlPoint = new List<Material>();
+    public List<ControlPointsData> cpDataList=new List<ControlPointsData>();
+    List<ControlPointsData> ControlPointsInfo = new List<ControlPointsData>();
 
-    [HideInInspector]
-    public float scale;
-    [HideInInspector]
-    public bool scaleGO;
-    public bool collision;
 
-    float collisionSliVal = new float();
-    float sliValCol;
-
-    [HideInInspector]
-    public List<InteractionBehaviour> interactCP = new List<InteractionBehaviour>();
-
-    void Start()
+    private void Start()
     {
         scale = 1;
         collision = false;
@@ -107,10 +104,11 @@ public class MeshCreateControlPoints : MonoBehaviour
         //Debug.Log("Vertex of triangle[0].1 " + modelVertices[trisModel[0]].ToString("F6"));
         //Debug.Log("Vertex of triangle[0].2 " + modelVertices[trisModel[1]].ToString("F6"));
         //Debug.Log("Vertex of triangle[0].3 " + modelVertices[trisModel[2]].ToString("F6"));
-
     }
+
+
     /// <summary>
-    /// function to create control points
+    ///     function to create control points
     /// </summary>
     public void CreateControlPoints()
     {
@@ -127,15 +125,15 @@ public class MeshCreateControlPoints : MonoBehaviour
         trisModel = meshModel.triangles;
         //Debug.Log("the vertices" + vertices);
         ////generate the control points
-        for (int i = 0; i < meshCage.vertices.Length; i++)
+        for (var i = 0; i < meshCage.vertices.Length; i++)
         {
             ControlPoint = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            Vector3 K = initialControlPointPosition[i];
+            var K = initialControlPointPosition[i];
             ControlPoint.transform.position = new Vector3(K[0], K[1], K[2]);
             ControlPoint.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
             ControlPoint.tag = selectableTag;
-            ControlPoint.name = "Control Point "+ goCounter;
-            interactCP.Add( ControlPoint.AddComponent<InteractionBehaviour>());
+            ControlPoint.name = "Control Point " + goCounter;
+            interactCP.Add(ControlPoint.AddComponent<InteractionBehaviour>());
             ControlPoint.GetComponent<Rigidbody>().useGravity = false;
             ControlPoint.GetComponent<Rigidbody>().isKinematic = true;
             ControlPoint.AddComponent<ChangeColor>();
@@ -147,51 +145,223 @@ public class MeshCreateControlPoints : MonoBehaviour
             controlPointRenderer.material = defaultMaterial;
             _newPosCP.Add(ControlPoint.transform);
             PositionControlPoints.Add(ControlPoint.transform);
-            
+
             //Destroy(ControlPoint.gameObject.GetComponent<Collider>());
         }
-        //for (int i = 0; i < newListPositionControlPoints.Count; i++)
+
+        //Generate CPs of different colors for different segments
+
+        //for (int i = 0; i < readJson.CageAllSegVertIndex.Count; i++)
         //{
-        //    Debug.Log("newly recorded newListPositionControlPoints" + "\t" + i + "\t" + newListPositionControlPoints[i].position.ToString("F6"));
+        //    for (int j = 0; j < readJson.CageAllSegVertIndex[i].Count; j++)
+        //    {
+        //        var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        //        cube.GetComponent<MeshRenderer>().material = materialControlPoint[i];
+        //        cube.transform.position = cageVertices[readJson.CageAllSegVertIndex[i][j]];
+        //        cube.transform.localScale = new Vector3(0.3f, 0.3f, 0.3f);
+        //        cube.name = "Cube" + j;
+        //        //ControlPointsData cpData=new ControlPointsData();
+        //        ControlPointsData cpData =
+        //        cpDataList.Find(x => Vector3.Distance(x.go.transform.position, cube.transform.position) < 0.1);
+        //        if (cpData != null)
+        //        {
+        //            cpData.goTags.Add(readJson.segmentTags[i]);
+        //            cpData.goColor.Add(new Color(readJson.AllSegColors[i][0], readJson.AllSegColors[i][1], readJson.AllSegColors[i][2]));
+        //        }
+        //        else
+        //        {
+        //            cpData = new ControlPointsData();
+        //            cpData.go = cube;
+        //            cpData.goTags.Add(readJson.segmentTags[i]);
+        //            cpData.goColor.Add(new Color(readJson.AllSegColors[i][0], readJson.AllSegColors[i][1], readJson.AllSegColors[i][2]));
+        //            Debug.Log("cpData.goTags 0.1" + cpData.goTags.Last());
+        //            cpDataList.Add(cpData);
+        //        }
+
+        //    }
         //}
 
+
+
+        for (int i = 0; i < readJson.CageAllSegVertIndex.Count; i++)
+        {
+            for (int j = 0; j < readJson.CageAllSegVertIndex[i].Count; j++)
+            {
+                //////var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                ControlPointsData cpData=new ControlPointsData();
+
+                cpData = new ControlPointsData();
+                //cpData.go = cube;
+                cpData.goTags.Add(readJson.segmentTags[i]);
+                cpData.goIndex=readJson.CageAllSegVertIndex[i][j];
+                cpData.goColor.Add(new Color(readJson.AllSegColors[i][0], readJson.AllSegColors[i][1], readJson.AllSegColors[i][2]));
+                Debug.Log("cpData.goTags vertices" + cpData.goTags.Last());
+                cpDataList.Add(cpData);
+
+                cpData = cpDataList.Find(x => (x.goIndex == readJson.CageAllSegVertIndex[i][j]));
+                if (cpData != null)
+                {
+                    cpData.goTags.Add(readJson.segmentTags[i]);
+                    cpData.goColor.Add(new Color(readJson.AllSegColors[i][0], readJson.AllSegColors[i][1], readJson.AllSegColors[i][2]));
+                }
+                //else
+                //{
+                //    //cpData = new ControlPointsData();
+                //    //cpData.go = cube;
+                //    //cpData.goTags.Add(readJson.segmentTags[i]);
+                //    //cpData.goColor.Add(new Color(readJson.AllSegColors[i][0], readJson.AllSegColors[i][1], readJson.AllSegColors[i][2]));
+                //    ////Debug.Log("cpData.goTags vertices" + cpData.goTags.Last());
+                //    //cpDataList.Add(cpData);
+                //}
+
+
+                ////////cube.GetComponent<MeshRenderer>().material = materialControlPoint[i];
+                ////////cube.transform.position = cageVertices[readJson.CageAllSegVertIndex[i][j]];
+                ////////cube.transform.localScale = new Vector3(0.3f, 0.3f, 0.3f);
+
+
+            }
+        }
+
+        for (int i = 0; i < cpDataList.Count; i++)
+        {
+            Debug.Log("cpDataList indexes " + cpDataList[i].goIndex);
+        }
+        
+
+        
+
+        while (cpDataList.Count > 0)
+        {
+            ControlPointsData m = cpDataList[0];
+            cpDataList.RemoveAt(0);
+            List<ControlPointsData> listB = new List<ControlPointsData>();
+            foreach (var VARIABLE in cpDataList)
+            {
+                if (VARIABLE.goIndex.Equals(m.goIndex))
+                {
+                    m.goTags.Add(VARIABLE.goTags[0]);
+                    m.goColor[0]=(VARIABLE.goColor[0]+m.goColor[0])/2;
+                }
+                else
+                {
+                    listB.Add(VARIABLE);
+                }
+            }
+            cpDataList = listB;
+            ControlPointsInfo.Add(m);
+        }
+
+        Debug.Log("result.count "+ ControlPointsInfo.Count);
+        Debug.Log("result.count "+ ControlPointsInfo[0].ToString());
+        ////////for (int i = 0; i < readJson.CageAllSegVertIndex.Count; i++)
+        ////////{
+        ////////    for (int j = 0; j < readJson.CageAllSegVertIndex[i].Count; j++)
+        ////////    {
+        ////////        cpDataList.Find(x => Vector3.Distance(x.go.transform.position, cageVertices[readJson.CageAllSegVertIndex[i][j]]) < 0.1);
+        ////////    }
+        ////////}
+
+
+
+        //foreach (var VARIABLE in cpDataList.FindAll(x => x.goTags.Count() > 1))
+        //{
+        //    Debug.Log("repeat cubes tags" + VARIABLE);
+        //}
+
+
+        //foreach (var VARIABLE in cpDataList.FindAll(x => x.goColor.Count() > 1))
+        //{
+        //    Debug.Log("repeat cubes color" + VARIABLE);
+        //}
+        CreateMaterial();
+
+        //load the materials for the segments on the cage
+        for (int i = 0; i < ControlPointsInfo.Count; i++)
+        {
+            materialControlPoint.Add(Resources.Load("MaterialControlPoint" + i, typeof(Material)) as Material);
+        }
+
+
+        for (var i = 0; i < ControlPointsInfo.Count; i++)
+        {
+            ControlPoint = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            ControlPoint.transform.position = cageVertices[ControlPointsInfo[i].goIndex];
+            ControlPoint.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
+            ControlPoint.tag = selectableTag;
+            ControlPoint.name = "Control Point " + goCounter;
+            interactCP.Add(ControlPoint.AddComponent<InteractionBehaviour>());
+            ControlPoint.GetComponent<Rigidbody>().useGravity = false;
+            ControlPoint.GetComponent<Rigidbody>().isKinematic = true;
+            ControlPoint.AddComponent<ChangeColor>();
+
+            goCounter++;
+            //ControlPoint.AddComponent<Rigidbody>().useGravity = false;
+            ControlPoint.transform.parent = _initializedControlPoints;
+            var controlPointRenderer = ControlPoint.GetComponent<MeshRenderer>();
+            controlPointRenderer.material = materialControlPoint[i];
+            _newPosCP.Add(ControlPoint.transform);
+            PositionControlPoints.Add(ControlPoint.transform);
+
+            //Destroy(ControlPoint.gameObject.GetComponent<Collider>());
+        }
+
     }
+
+
+    void CreateMaterial()
+    {
+        // Create a simple material asset
+
+        for (int i = 0; i < ControlPointsInfo.Count; i++)
+        {
+            Debug.Log("inside ControlPointsInfo.Count loop");
+            var newMaterial = new Material(Shader.Find("Diffuse"));
+            AssetDatabase.CreateAsset(newMaterial, "Assets/Resources/" + "MaterialControlPoint" + i + ".mat");
+            Color sum = Color.black;
+            for (int j = 0; j < ControlPointsInfo[i].goColor.Count; j++)
+            {
+                Debug.Log("inside color mixer");
+                sum += ControlPointsInfo[i].goColor[j]/255;
+            }
+            Debug.Log("outside ControlPointsInfo.Count loop");
+
+            newMaterial.color = sum / ControlPointsInfo[i].goColor.Count;
+        }
+
+
+    }
+
 
 
     // extract the postion in TransformList
     private List<Vector3> convertTransformPosition(List<Transform> listTransformInput)
     {
-        List<Vector3> toReturn = new List<Vector3>();
-        for (int i = 0; i < listTransformInput.Count; i++)
-        {
-            toReturn.Add(listTransformInput[i].position);
-        }
+        var toReturn = new List<Vector3>();
+        for (var i = 0; i < listTransformInput.Count; i++) toReturn.Add(listTransformInput[i].position);
         return toReturn;
     }
 
-    void Update()
+    private void Update()
     {
         sliderValue = slider.value;
         UpdateCage(cageVertices, _newPosCP, meshCage);
 
-        if (scaleGO)
-        {
-            GetNewPos();
-        }
+        if (scaleGO) GetNewPos();
         scaleGO = false;
 
         UpdateModel();
-        
     }
 
     private void UpdateModel()
     {
         double[,] newMatrixPositionControlPoints;
         newMatrixPositionControlPoints = ConvertListToMatrix(_newPosCP);
-        double[,] newMatrixPositionModelVertices = new double[readFileComputeNewcage.columnNumberUpdate,
+        var newMatrixPositionModelVertices = new double[readFileComputeNewcage.columnNumberUpdate,
             readFileComputeNewcage.columnNumberUpdate];
         // compute the model matrix M with the verticesPosition after deformation
-        newMatrixPositionModelVertices = readFileComputeNewcage.computeProductBG(readFileComputeNewcage.barMatrices, newMatrixPositionControlPoints);
+        newMatrixPositionModelVertices =
+            readFileComputeNewcage.computeProductBG(readFileComputeNewcage.barMatrices, newMatrixPositionControlPoints);
         UpdateModelModification(modelVertices, newMatrixPositionModelVertices, meshModel);
     }
 
@@ -211,18 +381,15 @@ public class MeshCreateControlPoints : MonoBehaviour
         //    _newPosCP[i].transform.position = _newScalePosCPs[i];
         //}
 
-        List<Vector3> vec = new List<Vector3>();
-        for (int i = 0; i < PositionControlPoints/*initialControlPointPosition*/.Count; i++)
+        var vec = new List<Vector3>();
+        for (var i = 0; i < PositionControlPoints /*initialControlPointPosition*/.Count; i++)
+            vec.Add(PositionControlPoints /*initialControlPointPosition*/[i].position - scaleCenter);
+        for (var i = 0; i < vec.Count; i++)
         {
-            vec.Add(PositionControlPoints/*initialControlPointPosition*/[i].position - scaleCenter);
-        }
-        for (int i = 0; i < vec.Count; i++)
-        {
-            vec[i]*=scale;
-            _newScalePosCPs.Add(vec[i]+ scaleCenter);
+            vec[i] *= scale;
+            _newScalePosCPs.Add(vec[i] + scaleCenter);
             _newPosCP[i].transform.position = _newScalePosCPs[i];
         }
-
     }
 
     public void AdjustScaleRatio()
@@ -256,32 +423,28 @@ public class MeshCreateControlPoints : MonoBehaviour
             newColorBlock.selectedColor = Color.white;
             slider.colors = newColorBlock;
         }
-
     }
 
 
     private void ComputeBarCenter(Vector3[] _vec)
     {
-        Vector3 sum = new Vector3(0, 0, 0);
-        for (int i = 0; i < _vec.Length; i++)
-        {
-            sum = _vec[i] + sum;
-        }
-        barCenter = (sum / _vec.Length);
+        var sum = new Vector3(0, 0, 0);
+        for (var i = 0; i < _vec.Length; i++) sum = _vec[i] + sum;
+        barCenter = sum / _vec.Length;
         //Debug.Log("barcenter  " + barCenter);
     }
 
     private double[,] ConvertListToMatrix(List<Transform> myList)
     {
-        double[,] myMatrix = new double[myList.Count, 3];
-        for (int i = 0; i < myList.Count; i++)
+        var myMatrix = new double[myList.Count, 3];
+        for (var i = 0; i < myList.Count; i++)
         {
             myMatrix[i, 0] = myList[i].position.x;
             myMatrix[i, 1] = myList[i].position.y;
             myMatrix[i, 2] = myList[i].position.z;
         }
-        return(myMatrix);
 
+        return myMatrix;
     }
 
     public void ClickResetMesh()
@@ -294,69 +457,62 @@ public class MeshCreateControlPoints : MonoBehaviour
         //Reset slider
         slider.value = 1;
         scale = 1;
-
     }
 
     private void ResetCageMesh(Vector3[] vertices, Vector3[] DefaultPosition, Mesh mesh)
     {
-       
-        for (int i = 0; i < vertices.Length; i++)
+        for (var i = 0; i < vertices.Length; i++)
         {
             vertices[i] = DefaultPosition[i];
             _newPosCP[i].position = initialControlPointPosition[i];
         }
+
         // assign the local vertices array into the vertices array of the Mesh.
         mesh.vertices = vertices;
         mesh.RecalculateBounds();
         mesh.triangles = trisCage;
-        
     }
 
-    private void UpdateModelModification(Vector3[] vertices, double[,] matrixMprime , Mesh mesh)
+    private void UpdateModelModification(Vector3[] vertices, double[,] matrixMprime, Mesh mesh)
     {
         //Debug.Log("vertices.Length\t" + vertices.Length);
         //Debug.Log("matrixMprime.count/3\t" + matrixMprime.Length / 3);
-        Color[] colors = new Color[vertices.Length];
-        for (int i = 0; i < vertices.Length; i++)
+        var colors = new Color[vertices.Length];
+        for (var i = 0; i < vertices.Length; i++)
         {
-            vertices[i].x = (float)matrixMprime[i, 0];
-            vertices[i].y = (float)matrixMprime[i, 1];
-            vertices[i].z = (float)matrixMprime[i, 2];
+            vertices[i].x = (float) matrixMprime[i, 0];
+            vertices[i].y = (float) matrixMprime[i, 1];
+            vertices[i].z = (float) matrixMprime[i, 2];
             //colors[i] = Color.red;
         }
 
-        int colorCorrector = 0;
-        for (int i = 0; i < readJson.AllSegVertsIndexes.Count; i++)
-        {
+        var colorCorrector = 0;
+        for (var i = 0; i < readJson.AllSegVertsIndexes.Count; i++)
             //Debug.Log("readJson.AllSegVertsIndexes.Count "+ readJson.AllSegVertsIndexes.Count);
-            for (int j = 0; j < readJson.AllSegVertsIndexes[i].Count; j++)
-            {
-                //Debug.Log("this is a string inside j 1");
-                List<int> colorFromJson = readJson.AllSegColors[i];
-                colors[readJson.AllSegVertsIndexes[i][j]] = new Color(colorFromJson[0], colorFromJson[1], colorFromJson[2])/255;
-                //Debug.Log("this is a string inside j 2");
-                //Debug.Log(j + colorCorrector);
-            }
-            Debug.Log(Color.red);
+        for (var j = 0; j < readJson.AllSegVertsIndexes[i].Count; j++)
+        {
+            //Debug.Log("this is a string inside j 1");
+            var colorFromJson = readJson.AllSegColors[i];
+            colors[readJson.AllSegVertsIndexes[i][j]] =
+                new Color(colorFromJson[0], colorFromJson[1], colorFromJson[2]) / 255;
+            //Debug.Log("this is a string inside j 2");
+            //Debug.Log(j + colorCorrector);
+        }
         //Debug.Log("the colors "+ readJson.AllSegColors[i][0]+" "+ readJson.AllSegColors[i][1]+" "+ readJson.AllSegColors[i][2]);
         //colorCorrector += readJson.AllSegVertsIndexAmounts[i];
-        }
 
         mesh.vertices = vertices;
         mesh.RecalculateBounds();
         mesh.triangles = trisModel;
         mesh.colors = colors;
     }
+
     /// <summary>
-    /// Update modification to the cage.
+    ///     Update modification to the cage.
     /// </summary>
     private void UpdateCage(Vector3[] vertices, List<Transform> newListPosition, Mesh mesh)
     {
-
-        for (int i = 0; i < vertices.Length; i++)
-        {
-            vertices[i] = newListPosition[i].position;
-        }
+        for (var i = 0; i < vertices.Length; i++) vertices[i] = newListPosition[i].position;
         // assign the local vertices array into the vertices array of the Mesh.
         mesh.vertices = vertices;
         mesh.RecalculateBounds();
