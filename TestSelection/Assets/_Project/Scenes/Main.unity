@@ -1656,7 +1656,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!54 &679364747
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -4502,6 +4502,7 @@ GameObject:
   - component: {fileID: 1550730626}
   - component: {fileID: 1550730628}
   - component: {fileID: 1550730629}
+  - component: {fileID: 1550730630}
   m_Layer: 0
   m_Name: Selection Manager
   m_TagString: Untagged
@@ -4577,22 +4578,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 17fc7e64716311e4c8212477925e18d4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  littleFinger: 
-  ringFinger: 
-  mediumFinger: 
-  indexFinger: 
-  thumb: 
-  wrist: 
-  palm: 
   AllSegtriansIndexAmounts: 
   AllSegVertsIndexAmounts: 
-  trianModelSegmented: 
-  trianCageSegmented: 
-  threshold: 1
-  switchSegment: 1
+  indexFinger: 
+  littleFinger: 
+  mediumFinger: 
+  palm: 
+  ringFinger: 
   segmentmMaterial: {fileID: 2100000, guid: 37682ef268d9b2a4b97deef74e89bed2, type: 2}
   segmentmMaterial2: {fileID: 2100000, guid: fa37307080adf084dac64be9542557d5, type: 2}
-  colors: []
+  switchSegment: 1
+  threshold: 0.4000000059604645
+  thumb: 
+  trianCageSegmented: 
+  trianModelSegmented: 
+  wrist: 
+  trisCage: 
+  trisModel: 
+  objCage: {fileID: 1225658508}
+  objModel: {fileID: 1425029294}
+  modelVertices: []
+  cageVertices: []
+  segmentTags: []
 --- !u!114 &1550730624
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4652,28 +4659,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 433b4c8ad7f141048b99adfbbee65013, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _initializedControlPoints: {fileID: 0}
+  barCenterCage: {fileID: 2100000, guid: 6a6e335514576e3449cf7d76b2ce8087, type: 2}
   cageVertices: []
-  modelVertices: []
+  collision: 0
+  defaultMaterial: {fileID: 2100000, guid: 5a21f72b8943e09419e0e25fa746b43e, type: 2}
   initialControlPointPosition: []
+  InitializedControlPoints: {fileID: 0}
   initialModelVerticesPosition: []
-  scaleCenter: {x: 0, y: 0, z: 0}
+  interactCP: []
+  modelVertices: []
   objCage: {fileID: 1225658508}
   objModel: {fileID: 1425029294}
-  trisModel: 
-  selectableTag: Selectable
-  spawnSelectableTag: InitializeParent
-  defaultMaterial: {fileID: 2100000, guid: 5a21f72b8943e09419e0e25fa746b43e, type: 2}
-  barCenterCage: {fileID: 2100000, guid: 6a6e335514576e3449cf7d76b2ce8087, type: 2}
   readFileComputeNewcage: {fileID: 1550730625}
   readJson: {fileID: 1550730623}
-  _initializedControlPoints: {fileID: 0}
-  InitializedControlPoints: {fileID: 0}
+  scale: 0
+  scaleCenter: {x: 0, y: 0, z: 0}
+  scaleGO: 0
   slider: {fileID: 875678696}
   sliderValue: 0
-  scale: 0
-  scaleGO: 0
-  collision: 0
-  interactCP: []
+  spawnSelectableTag: InitializeParent
+  trisModel: 
+  materialControlPoint: []
 --- !u!114 &1550730628
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4700,6 +4707,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   leftHandModel: {fileID: 114392914143622621}
+--- !u!114 &1550730630
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1550730619}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae3b658130cc1df409c465aadaae0d3c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1563168198
 GameObject:
   m_ObjectHideFlags: 0
@@ -6221,11 +6240,11 @@ MonoBehaviour:
   _templateLayer:
     layerIndex: 0
   _interactionLayer:
-    layerIndex: 9
-  _interactionNoContactLayer:
     layerIndex: 10
-  _contactBoneLayer:
+  _interactionNoContactLayer:
     layerIndex: 11
+  _contactBoneLayer:
+    layerIndex: 12
   _drawControllerRuntimeGizmos: 0
 --- !u!114 &6469991616929174445
 MonoBehaviour:
