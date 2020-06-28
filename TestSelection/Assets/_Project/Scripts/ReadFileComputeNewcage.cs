@@ -50,8 +50,7 @@ public class ReadFileComputeNewcage : MonoBehaviour
 
         //ReadAnnotationFromFile(annotationFileName);
 
-        order = mapping(meshCreateControlPoints.initialControlPointPosition, cageMatrices);
-        //Debug.Log("this is cage mapping rule start");
+        //order = mapping(meshCreateControlPoints.initialControlPointPosition, cageMatrices);
         //Debug.Log("cage mesh order.Count\t" + order.Count);
         bool flagcage = true;
         for (int i = 0; i < order.Count; i++)
@@ -69,7 +68,7 @@ public class ReadFileComputeNewcage : MonoBehaviour
             //Debug.Log("We are sure we do not need re-mapping for cage");
         }
 
-        order = mapping(meshCreateControlPoints.initialModelVerticesPosition, modelMatrices);
+        //order = mapping(meshCreateControlPoints.initialModelVerticesPosition, modelMatrices);
         //Debug.Log("this is model mapping rule start");
         //Debug.Log("model mesh order.Count\t" + order.Count);
         bool flagmodel = true;
