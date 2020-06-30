@@ -1,6 +1,7 @@
 ﻿using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 using Assets._Project.Scripts.treatment;
 using Leap.Unity.Interaction;
 using UnityEditor;
@@ -60,9 +61,11 @@ public class MeshCreateControlPoints : MonoBehaviour
     [SerializeField] private string spawnSelectableTag = "InitializeParent";
     private int[] trisCage;
     public int[] trisModel;
-    public List<Material> materialControlPoint = new List<Material>();
+    public List<Material> materialGroup = new List<Material>();
+    public List<Material> outlinedMaterialGroup = new List<Material>();
     public List<ControlPointsData> cpDataList=new List<ControlPointsData>();
     List<ControlPointsData> ControlPointsInfo = new List<ControlPointsData>();
+    List<IGrouping<Color,ControlPointsData>> listTagsGroupedByIndex = new List<IGrouping<Color, ControlPointsData>>();
 
 
     private void Start()
@@ -156,7 +159,7 @@ public class MeshCreateControlPoints : MonoBehaviour
         //    for (int j = 0; j < readJson.CageAllSegVertIndex[i].Count; j++)
         //    {
         //        var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        //        cube.GetComponent<MeshRenderer>().material = materialControlPoint[i];
+        //        //cube.GetComponent<MeshRenderer>().material = materialGroup[i];
         //        cube.transform.position = cageVertices[readJson.CageAllSegVertIndex[i][j]];
         //        cube.transform.localScale = new Vector3(0.3f, 0.3f, 0.3f);
         //        cube.name = "Cube" + j;
@@ -172,6 +175,7 @@ public class MeshCreateControlPoints : MonoBehaviour
         //        {
         //            cpData = new ControlPointsData();
         //            cpData.go = cube;
+
         //            cpData.goTags.Add(readJson.segmentTags[i]);
         //            cpData.goColor.Add(new Color(readJson.AllSegColors[i][0], readJson.AllSegColors[i][1], readJson.AllSegColors[i][2]));
         //            Debug.Log("cpData.goTags 0.1" + cpData.goTags.Last());
@@ -187,35 +191,26 @@ public class MeshCreateControlPoints : MonoBehaviour
         {
             for (int j = 0; j < readJson.CageAllSegVertIndex[i].Count; j++)
             {
-                //////var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                ControlPointsData cpData=new ControlPointsData();
-
-                cpData = new ControlPointsData();
-                //cpData.go = cube;
-                cpData.goTags.Add(readJson.segmentTags[i]);
-                cpData.goIndex=readJson.CageAllSegVertIndex[i][j];
-                cpData.goColor.Add(new Color(readJson.AllSegColors[i][0], readJson.AllSegColors[i][1], readJson.AllSegColors[i][2]));
-                Debug.Log("cpData.goTags vertices" + cpData.goTags.Last());
-                cpDataList.Add(cpData);
-
+                ControlPointsData cpData = new ControlPointsData();
                 cpData = cpDataList.Find(x => (x.goIndex == readJson.CageAllSegVertIndex[i][j]));
                 if (cpData != null)
                 {
                     cpData.goTags.Add(readJson.segmentTags[i]);
                     cpData.goColor.Add(new Color(readJson.AllSegColors[i][0], readJson.AllSegColors[i][1], readJson.AllSegColors[i][2]));
                 }
-                //else
-                //{
-                //    //cpData = new ControlPointsData();
-                //    //cpData.go = cube;
-                //    //cpData.goTags.Add(readJson.segmentTags[i]);
-                //    //cpData.goColor.Add(new Color(readJson.AllSegColors[i][0], readJson.AllSegColors[i][1], readJson.AllSegColors[i][2]));
-                //    ////Debug.Log("cpData.goTags vertices" + cpData.goTags.Last());
-                //    //cpDataList.Add(cpData);
-                //}
+                else
+                {
+                    cpData = new ControlPointsData();
+                    //cpData.go = cube;
+                    cpData.goIndex = readJson.CageAllSegVertIndex[i][j];
+                    cpData.goTags.Add(readJson.segmentTags[i]);
+                    cpData.goColor.Add(new Color(readJson.AllSegColors[i][0], readJson.AllSegColors[i][1], readJson.AllSegColors[i][2]));
+                    //Debug.Log("cpData.goTags vertices" + cpData.goTags.Last());
+                    cpDataList.Add(cpData);
+                }
 
 
-                ////////cube.GetComponent<MeshRenderer>().material = materialControlPoint[i];
+                ////////cube.GetComponent<MeshRenderer>().material = materialGroup[i];
                 ////////cube.transform.position = cageVertices[readJson.CageAllSegVertIndex[i][j]];
                 ////////cube.transform.localScale = new Vector3(0.3f, 0.3f, 0.3f);
 
@@ -223,44 +218,24 @@ public class MeshCreateControlPoints : MonoBehaviour
             }
         }
 
+        // compute(mix) the color for each Control Point
         for (int i = 0; i < cpDataList.Count; i++)
         {
-            Debug.Log("cpDataList indexes " + cpDataList[i].goIndex);
-        }
-        
-
-        
-
-        while (cpDataList.Count > 0)
-        {
-            ControlPointsData m = cpDataList[0];
-            cpDataList.RemoveAt(0);
-            List<ControlPointsData> listB = new List<ControlPointsData>();
-            foreach (var VARIABLE in cpDataList)
+            //Debug.Log("cpDataList indexes " + cpDataList[i].goIndex);
+            //foreach (var VARIABLE in cpDataList[i].goTags)
+            //{
+            //    Debug.Log("cpDataList indexes " + VARIABLE);
+            //}
+            Color mycolor = Color.black;
+            for (int j = 0; j < cpDataList[i].goColor.Count; j++)
             {
-                if (VARIABLE.goIndex.Equals(m.goIndex))
-                {
-                    m.goTags.Add(VARIABLE.goTags[0]);
-                    m.goColor[0]=(VARIABLE.goColor[0]+m.goColor[0])/2;
-                }
-                else
-                {
-                    listB.Add(VARIABLE);
-                }
+                mycolor += cpDataList[i].goColor[j];
             }
-            cpDataList = listB;
-            ControlPointsInfo.Add(m);
+            mycolor /= cpDataList[i].goColor.Count;
+            cpDataList[i].goColor.Clear();
+            cpDataList[i].goColor.Add(mycolor);
+            //Debug.Log("cpDataList[i].goColor "+ cpDataList[i].goColor[0]);
         }
-
-        Debug.Log("result.count "+ ControlPointsInfo.Count);
-        Debug.Log("result.count "+ ControlPointsInfo[0].ToString());
-        ////////for (int i = 0; i < readJson.CageAllSegVertIndex.Count; i++)
-        ////////{
-        ////////    for (int j = 0; j < readJson.CageAllSegVertIndex[i].Count; j++)
-        ////////    {
-        ////////        cpDataList.Find(x => Vector3.Distance(x.go.transform.position, cageVertices[readJson.CageAllSegVertIndex[i][j]]) < 0.1);
-        ////////    }
-        ////////}
 
 
 
@@ -277,16 +252,19 @@ public class MeshCreateControlPoints : MonoBehaviour
         CreateMaterial();
 
         //load the materials for the segments on the cage
-        for (int i = 0; i < ControlPointsInfo.Count; i++)
+        for (int i = 0; i < listTagsGroupedByIndex.Count; i++)
         {
-            materialControlPoint.Add(Resources.Load("MaterialControlPoint" + i, typeof(Material)) as Material);
+            materialGroup.Add(Resources.Load("Default Material Group" + i, typeof(Material)) as Material);
+            outlinedMaterialGroup.Add(Resources.Load("Outlined Material Group" + i, typeof(Material)) as Material);
+            
+            ////Debug.Log(string.Format("ControlPointsInfo[i].goIndex: {0} ControlPointsInfo[i].goTags.count: {1}", ControlPointsInfo[i].goIndex, ControlPointsInfo[i].goTags.Count));
         }
 
 
-        for (var i = 0; i < ControlPointsInfo.Count; i++)
+        for (var i = 0; i < cpDataList.Count; i++)
         {
             ControlPoint = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            ControlPoint.transform.position = cageVertices[ControlPointsInfo[i].goIndex];
+            ControlPoint.transform.position = cageVertices[cpDataList[i].goIndex];
             ControlPoint.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
             ControlPoint.tag = selectableTag;
             ControlPoint.name = "Control Point " + goCounter;
@@ -299,7 +277,13 @@ public class MeshCreateControlPoints : MonoBehaviour
             //ControlPoint.AddComponent<Rigidbody>().useGravity = false;
             ControlPoint.transform.parent = _initializedControlPoints;
             var controlPointRenderer = ControlPoint.GetComponent<MeshRenderer>();
-            controlPointRenderer.material = materialControlPoint[i];
+            //Find the correct material for this CP
+            for (int j = 0; j < materialGroup.Count; j++)
+            {
+                if (cpDataList[i].goColor[0]/255 == materialGroup[j].color)
+                { controlPointRenderer.material = materialGroup[j];}
+            }
+            
             _newPosCP.Add(ControlPoint.transform);
             PositionControlPoints.Add(ControlPoint.transform);
 
@@ -311,25 +295,36 @@ public class MeshCreateControlPoints : MonoBehaviour
 
     void CreateMaterial()
     {
-        // Create a simple material asset
+        // regroup indexes of the same color
 
-        for (int i = 0; i < ControlPointsInfo.Count; i++)
+        var tagsGroupedByIndex = cpDataList.GroupBy(x => x.goColor[0]);
+        Debug.Log("This is the amount of different tags " + tagsGroupedByIndex.Count());
+        foreach (var group in tagsGroupedByIndex)
         {
-            Debug.Log("inside ControlPointsInfo.Count loop");
-            var newMaterial = new Material(Shader.Find("Diffuse"));
-            AssetDatabase.CreateAsset(newMaterial, "Assets/Resources/" + "MaterialControlPoint" + i + ".mat");
-            Color sum = Color.black;
-            for (int j = 0; j < ControlPointsInfo[i].goColor.Count; j++)
-            {
-                Debug.Log("inside color mixer");
-                sum += ControlPointsInfo[i].goColor[j]/255;
-            }
-            Debug.Log("outside ControlPointsInfo.Count loop");
-
-            newMaterial.color = sum / ControlPointsInfo[i].goColor.Count;
+            Debug.Log("the vetex indexes of the color " + group.Key + ":");
+            foreach (var x in group)
+                Debug.Log("* " + x.goIndex);
         }
 
+        listTagsGroupedByIndex = tagsGroupedByIndex.ToList();
 
+        // Create a simple material asset
+        for (int i = 0; i < listTagsGroupedByIndex.Count(); i++)
+        {
+
+            Debug.Log("inside ControlPointsInfo.Count loop 0");
+            var defautMaterial = new Material(Shader.Find("Diffuse"));
+            Debug.Log("inside ControlPointsInfo.Count loop 1");
+            var outlinedMaterial = new Material(Shader.Find("Outlined/Silhouetted Diffuse"));
+            Debug.Log("inside ControlPointsInfo.Count loop 2");
+            AssetDatabase.CreateAsset(defautMaterial, "Assets/Resources/" + "Default Material Group" + i + ".mat");
+            AssetDatabase.CreateAsset(outlinedMaterial, "Assets/Resources/" + "Outlined Material Group" + i + ".mat");
+            defautMaterial.color = listTagsGroupedByIndex[i].Key/255;
+            //outlinedMaterial.color = listTagsGroupedByIndex[i].Key / 255;
+            outlinedMaterial.SetColor("_Color", listTagsGroupedByIndex[i].Key / 255);
+            outlinedMaterial.SetFloat("_Outline", 0.015f);
+            outlinedMaterial.SetColor("_OutlineColor", Color.red);
+        }
     }
 
 
