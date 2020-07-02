@@ -56,12 +56,19 @@ public class TreatSelectionManager : MonoBehaviour
 
     private Transform _outline;
 
+    private List<Material> outlineMaterialGroup=new List<Material>();
     //public Text objectselected;
     //public Text objectstored;
     //public Text objectdeleted;
     //public Text objectremoved;
     void Start()
     {
+        //load material for the outline material
+        for (int i = 0; i < meshCreateControlPoints.listTagsGroupedByIndex.Count; i++)
+        {
+            outlineMaterialGroup.Add(Resources.Load("Outlined Material Group" + i, typeof(Material)) as Material);
+        }
+
         InitializeSelecObj();
         //InitializeUnselecObj();
         select = false;
@@ -75,7 +82,15 @@ public class TreatSelectionManager : MonoBehaviour
         if (_outline != null && !selectionList.Contains(hit.transform))
         {
             var selectionRenderer = _outline.GetComponent<Renderer>();
-            selectionRenderer.material = defaultMaterial;
+
+            for (int i = 0; i < meshCreateControlPoints.cpDataList.Count; i++)
+            {
+                if (_outline == meshCreateControlPoints.cpDataList[i].go.transform)
+                {
+                    hit.transform.gameObject.GetComponent<MeshRenderer>().material = meshCreateControlPoints.cpDataList[i].defautMaterial;
+                }
+            }
+            //selectionRenderer.material = defaultMaterial;
             _outline = null;
         }
 
@@ -130,8 +145,15 @@ public class TreatSelectionManager : MonoBehaviour
                     //outline the gameobject
                     if (!selectionList.Contains(hit.transform))
                     {
-                        hit.transform.gameObject.GetComponent<MeshRenderer>().material = OutlineMaterial1;
+                        //hit.transform.gameObject.GetComponent<MeshRenderer>().material = outlineMaterialGroup[0]/*OutlineMaterial1*/;
+                        for (int i = 0; i < meshCreateControlPoints.cpDataList.Count; i++)
+                        {
+                            if (hit.transform.gameObject == meshCreateControlPoints.cpDataList[i].go)
+                            {
+                                hit.transform.gameObject.GetComponent<MeshRenderer>().material = meshCreateControlPoints.cpDataList[i].outlineMaterial;
 
+                            }
+                        }
                     }
 
                     if (selectionList.Contains(hit.transform))
