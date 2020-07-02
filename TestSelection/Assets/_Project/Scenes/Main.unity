@@ -4680,7 +4680,8 @@ MonoBehaviour:
   sliderValue: 0
   spawnSelectableTag: InitializeParent
   trisModel: 
-  materialControlPoint: []
+  materialGroup: []
+  outlineMaterialGroup: []
 --- !u!114 &1550730628
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5112,7 +5113,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: f9d7185e436b93c4aaa8e7b7ec2463c3, type: 2}
+  - {fileID: 2100000, guid: 94f82e82d51150a4db725fc5089c7e2d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
