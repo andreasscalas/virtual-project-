@@ -6,6 +6,7 @@ public class CustomTag : MonoBehaviour
     [SerializeField]
     private List<string> tags = new List<string>();
 
+
     public bool HasTag(string tag)
     {
         return tags.Contains(tag);
@@ -29,5 +30,10 @@ public class CustomTag : MonoBehaviour
     public int Count
     {
         get { return tags.Count; }
+    }
+
+    public void Add(string tagName)
+    {
+        tags.Add(tagName);
     }
 }
