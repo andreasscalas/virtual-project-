@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+﻿using System;
+using UnityEditor;
 using UnityEngine;
 using UnityEditorInternal;
 
@@ -9,8 +10,17 @@ public class CustomTagEditor : Editor
     SerializedProperty tagsProp;
     private ReorderableList list;
 
+
+    private ReadJson readJson;
+
+    private void Awake()
+    {
+        readJson = GameObject.Find("Selection Manager").GetComponent<ReadJson>();
+    }
+
     private void OnEnable()
     {
+        Debug.Log("i'm editor");
         unityTags = InternalEditorUtility.tags;
         tagsProp = serializedObject.FindProperty("tags");
         list = new ReorderableList(serializedObject, tagsProp, true, true, true, true);
@@ -46,6 +56,19 @@ public class CustomTagEditor : Editor
                 menu.AddItem(label, false, OnAddClickHandler, unityTags[i]);
         }
 
+        //extract the tags from ReadJson
+        for (int i = 0; i < readJson.segmentTags.Count; i++)
+        {
+            string strValue = readJson.segmentTags[i];
+            var label2 = new GUIContent(strValue);
+
+            // Don't allow duplicate tags to be added.
+            if (PropertyContainsString(tagsProp, strValue))
+                menu.AddDisabledItem(label2);
+            else
+                menu.AddItem(label2, false, OnAddClickHandler, strValue);
+        }
+        
         menu.ShowAsContext();
     }
 
