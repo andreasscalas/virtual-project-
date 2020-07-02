@@ -15,7 +15,7 @@ public class TestMergeList : MonoBehaviour
         GameObject obj4 = new GameObject() ;
 
         List<ControlPointsData> cpDataList = new List<ControlPointsData>();
-        cpDataList.Add(new ControlPointsData{/*go = obj0,*/ goTags ={"little finger"}, goColor={Color.red}, goIndex = 0} );
+        cpDataList.Add(new ControlPointsData{/*go = obj0,*/ goTags ={"little finger", "palm"}, goColor={Color.red}, goIndex = 0} );
         cpDataList.Add(new ControlPointsData{/*go = obj1,*/ goTags ={"little finger"}, goColor={Color.red}, goIndex = 1} );
         cpDataList.Add(new ControlPointsData{/*go = obj2,*/ goTags ={"pinky"}, goColor={Color.red}, goIndex = 0} );
         cpDataList.Add(new ControlPointsData{/*go = obj3,*/ goTags ={"ring finger"}, goColor={Color.red}, goIndex = 0} );
