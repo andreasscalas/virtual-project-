@@ -22,7 +22,7 @@ public class MeshCreateControlPoints : MonoBehaviour
     public bool collision;
 
     private float collisionSliVal = new float();
-    private GameObject ControlPoint /*= new GameObject()*/;
+    private List<GameObject> controlPointList = new List<GameObject>();
     [SerializeField] private Material defaultMaterial;
     private int goCounter = 1;
 
@@ -62,11 +62,10 @@ public class MeshCreateControlPoints : MonoBehaviour
     private int[] trisCage;
     public int[] trisModel;
     public List<Material> materialGroup = new List<Material>();
-    public List<Material> outlinedMaterialGroup = new List<Material>();
+    public List<Material> outlineMaterialGroup = new List<Material>();
     public List<ControlPointsData> cpDataList=new List<ControlPointsData>();
-    List<ControlPointsData> ControlPointsInfo = new List<ControlPointsData>();
-    List<IGrouping<Color,ControlPointsData>> listTagsGroupedByIndex = new List<IGrouping<Color, ControlPointsData>>();
 
+    public List<IGrouping<Color,ControlPointsData>> listTagsGroupedByIndex = new List<IGrouping<Color, ControlPointsData>>();
 
     private void Start()
     {
@@ -76,37 +75,13 @@ public class MeshCreateControlPoints : MonoBehaviour
         InitializedControlPoints.name = "Initialized Control Points";
         InitializedControlPoints.tag = "InitializeParent";
         _initializedControlPoints = InitializedControlPoints.transform;
-        //InitializedControlPoints.AddComponent<InteractionBehaviour>();
-        //InitializedControlPoints.GetComponent<Rigidbody>().useGravity = false;
+
         CreateControlPoints();
 
         ComputeBarCenter(modelVertices);
-        //VectorBarCagevertices();
 
-        //ComputeBarCenter(modelVertices);
-        //GameObject Bar = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-        //Bar.transform.position = barCenter;
         scaleCenter = barCenter;
-        //Bar.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
-        //MeshRenderer meshBar = Bar.GetComponent<MeshRenderer>();
-        //meshBar.material = barCenterCage;
 
-        //for (int i = 0; i < modelVertices.Length; i++)
-        //{
-        //    Debug.Log(i + " " + modelVertices[i].ToString("F6"));
-        //}
-
-
-        //for (int i = 0; i < modelVertices.Length; i++)
-        //{
-        //    //Debug.Log(trisModel[i]);
-
-        //    File.AppendAllText("C:\\Users\\DELL\\Documents\\new ModelDeformationVR\\TestSelection\\Assets\\_Project\\prefabs\\hand git\\hand_vertices.txt", " "+ modelVertices[i].ToString("F6")+" " + "\n", Encoding.Default);
-        //}
-        //Debug.Log("triangle[0] " + trisModel[0]+" "+ trisModel[1]+" "+ trisModel[2]);
-        //Debug.Log("Vertex of triangle[0].1 " + modelVertices[trisModel[0]].ToString("F6"));
-        //Debug.Log("Vertex of triangle[0].2 " + modelVertices[trisModel[1]].ToString("F6"));
-        //Debug.Log("Vertex of triangle[0].3 " + modelVertices[trisModel[2]].ToString("F6"));
     }
 
 
@@ -130,7 +105,7 @@ public class MeshCreateControlPoints : MonoBehaviour
         ////generate the control points
         for (var i = 0; i < meshCage.vertices.Length; i++)
         {
-            ControlPoint = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            GameObject ControlPoint = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             var K = initialControlPointPosition[i];
             ControlPoint.transform.position = new Vector3(K[0], K[1], K[2]);
             ControlPoint.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
@@ -146,47 +121,13 @@ public class MeshCreateControlPoints : MonoBehaviour
             ControlPoint.transform.parent = _initializedControlPoints;
             var controlPointRenderer = ControlPoint.GetComponent<MeshRenderer>();
             controlPointRenderer.material = defaultMaterial;
-            _newPosCP.Add(ControlPoint.transform);
-            PositionControlPoints.Add(ControlPoint.transform);
+            //_newPosCP.Add(ControlPoint.transform);
+            //PositionControlPoints.Add(ControlPoint.transform);
 
             //Destroy(ControlPoint.gameObject.GetComponent<Collider>());
         }
 
-        //Generate CPs of different colors for different segments
-
-        //for (int i = 0; i < readJson.CageAllSegVertIndex.Count; i++)
-        //{
-        //    for (int j = 0; j < readJson.CageAllSegVertIndex[i].Count; j++)
-        //    {
-        //        var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        //        //cube.GetComponent<MeshRenderer>().material = materialGroup[i];
-        //        cube.transform.position = cageVertices[readJson.CageAllSegVertIndex[i][j]];
-        //        cube.transform.localScale = new Vector3(0.3f, 0.3f, 0.3f);
-        //        cube.name = "Cube" + j;
-        //        //ControlPointsData cpData=new ControlPointsData();
-        //        ControlPointsData cpData =
-        //        cpDataList.Find(x => Vector3.Distance(x.go.transform.position, cube.transform.position) < 0.1);
-        //        if (cpData != null)
-        //        {
-        //            cpData.goTags.Add(readJson.segmentTags[i]);
-        //            cpData.goColor.Add(new Color(readJson.AllSegColors[i][0], readJson.AllSegColors[i][1], readJson.AllSegColors[i][2]));
-        //        }
-        //        else
-        //        {
-        //            cpData = new ControlPointsData();
-        //            cpData.go = cube;
-
-        //            cpData.goTags.Add(readJson.segmentTags[i]);
-        //            cpData.goColor.Add(new Color(readJson.AllSegColors[i][0], readJson.AllSegColors[i][1], readJson.AllSegColors[i][2]));
-        //            Debug.Log("cpData.goTags 0.1" + cpData.goTags.Last());
-        //            cpDataList.Add(cpData);
-        //        }
-
-        //    }
-        //}
-
-
-
+        //Merge the same CPs that have different tags(belong to different segments) 
         for (int i = 0; i < readJson.CageAllSegVertIndex.Count; i++)
         {
             for (int j = 0; j < readJson.CageAllSegVertIndex[i].Count; j++)
@@ -209,23 +150,12 @@ public class MeshCreateControlPoints : MonoBehaviour
                     cpDataList.Add(cpData);
                 }
 
-
-                ////////cube.GetComponent<MeshRenderer>().material = materialGroup[i];
-                ////////cube.transform.position = cageVertices[readJson.CageAllSegVertIndex[i][j]];
-                ////////cube.transform.localScale = new Vector3(0.3f, 0.3f, 0.3f);
-
-
             }
         }
 
         // compute(mix) the color for each Control Point
         for (int i = 0; i < cpDataList.Count; i++)
         {
-            //Debug.Log("cpDataList indexes " + cpDataList[i].goIndex);
-            //foreach (var VARIABLE in cpDataList[i].goTags)
-            //{
-            //    Debug.Log("cpDataList indexes " + VARIABLE);
-            //}
             Color mycolor = Color.black;
             for (int j = 0; j < cpDataList[i].goColor.Count; j++)
             {
@@ -236,8 +166,6 @@ public class MeshCreateControlPoints : MonoBehaviour
             cpDataList[i].goColor.Add(mycolor);
             //Debug.Log("cpDataList[i].goColor "+ cpDataList[i].goColor[0]);
         }
-
-
 
         //foreach (var VARIABLE in cpDataList.FindAll(x => x.goTags.Count() > 1))
         //{
@@ -251,19 +179,19 @@ public class MeshCreateControlPoints : MonoBehaviour
         //}
         CreateMaterial();
 
-        //load the materials for the segments on the cage
+        //load the defaut materials for the segments on the cage
         for (int i = 0; i < listTagsGroupedByIndex.Count; i++)
         {
             materialGroup.Add(Resources.Load("Default Material Group" + i, typeof(Material)) as Material);
-            outlinedMaterialGroup.Add(Resources.Load("Outlined Material Group" + i, typeof(Material)) as Material);
-            
+            outlineMaterialGroup.Add(Resources.Load("Outlined Material Group" + i, typeof(Material)) as Material);
             ////Debug.Log(string.Format("ControlPointsInfo[i].goIndex: {0} ControlPointsInfo[i].goTags.count: {1}", ControlPointsInfo[i].goIndex, ControlPointsInfo[i].goTags.Count));
         }
 
-
+        //Create CPs
         for (var i = 0; i < cpDataList.Count; i++)
         {
-            ControlPoint = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            GameObject ControlPoint = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            cpDataList[i].go = ControlPoint;
             ControlPoint.transform.position = cageVertices[cpDataList[i].goIndex];
             ControlPoint.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
             ControlPoint.tag = selectableTag;
@@ -271,8 +199,14 @@ public class MeshCreateControlPoints : MonoBehaviour
             interactCP.Add(ControlPoint.AddComponent<InteractionBehaviour>());
             ControlPoint.GetComponent<Rigidbody>().useGravity = false;
             ControlPoint.GetComponent<Rigidbody>().isKinematic = true;
-            ControlPoint.AddComponent<ChangeColor>();
-
+            //Add tag(the segment that they belong to) to each CP 
+            ControlPoint.AddComponent<CustomTag>();
+            var tagSystem = ControlPoint.GetComponent<CustomTag>();
+            for (int j = 0; j < cpDataList[i].goTags.Count; j++)
+            {
+                tagSystem.Add(cpDataList[i].goTags[j]);
+            }
+            
             goCounter++;
             //ControlPoint.AddComponent<Rigidbody>().useGravity = false;
             ControlPoint.transform.parent = _initializedControlPoints;
@@ -280,14 +214,35 @@ public class MeshCreateControlPoints : MonoBehaviour
             //Find the correct material for this CP
             for (int j = 0; j < materialGroup.Count; j++)
             {
-                if (cpDataList[i].goColor[0]/255 == materialGroup[j].color)
-                { controlPointRenderer.material = materialGroup[j];}
+                if (cpDataList[i].goColor[0] / 255 == materialGroup[j].color)
+                {
+                    controlPointRenderer.material = materialGroup[j];
+                    //Debug.Log("this is a string inside add material to class 0");
+                    cpDataList[i].defautMaterial = materialGroup[j];
+                    //Debug.Log("this is a string inside add material to class 1");
+                    cpDataList[i].outlineMaterial = outlineMaterialGroup[j];
+                    //Debug.Log("this is a string inside add material to class 2");
+                }
             }
-            
-            _newPosCP.Add(ControlPoint.transform);
-            PositionControlPoints.Add(ControlPoint.transform);
-
+            //Debug.Log("this is a string outside add material to class");
+            controlPointList.Add(ControlPoint);
+            //_newPosCP.Add(ControlPoint.transform);
+            //PositionControlPoints.Add(ControlPoint.transform);
             //Destroy(ControlPoint.gameObject.GetComponent<Collider>());
+        }
+
+        for (int i = 0; i < cageVertices.Length; i++)
+        {
+            for (int j = 0; j < controlPointList.Count; j++)
+            {
+                if (/*Vector3.Distance(cageVertexPos[j], cageVertices[i]) < 0.01f*/ controlPointList[j].transform.position == cageVertices[i])
+                {
+                    Debug.Log("this is a string inside storage transforms");
+                    _newPosCP.Add(controlPointList[j].transform);
+                    PositionControlPoints.Add(controlPointList[j].transform);
+                    //Debug.Log("ControlPoint.transform.position" + ControlPoint.transform.position);
+                }
+            }
         }
 
     }
@@ -321,9 +276,10 @@ public class MeshCreateControlPoints : MonoBehaviour
             AssetDatabase.CreateAsset(outlinedMaterial, "Assets/Resources/" + "Outlined Material Group" + i + ".mat");
             defautMaterial.color = listTagsGroupedByIndex[i].Key/255;
             //outlinedMaterial.color = listTagsGroupedByIndex[i].Key / 255;
-            outlinedMaterial.SetColor("_Color", listTagsGroupedByIndex[i].Key / 255);
-            outlinedMaterial.SetFloat("_Outline", 0.015f);
-            outlinedMaterial.SetColor("_OutlineColor", Color.red);
+            var colorSource = listTagsGroupedByIndex[i].Key / 255;
+            outlinedMaterial.SetColor("_Color", new Color(colorSource.r, colorSource.g, colorSource.b, 0.8f ));
+            //outlinedMaterial.SetFloat("_Outline", 0.015f);
+            outlinedMaterial.SetColor("_OutlineColor", Color.yellow);
         }
     }
 
