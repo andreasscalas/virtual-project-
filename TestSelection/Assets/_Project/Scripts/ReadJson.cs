@@ -64,8 +64,10 @@ using UnityEngine;
     public Vector3[] cageVertices;
     public List<string> segmentTags;
 
-    // Start is called before the first frame update
-    private void Start()
+
+
+
+    void Awake()
     {
         segmentTags = new List<string>();
         meshCage = objCage.GetComponent<MeshFilter>().mesh;
@@ -80,6 +82,46 @@ using UnityEngine;
         jsonString = File.ReadAllText(Application.streamingAssetsPath + "/" + "hand_segmentation_correct.txt");
 
         data = JsonMapper.ToObject(jsonString);
+
+        for (var i = 0; i < data["annotations"].Count; i++)
+        {
+            var interSegTrianLists = new List<int>();
+            var interSegColors = new List<int>();
+            interSegTrianLists.Clear();
+            interSegColors.Clear();
+            GetDataToLst(data["annotations"][i]["triangles"], interSegTrianLists);
+            GetDataToLst(data["annotations"][i]["color"], interSegColors);
+            segmentTags.Add(Convert.ToString(data["annotations"][i]["tag"]));
+
+
+            //for (int j = 0; j < interSegTrianLists.Count; j++)
+            //{
+            //    Debug.Log(interSegTrianLists[j]);
+            //}
+            AllSegtrianIndexes.Add(interSegTrianLists);
+            AllSegColors.Add(interSegColors);
+            AllSegtriansIndexAmounts.Add(interSegTrianLists.Count);
+        }
+
+    }
+
+
+    // Start is called before the first frame update
+    private void Start()
+    {
+        //////////////////segmentTags = new List<string>();
+        //////////////////meshCage = objCage.GetComponent<MeshFilter>().mesh;
+        //////////////////meshModel = objModel.GetComponent<MeshFilter>().mesh;
+        //////////////////cageVertices = meshCage.vertices;
+        //////////////////modelVertices = meshModel.vertices;
+        //////////////////trisCage = meshCage.triangles;
+        //////////////////trisModel = meshModel.triangles;
+
+        //////////////////meshCreateControlPoints = GameObject.Find("Selection Manager").GetComponent<MeshCreateControlPoints>();
+        //////////////////readFileComputeNewcage = GameObject.Find("Selection Manager").GetComponent<ReadFileComputeNewcage>();
+        //////////////////jsonString = File.ReadAllText(Application.streamingAssetsPath + "/" + "hand_segmentation_correct.txt");
+
+        //////////////////data = JsonMapper.ToObject(jsonString);
 
         //Debug.Log(data["annotations"][0]["triangles"]);
 
@@ -99,25 +141,25 @@ using UnityEngine;
         //Debug.Log(wrist.Count);
         //Debug.Log(palm.Count);
 
-        for (var i = 0; i < data["annotations"].Count; i++)
-        {
-            var interSegTrianLists = new List<int>();
-            var interSegColors = new List<int>();
-            interSegTrianLists.Clear();
-            interSegColors.Clear();
-            GetDataToLst(data["annotations"][i]["triangles"], interSegTrianLists);
-            GetDataToLst(data["annotations"][i]["color"], interSegColors);
-            segmentTags.Add(Convert.ToString(data["annotations"][i]["tag"])); 
+        ////////////////////////////for (var i = 0; i < data["annotations"].Count; i++)
+        ////////////////////////////{
+        ////////////////////////////    var interSegTrianLists = new List<int>();
+        ////////////////////////////    var interSegColors = new List<int>();
+        ////////////////////////////    interSegTrianLists.Clear();
+        ////////////////////////////    interSegColors.Clear();
+        ////////////////////////////    GetDataToLst(data["annotations"][i]["triangles"], interSegTrianLists);
+        ////////////////////////////    GetDataToLst(data["annotations"][i]["color"], interSegColors);
+        ////////////////////////////    segmentTags.Add(Convert.ToString(data["annotations"][i]["tag"]));
 
 
-            //for (int j = 0; j < interSegTrianLists.Count; j++)
-            //{
-            //    Debug.Log(interSegTrianLists[j]);
-            //}
-            AllSegtrianIndexes.Add(interSegTrianLists);
-            AllSegColors.Add(interSegColors);
-            AllSegtriansIndexAmounts.Add(interSegTrianLists.Count);
-        }
+        ////////////////////////////    for (int j = 0; j < interSegTrianLists.Count; j++)
+        ////////////////////////////    {
+        ////////////////////////////        Debug.Log(interSegTrianLists[j]);
+        ////////////////////////////    }
+        ////////////////////////////    AllSegtrianIndexes.Add(interSegTrianLists);
+        ////////////////////////////    AllSegColors.Add(interSegColors);
+        ////////////////////////////    AllSegtriansIndexAmounts.Add(interSegTrianLists.Count);
+        ////////////////////////////}
 
         //for (int i = 0; i < AllSegtrianIndexes.Count; i++)
         //{
