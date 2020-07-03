@@ -79,7 +79,7 @@ using UnityEngine;
 
         meshCreateControlPoints = GameObject.Find("Selection Manager").GetComponent<MeshCreateControlPoints>();
         readFileComputeNewcage = GameObject.Find("Selection Manager").GetComponent<ReadFileComputeNewcage>();
-        jsonString = File.ReadAllText(Application.streamingAssetsPath + "/" + "hand_segmentation_correct.txt");
+        jsonString = File.ReadAllText(Application.streamingAssetsPath + "/" + "hand_segmentation_correct(no hierarchy).txt");
 
         data = JsonMapper.ToObject(jsonString);
 
@@ -109,6 +109,16 @@ using UnityEngine;
     // Start is called before the first frame update
     private void Start()
     {
+        //for (int i = 0; i < AllSegtrianIndexes.Count; i++)
+        //{
+        //    Debug.Log("segement separation ");
+        //    for (int j = 0; j < AllSegtrianIndexes[i].Count; j++)
+        //    {
+        //        Debug.Log("AllSegtrianIndexes[i] "+i+" "+ AllSegtrianIndexes[i][j]);
+        //    }
+        //}
+
+
         //////////////////segmentTags = new List<string>();
         //////////////////meshCage = objCage.GetComponent<MeshFilter>().mesh;
         //////////////////meshModel = objModel.GetComponent<MeshFilter>().mesh;
@@ -242,14 +252,21 @@ using UnityEngine;
 
         //for (int i = 0; i < CageAllSegVertIndex[2].Count; i++)
         //{
-        //    Debug.Log("inside loop ");
         //    var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
         //    var renderer = cube.GetComponent<MeshRenderer>().material = segmentmMaterial;
         //    cube.transform.position = cageVertices[CageAllSegVertIndex[2][i]];
         //    cube.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
-        //    Debug.Log("the first segment cage vertices positions in readjson " + CageAllSegVertIndex[1][i] /*+ " " + CageAllSegVertIndex[0][i] + " " + CageAllSegVertIndex[i][2]*/);
+        //    //Debug.Log("the first segment cage vertices positions in readjson " + CageAllSegVertIndex[1][i] /*+ " " + CageAllSegVertIndex[0][i] + " " + CageAllSegVertIndex[i][2]*/);
         //}
-
+        //for (int i = 0; i < AllSegVertsIndexes[0].Count; i++)
+        //{
+        //    var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        //    var renderer = cube.GetComponent<MeshRenderer>().material = segmentmMaterial;
+        //    cube.transform.position = modelVertices[AllSegVertsIndexes[0][i]];
+        //    cube.transform.localScale = new Vector3(0.01f, 0.01f, 0.01f);
+        //    //Debug.Log("the first segment cage vertices positions in readjson " + CageAllSegVertIndex[1][i] /*+ " " + CageAllSegVertIndex[0][i] + " " + CageAllSegVertIndex[i][2]*/);
+        //}
+                
 
         for (var i = 0; i < littleFinger.Count; i++)
         {
