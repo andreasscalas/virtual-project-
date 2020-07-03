@@ -66,9 +66,14 @@ public class MeshCreateControlPoints : MonoBehaviour
     public List<ControlPointsData> cpDataList=new List<ControlPointsData>();
 
     public List<IGrouping<Color,ControlPointsData>> listTagsGroupedByIndex = new List<IGrouping<Color, ControlPointsData>>();
+    private bool UpdateModification;
+    private bool InitializeMesh;
+
 
     private void Start()
     {
+        UpdateModification = true;
+        InitializeMesh = false;
         scale = 1;
         collision = false;
         InitializedControlPoints = new GameObject();
@@ -237,7 +242,6 @@ public class MeshCreateControlPoints : MonoBehaviour
             {
                 if (/*Vector3.Distance(cageVertexPos[j], cageVertices[i]) < 0.01f*/ controlPointList[j].transform.position == cageVertices[i])
                 {
-                    Debug.Log("this is a string inside storage transforms");
                     _newPosCP.Add(controlPointList[j].transform);
                     PositionControlPoints.Add(controlPointList[j].transform);
                     //Debug.Log("ControlPoint.transform.position" + ControlPoint.transform.position);
@@ -253,25 +257,21 @@ public class MeshCreateControlPoints : MonoBehaviour
         // regroup indexes of the same color
 
         var tagsGroupedByIndex = cpDataList.GroupBy(x => x.goColor[0]);
-        Debug.Log("This is the amount of different tags " + tagsGroupedByIndex.Count());
-        foreach (var group in tagsGroupedByIndex)
-        {
-            Debug.Log("the vetex indexes of the color " + group.Key + ":");
-            foreach (var x in group)
-                Debug.Log("* " + x.goIndex);
-        }
+        //Debug.Log("This is the amount of different tags " + tagsGroupedByIndex.Count());
+        //foreach (var group in tagsGroupedByIndex)
+        //{
+        //    Debug.Log("the vetex indexes of the color " + group.Key + ":");
+        //    foreach (var x in group)
+        //        Debug.Log("* " + x.goIndex);
+        //}
 
         listTagsGroupedByIndex = tagsGroupedByIndex.ToList();
 
         // Create a simple material asset
         for (int i = 0; i < listTagsGroupedByIndex.Count(); i++)
         {
-
-            Debug.Log("inside ControlPointsInfo.Count loop 0");
             var defautMaterial = new Material(Shader.Find("Diffuse"));
-            Debug.Log("inside ControlPointsInfo.Count loop 1");
             var outlinedMaterial = new Material(Shader.Find("Outlined/Silhouetted Diffuse"));
-            Debug.Log("inside ControlPointsInfo.Count loop 2");
             AssetDatabase.CreateAsset(defautMaterial, "Assets/Resources/" + "Default Material Group" + i + ".mat");
             AssetDatabase.CreateAsset(outlinedMaterial, "Assets/Resources/" + "Outlined Material Group" + i + ".mat");
             defautMaterial.color = listTagsGroupedByIndex[i].Key/255;
@@ -296,12 +296,32 @@ public class MeshCreateControlPoints : MonoBehaviour
     private void Update()
     {
         sliderValue = slider.value;
-        UpdateCage(cageVertices, _newPosCP, meshCage);
+
+        UpdateModification = false;
+
+        for (int i = 0; i < _newPosCP.Count; i++)
+        {
+            if (_newPosCP[i].transform.position != cageVertices[i])
+            {
+                UpdateModification = true;
+                break;
+            }
+        }
+
+        if(!InitializeMesh || UpdateModification)
+        { UpdateCage(cageVertices, _newPosCP, meshCage); }
+        
 
         if (scaleGO) GetNewPos();
         scaleGO = false;
 
-        UpdateModel();
+        if (!InitializeMesh || UpdateModification)
+        {
+            UpdateModel();
+            Debug.Log("this is a update");
+        }
+
+        InitializeMesh = true;
     }
 
     private void UpdateModel()
@@ -437,18 +457,32 @@ public class MeshCreateControlPoints : MonoBehaviour
             //colors[i] = Color.red;
         }
 
-        var colorCorrector = 0;
-        for (var i = 0; i < readJson.AllSegVertsIndexes.Count; i++)
-            //Debug.Log("readJson.AllSegVertsIndexes.Count "+ readJson.AllSegVertsIndexes.Count);
-        for (var j = 0; j < readJson.AllSegVertsIndexes[i].Count; j++)
+        //full fill color array
+        for (var i = 0; i < readJson.AllSegVertsIndexes.Count ; i++)
         {
-            //Debug.Log("this is a string inside j 1");
             var colorFromJson = readJson.AllSegColors[i];
-            colors[readJson.AllSegVertsIndexes[i][j]] =
+            for (var j = 0; j < readJson.AllSegVertsIndexes[i].Count; j++)
+            {
+                //Debug.Log("this is a string inside j 1");
+                colors[readJson.AllSegVertsIndexes[i][j]] =
                 new Color(colorFromJson[0], colorFromJson[1], colorFromJson[2]) / 255;
-            //Debug.Log("this is a string inside j 2");
-            //Debug.Log(j + colorCorrector);
+            }
         }
+
+        //modify the color array that should have mixed color
+        for (int i = 0; i < readJson.AllSegVertsIndexes[4].Count; i++)
+        {
+            var colorFromJson4 = readJson.AllSegColors[4];
+            var colorFromJson6 = readJson.AllSegColors[6];
+            for (int j = 0; j < readJson.AllSegVertsIndexes[6].Count; j++)
+            {
+                if (readJson.AllSegVertsIndexes[4][i] == readJson.AllSegVertsIndexes[6][j])
+                    colors[readJson.AllSegVertsIndexes[4][i]] =new Color(colorFromJson4[0] + colorFromJson6[0], colorFromJson4[1] + colorFromJson6[1], colorFromJson4[2] + colorFromJson6[2]) / 510;
+            }
+        }
+
+
+
         //Debug.Log("the colors "+ readJson.AllSegColors[i][0]+" "+ readJson.AllSegColors[i][1]+" "+ readJson.AllSegColors[i][2]);
         //colorCorrector += readJson.AllSegVertsIndexAmounts[i];
 
@@ -456,6 +490,12 @@ public class MeshCreateControlPoints : MonoBehaviour
         mesh.RecalculateBounds();
         mesh.triangles = trisModel;
         mesh.colors = colors;
+
+        //Debug.Log("color 2859 " + colors[trisModel[2859 * 3 + 0]]);
+        //Debug.Log("color 2859 " + colors[trisModel[2859 * 3 + 0]]);
+        //Debug.Log("color 2859 " + colors[trisModel[2859 * 3 + 0]]);
+
+
     }
 
     /// <summary>
