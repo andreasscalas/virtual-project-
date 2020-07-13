@@ -47,6 +47,7 @@ public class MeshCreateControlPoints : MonoBehaviour
 
     public ReadFileComputeNewcage readFileComputeNewcage;
     public ReadJson readJson;
+    public Functionality functionality;
 
     [HideInInspector] public float scale;
 
@@ -73,6 +74,7 @@ public class MeshCreateControlPoints : MonoBehaviour
 
     private void Start()
     {
+        GameObject.Find("Selection Manager").GetComponent<Functionality>();
         UpdateModification = true;
         InitializeMesh = false;
         scale = 1;
@@ -448,7 +450,7 @@ public class MeshCreateControlPoints : MonoBehaviour
     {
         //Debug.Log("vertices.Length\t" + vertices.Length);
         //Debug.Log("matrixMprime.count/3\t" + matrixMprime.Length / 3);
-        var colors = new Color[vertices.Length];
+        
         for (var i = 0; i < vertices.Length; i++)
         {
             vertices[i].x = (float) matrixMprime[i, 0];
@@ -458,7 +460,9 @@ public class MeshCreateControlPoints : MonoBehaviour
         }
 
         //full fill color array
-        for (var i = 0; i < readJson.AllSegVertsIndexes.Count ; i++)
+        var colors = new Color[vertices.Length];
+
+        for (var i = 0; i < readJson.AllSegVertsIndexes.Count; i++)
         {
             var colorFromJson = readJson.AllSegColors[i];
             for (var j = 0; j < readJson.AllSegVertsIndexes[i].Count; j++)
@@ -470,26 +474,82 @@ public class MeshCreateControlPoints : MonoBehaviour
         }
 
         //modify the color array that should have mixed color
-        for (int i = 0; i < readJson.AllSegVertsIndexes[4].Count; i++)
+        //Debug.Log("readJson.AllSegVertsIndexes[4].Count: " + readJson.AllSegVertsIndexes[4].Count);
+        //Debug.Log("readJson.AllSegVertsIndexes[4].Count " + readJson.AllSegVertsIndexes[6].Count);
+        //for (int i = 0; i < readJson.AllSegVertsIndexes[4].Count; i++)
+        //{
+        //    var colorFromJson4 = readJson.AllSegColors[4];
+        //    var colorFromJson6 = readJson.AllSegColors[6];
+        //    for (int j = 0; j < readJson.AllSegVertsIndexes[4].Count; j++)
+        //    {
+        //        if (readJson.AllSegVertsIndexes[4][i] == readJson.AllSegVertsIndexes[6][j])
+        //            colors[readJson.AllSegVertsIndexes[4][i]] = new Color(colorFromJson4[0] + colorFromJson6[0], colorFromJson4[1] + colorFromJson6[1], colorFromJson4[2] + colorFromJson6[2]) / 510;
+        //    }
+        //}
+
+        //Debug.Log("color not in tree(correct): " + colors[vertices.Length - 1]);
+        //Debug.Log("color not in tree(correct) 1: " + colors[100]);
+
+        ////full fill color array
+        var colors0 = new Color[vertices.Length];
+        for (var i = 0; i < readJson.AllSegVertsIndexes1[0].Count; i++)
         {
-            var colorFromJson4 = readJson.AllSegColors[4];
-            var colorFromJson6 = readJson.AllSegColors[6];
-            for (int j = 0; j < readJson.AllSegVertsIndexes[6].Count; j++)
+            Debug.Log("intColor 1");
+            //Debug.Log("readJson.tree.GetChild(readJson.differentLevelModelSegments[1][i]).ID.verticesIndex.Count " + readJson.tree.GetChild(readJson.differentLevelModelSegments[1][0]).ID.verticesIndex.Count);
+            //Debug.Log("readJson.tree.GetChild(readJson.differentLevelModelSegments[1][i]).Count " + readJson.tree.GetChild(readJson.differentLevelModelSegments[1][i]).Count);
+
+            //first level, i-th segemnt [1][i]
+            var intColor = readJson.tree.ID.color;
+
+            for (var j = 0; j < readJson.AllSegVertsIndexes1[0][i].Count; j++)
             {
-                if (readJson.AllSegVertsIndexes[4][i] == readJson.AllSegVertsIndexes[6][j])
-                    colors[readJson.AllSegVertsIndexes[4][i]] =new Color(colorFromJson4[0] + colorFromJson6[0], colorFromJson4[1] + colorFromJson6[1], colorFromJson4[2] + colorFromJson6[2]) / 510;
+                //Debug.Log("this is a string inside j 1");
+                colors0[readJson.differentLevelModelSegments[0][i].verticesIndex[j]] = new Color(intColor[0] / 250, (float)intColor[1] / 250, (float)intColor[2] / 250);
             }
         }
 
 
 
-        //Debug.Log("the colors "+ readJson.AllSegColors[i][0]+" "+ readJson.AllSegColors[i][1]+" "+ readJson.AllSegColors[i][2]);
-        //colorCorrector += readJson.AllSegVertsIndexAmounts[i];
+        ////full fill color array
+        var colors1 = new Color[vertices.Length];
+        Debug.Log("readJson.AllSegVertsIndexes1[1] " + readJson.AllSegVertsIndexes1[1].Count);
+        for (var i = 0; i < readJson.AllSegVertsIndexes1[1].Count; i++)
+        {
+            Debug.Log("intColor 1");
+            //Debug.Log("readJson.tree.GetChild(readJson.differentLevelModelSegments[1][i]).ID.verticesIndex.Count " + readJson.tree.GetChild(readJson.differentLevelModelSegments[1][0]).ID.verticesIndex.Count);
+            //Debug.Log("readJson.tree.GetChild(readJson.differentLevelModelSegments[1][i]).Count " + readJson.tree.GetChild(readJson.differentLevelModelSegments[1][i]).Count);
+
+            //first level, i-th segemnt [1][i]
+            var intColor = readJson.tree.GetChild(readJson.differentLevelModelSegments[1][i]).ID.color;
+
+            for (var j = 0; j < readJson.AllSegVertsIndexes1[1][i].Count; j++)
+            {
+                //Debug.Log("this is a string inside j 1");
+                colors1[readJson.differentLevelModelSegments[1][i].verticesIndex[j]] = new Color(intColor[0] / 250, (float)intColor[1] / 250, (float)intColor[2] / 250);
+            }
+        }
+
+
+        //modify the color array that should have mixed color
+        var intColor4 = readJson.differentLevelModelSegments[1][4].color;
+        var intColor6 = readJson.differentLevelModelSegments[1][6].color;
+
+        for (int i = 0; i < readJson.AllSegVertsIndexes1[1][4].Count; i++)
+        {
+
+            for (int j = 0; j < readJson.AllSegVertsIndexes1[1][6].Count; j++)
+            {
+                if (readJson.AllSegVertsIndexes1[1][4][i] == readJson.AllSegVertsIndexes1[1][6][j])
+                    colors1[readJson.differentLevelModelSegments[1][4].verticesIndex[i]] = new Color(intColor4[0] + intColor6[0], intColor4[1] + intColor6[1], intColor4[2] + intColor6[2]) / 510;
+
+            }
+        }
+
 
         mesh.vertices = vertices;
         mesh.RecalculateBounds();
         mesh.triangles = trisModel;
-        mesh.colors = colors;
+        mesh.colors = colors0;
 
         //Debug.Log("color 2859 " + colors[trisModel[2859 * 3 + 0]]);
         //Debug.Log("color 2859 " + colors[trisModel[2859 * 3 + 0]]);
