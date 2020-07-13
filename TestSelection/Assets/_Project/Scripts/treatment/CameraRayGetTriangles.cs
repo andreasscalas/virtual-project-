@@ -17,7 +17,9 @@ public class CameraRayGetTriangles : MonoBehaviour
     void Update()
     {
         RaycastHit hit;
-        if (!Physics.Raycast(cam.ScreenPointToRay(/*Camera.main.transform.forward*/Input.mousePosition), out hit))
+        Ray ray = new Ray(Camera.main.transform.position, 1000 * Camera.main.transform.forward);
+
+        if (!Physics.Raycast(ray/*cam.ScreenPointToRay(Input.mousePosition)*/, out hit))
             return;
         MeshCollider meshCollider = hit.collider as MeshCollider;
         if (meshCollider == null || meshCollider.sharedMesh == null)
@@ -39,14 +41,14 @@ public class CameraRayGetTriangles : MonoBehaviour
                 {
                     Debug.Log("the i-th group that is being hit "+ i);
                     //Debug.Log("the position in the segment "+ j);
-                    //Debug.Log("hit.triangleIndex " + hit.triangleIndex);
+                    //Debug.Log("hit.triangles " + hit.triangles);
                 }
             }
         }
 
-        //Vector3 p0 = vertices[triangles[hit.triangleIndex * 3 + 0]];
-        //Vector3 p1 = vertices[triangles[hit.triangleIndex * 3 + 1]];
-        //Vector3 p2 = vertices[triangles[hit.triangleIndex * 3 + 2]];
+        //Vector3 p0 = vertices[triangles[hit.triangles * 3 + 0]];
+        //Vector3 p1 = vertices[triangles[hit.triangles * 3 + 1]];
+        //Vector3 p2 = vertices[triangles[hit.triangles * 3 + 2]];
         Transform hitTransform = hit.collider.transform;
         p0 = hitTransform.TransformPoint(p0);
         p1 = hitTransform.TransformPoint(p1);
