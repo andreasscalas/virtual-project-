@@ -311,14 +311,14 @@ public class MeshCreateControlPoints : MonoBehaviour
             }
         }
 
-        if(!InitializeMesh || UpdateModification)
+        if(!InitializeMesh || UpdateModification || functionality.levelsChange)
         { UpdateCage(cageVertices, _newPosCP, meshCage); }
         
 
         if (scaleGO) GetNewPos();
         scaleGO = false;
 
-        if (!InitializeMesh || UpdateModification)
+        if (!InitializeMesh || UpdateModification || functionality.levelsChange)
         {
             UpdateModel();
         }
@@ -545,11 +545,21 @@ public class MeshCreateControlPoints : MonoBehaviour
             }
         }
 
+        var levelsColors = new List<Color[]>();
+        levelsColors.Add(colors0);
+        levelsColors.Add(colors1);
 
         mesh.vertices = vertices;
         mesh.RecalculateBounds();
         mesh.triangles = trisModel;
-        mesh.colors = colors0;
+        for (int i = 0; i < functionality.levels.Count; i++)
+        {
+            if (functionality.levels[i]==true)
+            {
+                mesh.colors = levelsColors[i];
+            }
+        }
+        
 
         //Debug.Log("color 2859 " + colors[trisModel[2859 * 3 + 0]]);
         //Debug.Log("color 2859 " + colors[trisModel[2859 * 3 + 0]]);
