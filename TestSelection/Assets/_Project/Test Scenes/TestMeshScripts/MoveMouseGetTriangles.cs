@@ -27,9 +27,9 @@ public class MoveMouseGetTriangles : MonoBehaviour
         int[] triangles = mesh.triangles;
         Debug.Log("the triangle hit index "+hit.triangleIndex);
 
-        //Vector3 p0 = vertices[triangles[hit.triangleIndex * 3 + 0]];
-        //Vector3 p1 = vertices[triangles[hit.triangleIndex * 3 + 1]];
-        //Vector3 p2 = vertices[triangles[hit.triangleIndex * 3 + 2]];
+        //Vector3 p0 = vertices[triangles[hit.triangles * 3 + 0]];
+        //Vector3 p1 = vertices[triangles[hit.triangles * 3 + 1]];
+        //Vector3 p2 = vertices[triangles[hit.triangles * 3 + 2]];
         //Transform hitTransform = hit.collider.transform;
         //p0 = hitTransform.TransformPoint(p0);
         //p1 = hitTransform.TransformPoint(p1);

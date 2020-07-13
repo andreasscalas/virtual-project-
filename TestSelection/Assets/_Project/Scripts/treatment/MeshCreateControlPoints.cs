@@ -7,6 +7,7 @@ using Leap.Unity.Interaction;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
+using TreeEditor;
 
 public class MeshCreateControlPoints : MonoBehaviour
 {
@@ -318,7 +319,6 @@ public class MeshCreateControlPoints : MonoBehaviour
         if (!InitializeMesh || UpdateModification)
         {
             UpdateModel();
-            Debug.Log("this is a update");
         }
 
         InitializeMesh = true;
