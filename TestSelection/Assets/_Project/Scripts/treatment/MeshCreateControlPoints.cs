@@ -74,7 +74,8 @@ public class MeshCreateControlPoints : MonoBehaviour
 
     private void Start()
     {
-        GameObject.Find("Selection Manager").GetComponent<Functionality>();
+
+        functionality = GameObject.Find("Selection Manager").GetComponent<Functionality>();
         UpdateModification = true;
         InitializeMesh = false;
         scale = 1;
@@ -324,6 +325,7 @@ public class MeshCreateControlPoints : MonoBehaviour
         }
 
         InitializeMesh = true;
+        Debug.Log("functionality.levelsChange "+ functionality.levelsChange);
     }
 
     private void UpdateModel()
@@ -459,19 +461,19 @@ public class MeshCreateControlPoints : MonoBehaviour
             //colors[i] = Color.red;
         }
 
-        //full fill color array
-        var colors = new Color[vertices.Length];
+        ////full fill color array
+        //var colors = new Color[vertices.Length];
 
-        for (var i = 0; i < readJson.AllSegVertsIndexes.Count; i++)
-        {
-            var colorFromJson = readJson.AllSegColors[i];
-            for (var j = 0; j < readJson.AllSegVertsIndexes[i].Count; j++)
-            {
-                //Debug.Log("this is a string inside j 1");
-                colors[readJson.AllSegVertsIndexes[i][j]] =
-                new Color(colorFromJson[0], colorFromJson[1], colorFromJson[2]) / 255;
-            }
-        }
+        //for (var i = 0; i < readJson.AllSegVertsIndexes.Count; i++)
+        //{
+        //    var colorFromJson = readJson.AllSegColors[i];
+        //    for (var j = 0; j < readJson.AllSegVertsIndexes[i].Count; j++)
+        //    {
+        //        //Debug.Log("this is a string inside j 1");
+        //        colors[readJson.AllSegVertsIndexes[i][j]] =
+        //        new Color(colorFromJson[0], colorFromJson[1], colorFromJson[2]) / 255;
+        //    }
+        //}
 
         //modify the color array that should have mixed color
         //Debug.Log("readJson.AllSegVertsIndexes[4].Count: " + readJson.AllSegVertsIndexes[4].Count);
@@ -490,13 +492,11 @@ public class MeshCreateControlPoints : MonoBehaviour
         //Debug.Log("color not in tree(correct): " + colors[vertices.Length - 1]);
         //Debug.Log("color not in tree(correct) 1: " + colors[100]);
 
-        ////full fill color array
+        ////full fill color array for level 0
         var colors0 = new Color[vertices.Length];
         for (var i = 0; i < readJson.AllSegVertsIndexes1[0].Count; i++)
         {
             Debug.Log("intColor 1");
-            //Debug.Log("readJson.tree.GetChild(readJson.differentLevelModelSegments[1][i]).ID.verticesIndex.Count " + readJson.tree.GetChild(readJson.differentLevelModelSegments[1][0]).ID.verticesIndex.Count);
-            //Debug.Log("readJson.tree.GetChild(readJson.differentLevelModelSegments[1][i]).Count " + readJson.tree.GetChild(readJson.differentLevelModelSegments[1][i]).Count);
 
             //first level, i-th segemnt [1][i]
             var intColor = readJson.tree.ID.color;
@@ -510,14 +510,12 @@ public class MeshCreateControlPoints : MonoBehaviour
 
 
 
-        ////full fill color array
+        ////full fill color array for level 1
         var colors1 = new Color[vertices.Length];
         Debug.Log("readJson.AllSegVertsIndexes1[1] " + readJson.AllSegVertsIndexes1[1].Count);
         for (var i = 0; i < readJson.AllSegVertsIndexes1[1].Count; i++)
         {
             Debug.Log("intColor 1");
-            //Debug.Log("readJson.tree.GetChild(readJson.differentLevelModelSegments[1][i]).ID.verticesIndex.Count " + readJson.tree.GetChild(readJson.differentLevelModelSegments[1][0]).ID.verticesIndex.Count);
-            //Debug.Log("readJson.tree.GetChild(readJson.differentLevelModelSegments[1][i]).Count " + readJson.tree.GetChild(readJson.differentLevelModelSegments[1][i]).Count);
 
             //first level, i-th segemnt [1][i]
             var intColor = readJson.tree.GetChild(readJson.differentLevelModelSegments[1][i]).ID.color;
@@ -554,12 +552,12 @@ public class MeshCreateControlPoints : MonoBehaviour
         mesh.triangles = trisModel;
         for (int i = 0; i < functionality.levels.Count; i++)
         {
-            if (functionality.levels[i]==true)
+            if (functionality.levels[i] == true)
             {
                 mesh.colors = levelsColors[i];
             }
         }
-        
+
 
         //Debug.Log("color 2859 " + colors[trisModel[2859 * 3 + 0]]);
         //Debug.Log("color 2859 " + colors[trisModel[2859 * 3 + 0]]);
