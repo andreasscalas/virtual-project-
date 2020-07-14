@@ -66,6 +66,8 @@ public class MeshCreateControlPoints : MonoBehaviour
     public List<Material> materialGroup = new List<Material>();
     public List<Material> outlineMaterialGroup = new List<Material>();
     public List<ControlPointsData> cpDataList=new List<ControlPointsData>();
+    public List<ControlPointsData> cpDataList1=new List<ControlPointsData>();
+    public List<List<ControlPointsData>> cpDataListLevels1=new List<List<ControlPointsData>>();
 
     public List<IGrouping<Color,ControlPointsData>> listTagsGroupedByIndex = new List<IGrouping<Color, ControlPointsData>>();
     private bool UpdateModification;
@@ -136,7 +138,8 @@ public class MeshCreateControlPoints : MonoBehaviour
             //Destroy(ControlPoint.gameObject.GetComponent<Collider>());
         }
 
-        //Merge the same CPs that have different tags(belong to different segments) 
+        //Merge the same CPs that have different tags(belong to different segments)(no hierarchy)
+        //loop for the different segments
         for (int i = 0; i < readJson.CageAllSegVertIndex.Count; i++)
         {
             for (int j = 0; j < readJson.CageAllSegVertIndex[i].Count; j++)
@@ -173,8 +176,70 @@ public class MeshCreateControlPoints : MonoBehaviour
             mycolor /= cpDataList[i].goColor.Count;
             cpDataList[i].goColor.Clear();
             cpDataList[i].goColor.Add(mycolor);
-            //Debug.Log("cpDataList[i].goColor "+ cpDataList[i].goColor[0]);
+            Debug.Log("cpDataList[i].goColor          "+ cpDataList[i].goColor[0]);
         }
+
+
+
+
+        //Merge the same CPs that have different tags(belong to different segments)(with hierarchy)
+        //loop for the levels
+        for (int k = 0; k <readJson.differentLevelModelSegments.Count; k++)
+        {
+            //loop for the different segments
+            for (int i = 0; i < readJson.differentLevelModelSegments[k].Count; i++)
+            {
+                //
+                for (int j = 0; j < readJson.differentLevelModelSegments[k][i].cageVerticesIndex.Count; j++)
+                {
+                    ControlPointsData cpData1 = new ControlPointsData();
+                    cpData1 = cpDataList1.Find(x => (x.goIndex == readJson.differentLevelModelSegments[k][i].cageVerticesIndex[j]));
+                    if (cpData1 != null)
+                    {
+                        cpData1.goTags.Add(readJson.differentLevelModelSegments[k][i].tag);
+                        cpData1.goColor.Add(new Color(readJson.differentLevelModelSegments[k][i].color[0], readJson.differentLevelModelSegments[k][i].color[1], readJson.differentLevelModelSegments[k][i].color[2]));
+                    }
+                    else
+                    {
+                        cpData1 = new ControlPointsData();
+                        //cpData.go = cube;
+                        cpData1.goIndex = readJson.differentLevelModelSegments[k][i].cageVerticesIndex[j];
+                        cpData1.goTags.Add(readJson.differentLevelModelSegments[k][i].tag);
+                        cpData1.goColor.Add(new Color(readJson.differentLevelModelSegments[k][i].color[0], readJson.differentLevelModelSegments[k][i].color[1], readJson.differentLevelModelSegments[k][i].color[2]));
+                        //Debug.Log("cpData.goTags vertices" + cpData.goTags.Last());
+                        cpDataList1.Add(cpData1);
+                    }
+                }
+                cpDataListLevels1.Add(cpDataList1);
+            }
+
+            // compute(mix) the color for each Control Point
+            for (int i = 0; i < cpDataList1.Count; i++)
+            {
+                Color mycolor = Color.black;
+                for (int j = 0; j < cpDataList1[i].goColor.Count; j++)
+                {
+                    mycolor += cpDataList1[i].goColor[j];
+                }
+                mycolor /= cpDataList1[i].goColor.Count;
+                cpDataList1[i].goColor.Clear();
+                cpDataList1[i].goColor.Add(mycolor);
+                Debug.Log("cpDataList1[i].goColor "+ cpDataList1[i].goColor[0]);
+            }
+        }
+        
+
+
+
+
+
+
+
+
+
+
+
+
 
         //foreach (var VARIABLE in cpDataList.FindAll(x => x.goTags.Count() > 1))
         //{
