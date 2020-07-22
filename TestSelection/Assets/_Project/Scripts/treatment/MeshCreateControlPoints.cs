@@ -65,11 +65,13 @@ public class MeshCreateControlPoints : MonoBehaviour
     public int[] trisModel;
     public List<Material> materialGroup = new List<Material>();
     public List<Material> outlineMaterialGroup = new List<Material>();
+    public List<Material> materialGroup1 = new List<Material>();
+    public List<Material> outlineMaterialGroup1 = new List<Material>();
     public List<ControlPointsData> cpDataList=new List<ControlPointsData>();
     public List<List<ControlPointsData>> cpDataListLevels1=new List<List<ControlPointsData>>();
 
     public List<IGrouping<Color,ControlPointsData>> listTagsGroupedByIndex = new List<IGrouping<Color, ControlPointsData>>();
-    public List<IGrouping<Color,ControlPointsData>> listTagsGroupedByIndex1 = new List<IGrouping<Color, ControlPointsData>>();
+    public int colorAmountsOfDifferentlevels;
     private bool UpdateModification;
     private bool InitializeMesh;
 
@@ -92,7 +94,6 @@ public class MeshCreateControlPoints : MonoBehaviour
         ComputeBarCenter(modelVertices);
 
         scaleCenter = barCenter;
-
     }
 
 
@@ -114,50 +115,59 @@ public class MeshCreateControlPoints : MonoBehaviour
         trisModel = meshModel.triangles;
         //Debug.Log("the vertices" + vertices);
         ////generate the control points
-        for (var i = 0; i < meshCage.vertices.Length; i++)
-        {
-            GameObject ControlPoint = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            var K = initialControlPointPosition[i];
-            ControlPoint.transform.position = new Vector3(K[0], K[1], K[2]);
-            ControlPoint.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
-            ControlPoint.tag = selectableTag;
-            ControlPoint.name = "Control Point " + goCounter;
-            interactCP.Add(ControlPoint.AddComponent<InteractionBehaviour>());
-            ControlPoint.GetComponent<Rigidbody>().useGravity = false;
-            ControlPoint.GetComponent<Rigidbody>().isKinematic = true;
-            ControlPoint.AddComponent<ChangeColor>();
+        //for (var i = 0; i < meshCage.vertices.Length; i++)
+        //{
+        //    GameObject ControlPoint = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        //    var K = initialControlPointPosition[i];
+        //    ControlPoint.transform.position = new Vector3(K[0], K[1], K[2]);
+        //    ControlPoint.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
+        //    ControlPoint.tag = selectableTag;
+        //    ControlPoint.name = "Control Point " + goCounter;
+        //    interactCP.Add(ControlPoint.AddComponent<InteractionBehaviour>());
+        //    ControlPoint.GetComponent<Rigidbody>().useGravity = false;
+        //    ControlPoint.GetComponent<Rigidbody>().isKinematic = true;
+        //    ControlPoint.AddComponent<ChangeColor>();
 
-            goCounter++;
-            //ControlPoint.AddComponent<Rigidbody>().useGravity = false;
-            ControlPoint.transform.parent = _initializedControlPoints;
-            var controlPointRenderer = ControlPoint.GetComponent<MeshRenderer>();
-            controlPointRenderer.material = defaultMaterial;
-            //_newPosCP.Add(ControlPoint.transform);
-            //PositionControlPoints.Add(ControlPoint.transform);
+        //    goCounter++;
+        //    //ControlPoint.AddComponent<Rigidbody>().useGravity = false;
+        //    ControlPoint.transform.parent = _initializedControlPoints;
+        //    var controlPointRenderer = ControlPoint.GetComponent<MeshRenderer>();
+        //    controlPointRenderer.material = defaultMaterial;
+        //    //_newPosCP.Add(ControlPoint.transform);
+        //    //PositionControlPoints.Add(ControlPoint.transform);
 
-            //Destroy(ControlPoint.gameObject.GetComponent<Collider>());
-        }
+        //    //Destroy(ControlPoint.gameObject.GetComponent<Collider>());
+        //}
 
-        //Merge the same CPs that have different tags(belong to different segments)(no hierarchy)
+        //Merge the same CPs that have different tags(belong to different segments)(with hierarchy and tree node)
         //loop for the different segments
-        for (int i = 0; i < readJson.CageAllSegVertIndex.Count; i++)
+
+        for (int i = 0; i < readJson.treeNodeLevelx.Count; i++)
         {
-            for (int j = 0; j < readJson.CageAllSegVertIndex[i].Count; j++)
+            for (int j = 0; j < readJson.treeNodeLevelx[i].GetData().cageVerticesIndex.Count; j++)
             {
                 ControlPointsData cpData = new ControlPointsData();
-                cpData = cpDataList.Find(x => (x.goIndex == readJson.CageAllSegVertIndex[i][j]));
+                cpData = cpDataList.Find(x => (x.goIndex == readJson.treeNodeLevelx[i].GetData().cageVerticesIndex[j]));
                 if (cpData != null)
                 {
-                    cpData.goTags.Add(readJson.segmentTags[i]);
-                    cpData.goColor.Add(new Color(readJson.AllSegColors[i][0], readJson.AllSegColors[i][1], readJson.AllSegColors[i][2]));
+                    var getColor = readJson.treeNodeLevelx[i].GetData().color;
+                    cpData.goTags.Add(readJson.treeNodeLevelx[i].GetData().tag);
+
+                    cpData.goLevel = readJson.treeNodeLevelx[i].GetLevel();
+
+                    cpData.goColor.Add(new Color(getColor[0], getColor[1], getColor[2],255)/255);
                 }
                 else
                 {
                     cpData = new ControlPointsData();
                     //cpData.go = cube;
-                    cpData.goIndex = readJson.CageAllSegVertIndex[i][j];
-                    cpData.goTags.Add(readJson.segmentTags[i]);
-                    cpData.goColor.Add(new Color(readJson.AllSegColors[i][0], readJson.AllSegColors[i][1], readJson.AllSegColors[i][2]));
+                    var getColor = readJson.treeNodeLevelx[i].GetData().color;
+                    cpData.goIndex = readJson.treeNodeLevelx[i].GetData().cageVerticesIndex[j];
+                    cpData.goTags.Add(readJson.treeNodeLevelx[i].GetData().tag);
+
+                    cpData.goLevel = readJson.treeNodeLevelx[i].GetLevel();
+
+                    cpData.goColor.Add(new Color(getColor[0], getColor[1], getColor[2],255)/255);
                     //Debug.Log("cpData.goTags vertices" + cpData.goTags.Last());
                     cpDataList.Add(cpData);
                 }
@@ -165,10 +175,10 @@ public class MeshCreateControlPoints : MonoBehaviour
             }
         }
 
-        // compute(mix) the color for each Control Point
+        // compute(mix) the color for each Control Point; add level for each CP
         for (int i = 0; i < cpDataList.Count; i++)
         {
-            Color mycolor = Color.black;
+            Color mycolor = new Color(0,0,0,0);
             for (int j = 0; j < cpDataList[i].goColor.Count; j++)
             {
                 mycolor += cpDataList[i].goColor[j];
@@ -179,131 +189,67 @@ public class MeshCreateControlPoints : MonoBehaviour
             //Debug.Log("cpDataList[i].goColor          "+ cpDataList[i].goColor[0]);
         }
 
-        ////for (int i = 0; i < readJson.AllSegColors.Count; i++)
-        ////{
-        ////    Debug.Log("readJson.AllSegColors[i][0] "+ readJson.AllSegColors[i][0]);
-        ////}
-
-        ////for (int i = 0; i < readJson.differentLevelModelSegments[1].Count; i++)
-        ////{
-        ////    Debug.Log("readJson.differentLevelModelSegments[1][i].color[0] " + readJson.differentLevelModelSegments[1][i].color[0]);
-        ////}
-        /// 
-        for (int j = 0; j < readJson.CageAllSegVertIndex[6].Count; j++)
-        {
-            Debug.Log("readJson.CageAllSegVertIndex[i][j]) " + readJson.CageAllSegVertIndex[6][j]);
-        }
-
-
-        for (int j = 0; j < readJson.differentLevelModelSegments[1][6].cageVerticesIndex.Count; j++)
-        {
-            Debug.Log("readJson.differentLevelModelSegments[k][i].cageVerticesIndex[j]) " + readJson.differentLevelModelSegments[1][6].cageVerticesIndex[j]);
-        }
-
-
-        //Merge the same CPs that have different tags(belong to different segments)(with hierarchy)
-        //loop for the levels
-        for (int k = 0; k <readJson.differentLevelModelSegments.Count; k++)
-        {
-            List<ControlPointsData> cpDataList1 = new List<ControlPointsData>();
-            cpDataList1.Clear();
-            //loop for the different segments
-            for (int i = 0; i < readJson.differentLevelModelSegments[k].Count; i++)
-            {
-                //
-                for (int j = 0; j < readJson.differentLevelModelSegments[k][i].cageVerticesIndex.Count; j++)
-                {
-                    ControlPointsData cpData1 = new ControlPointsData();
-                    cpData1 = cpDataList1.Find(x => (x.goIndex == readJson.differentLevelModelSegments[k][i].cageVerticesIndex[j]));
-                    if (cpData1 != null)
-                    {
-                        cpData1.goTags.Add(readJson.differentLevelModelSegments[k][i].tag);
-                        cpData1.goColor.Add(new Color(readJson.differentLevelModelSegments[k][i].color[0], readJson.differentLevelModelSegments[k][i].color[1], readJson.differentLevelModelSegments[k][i].color[2]));
-                    }
-                    else
-                    {
-                        cpData1 = new ControlPointsData();
-                        //cpData.go = cube;
-                        cpData1.goIndex = readJson.differentLevelModelSegments[k][i].cageVerticesIndex[j];
-                        cpData1.goTags.Add(readJson.differentLevelModelSegments[k][i].tag);
-                        cpData1.goColor.Add(new Color(readJson.differentLevelModelSegments[k][i].color[0], readJson.differentLevelModelSegments[k][i].color[1], readJson.differentLevelModelSegments[k][i].color[2]));
-                        //Debug.Log("cpData.goTags vertices" + cpData.goTags.Last());
-                        cpDataList1.Add(cpData1);
-                    }
-                }
-            }
-            // compute(mix) the color for each Control Point
-            for (int i = 0; i < cpDataList1.Count; i++)
-            {
-                Color mycolor = Color.black;
-                for (int j = 0; j < cpDataList1[i].goColor.Count; j++)
-                {
-                    mycolor += cpDataList1[i].goColor[j];
-                }
-                mycolor /= cpDataList1[i].goColor.Count;
-                cpDataList1[i].goColor.Clear();
-                cpDataList1[i].goColor.Add(mycolor);
-                //Debug.Log("cpDataList1[i].goColor "+ cpDataList1[i].goColor[0]);
-            }
-
-
-            cpDataListLevels1.Add(cpDataList1);
-
-        }
-
-        //Debug.Log("cpDataListLevels1[1].Count " + cpDataListLevels1[1].Count);
-        //Debug.Log("cpDataList.Count " + cpDataList.Count);
-
-        for (int i = 0; i < cpDataListLevels1[0].Count; i++)
-        {
-            Debug.Log("cpDataListLevels1[1][i].goTags " + cpDataListLevels1[0][i].goTags.Count);
-            Debug.Log("cpDataList[i].goTags " + cpDataList[i].goTags.Count);
-            Debug.Log("cpDataListLevels1[1][i].goIndex " + cpDataListLevels1[0][i].goIndex);
-            Debug.Log("cpDataList[i].goIndex " + cpDataList[i].goIndex);
-        }
-
-
-        for (int i = 0; i < cpDataList.Count; i++)
-        {
-            
-        }
-        //Debug.Log("cpDataListLevels1 " + cpDataListLevels1.Count);
-        //Debug.Log("cpDataListLevels1[0].count " + cpDataListLevels1[0].Count);
-        //Debug.Log("cpDataListLevels1[1].count " + cpDataListLevels1[1].Count);
-
-
-
-
-
-
-
-
-
-
-
-
         //foreach (var VARIABLE in cpDataList.FindAll(x => x.goTags.Count() > 1))
-        //{
-        //    Debug.Log("repeat cubes tags" + VARIABLE);
-        //}
-
 
         //foreach (var VARIABLE in cpDataList.FindAll(x => x.goColor.Count() > 1))
-        //{
-        //    Debug.Log("repeat cubes color" + VARIABLE);
-        //}
+
         CreateMaterial();
-        CreateLevelsMaterials();
+        //CreateLevelsMaterials();
 
-        //load the defaut materials for the segments on the cage
-        for (int i = 0; i < listTagsGroupedByIndex.Count; i++)
+
+        //load the defaut materials for the segments on the cage(with hierarchy)
+        for (int k = 0; k < colorAmountsOfDifferentlevels; k++)
         {
-            materialGroup.Add(Resources.Load("Default Material Group" + i, typeof(Material)) as Material);
-            outlineMaterialGroup.Add(Resources.Load("Outlined Material Group" + i, typeof(Material)) as Material);
-            ////Debug.Log(string.Format("ControlPointsInfo[i].goIndex: {0} ControlPointsInfo[i].goTags.count: {1}", ControlPointsInfo[i].goIndex, ControlPointsInfo[i].goTags.Count));
+            materialGroup1.Add(Resources.Load(String.Format("level{0}, Default Material Group {1}", cpDataList[0].goLevel, k), typeof(Material)) as Material);
+            outlineMaterialGroup1.Add(Resources.Load(String.Format("level{0}, Outlined Material Group {1}", cpDataList[0].goLevel, k), typeof(Material)) as Material);
         }
+        //Debug.Log("materialGroup1.count" + materialGroup1[0]);
 
-        //Create CPs
+        ////Create CPs
+        //for (var i = 0; i < cpDataList.Count; i++)
+        //{
+        //    GameObject ControlPoint = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        //    cpDataList[i].go = ControlPoint;
+        //    ControlPoint.transform.position = cageVertices[cpDataList[i].goIndex];
+        //    ControlPoint.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
+        //    ControlPoint.tag = selectableTag;
+        //    ControlPoint.name = "Control Point " + goCounter;
+        //    interactCP.Add(ControlPoint.AddComponent<InteractionBehaviour>());
+        //    ControlPoint.GetComponent<Rigidbody>().useGravity = false;
+        //    ControlPoint.GetComponent<Rigidbody>().isKinematic = true;
+        //    //Add tag(the segment that they belong to) to each CP 
+        //    ControlPoint.AddComponent<CustomTag>();
+        //    var tagSystem = ControlPoint.GetComponent<CustomTag>();
+        //    for (int j = 0; j < cpDataList[i].goTags.Count; j++)
+        //    {
+        //        tagSystem.Add(cpDataList[i].goTags[j]);
+        //    }
+
+        //    goCounter++;
+        //    //ControlPoint.AddComponent<Rigidbody>().useGravity = false;
+        //    ControlPoint.transform.parent = _initializedControlPoints;
+        //    var controlPointRenderer = ControlPoint.GetComponent<MeshRenderer>();
+        //    //Find the correct material for this CP
+        //    for (int j = 0; j < materialGroup.Count; j++)
+        //    {
+        //        if (cpDataList[i].goColor[0] / 255 == materialGroup[j].color)
+        //        {
+        //            controlPointRenderer.material = materialGroup[j];
+        //            //Debug.Log("this is a string inside add material to class 0");
+        //            cpDataList[i].defautMaterial = materialGroup[j];
+        //            //Debug.Log("this is a string inside add material to class 1");
+        //            cpDataList[i].outlineMaterial = outlineMaterialGroup[j];
+        //            //Debug.Log("this is a string inside add material to class 2");
+        //        }
+        //    }
+        //    //Debug.Log("this is a string outside add material to class");
+        //    controlPointList.Add(ControlPoint);
+        //    //_newPosCP.Add(ControlPoint.transform);
+        //    //PositionControlPoints.Add(ControlPoint.transform);
+        //    //Destroy(ControlPoint.gameObject.GetComponent<Collider>());
+        //}
+
+        //create CPs attach them to cpDataList and add tag for CPs
         for (var i = 0; i < cpDataList.Count; i++)
         {
             GameObject ControlPoint = GameObject.CreatePrimitive(PrimitiveType.Sphere);
@@ -318,34 +264,89 @@ public class MeshCreateControlPoints : MonoBehaviour
             //Add tag(the segment that they belong to) to each CP 
             ControlPoint.AddComponent<CustomTag>();
             var tagSystem = ControlPoint.GetComponent<CustomTag>();
+            tagSystem.Add(Convert.ToString(cpDataList[i].goLevel));
             for (int j = 0; j < cpDataList[i].goTags.Count; j++)
             {
                 tagSystem.Add(cpDataList[i].goTags[j]);
             }
-            
+
             goCounter++;
             //ControlPoint.AddComponent<Rigidbody>().useGravity = false;
             ControlPoint.transform.parent = _initializedControlPoints;
             var controlPointRenderer = ControlPoint.GetComponent<MeshRenderer>();
             //Find the correct material for this CP
-            for (int j = 0; j < materialGroup.Count; j++)
+            for (int j = 0; j < materialGroup1.Count; j++)
             {
-                if (cpDataList[i].goColor[0] / 255 == materialGroup[j].color)
+                if (cpDataList[i].goColor[0] == materialGroup1[j].color)
                 {
-                    controlPointRenderer.material = materialGroup[j];
+                    controlPointRenderer.material = materialGroup1[j];
                     //Debug.Log("this is a string inside add material to class 0");
-                    cpDataList[i].defautMaterial = materialGroup[j];
+                    cpDataList[i].defautMaterial = materialGroup1[j];
                     //Debug.Log("this is a string inside add material to class 1");
-                    cpDataList[i].outlineMaterial = outlineMaterialGroup[j];
+                    cpDataList[i].outlineMaterial = outlineMaterialGroup1[j];
                     //Debug.Log("this is a string inside add material to class 2");
                 }
             }
-            //Debug.Log("this is a string outside add material to class");
             controlPointList.Add(ControlPoint);
             //_newPosCP.Add(ControlPoint.transform);
             //PositionControlPoints.Add(ControlPoint.transform);
-            //Destroy(ControlPoint.gameObject.GetComponent<Collider>());
         }
+
+
+
+
+
+        //for (var i = 0; i < cpDataList.Count; i++)
+        //{
+        //    GameObject ControlPoint = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        //    for (int j = 0; j < cpDataListLevels1.Count; j++)
+        //    {
+        //        cpDataListLevels1[j][i].go = ControlPoint;
+        //    }
+        //    ControlPoint.transform.position = cageVertices[cpDataList[i].goIndex];
+        //    ControlPoint.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
+        //    ControlPoint.tag = selectableTag;
+        //    ControlPoint.name = "Control Point " + goCounter;
+        //    interactCP.Add(ControlPoint.AddComponent<InteractionBehaviour>());
+        //    ControlPoint.GetComponent<Rigidbody>().useGravity = false;
+        //    ControlPoint.GetComponent<Rigidbody>().isKinematic = true;
+        //    //Add tag(the segment that they belong to) to each CP 
+        //    ControlPoint.AddComponent<CustomTag>();
+        //    var tagSystem = ControlPoint.GetComponent<CustomTag>();
+        //    for (int j = 0; j < cpDataList[i].goTags.Count; j++)
+        //    {
+        //        tagSystem.Add(cpDataList[i].goTags[j]);
+        //    }
+
+        //    goCounter++;
+        //    //ControlPoint.AddComponent<Rigidbody>().useGravity = false;
+        //    ControlPoint.transform.parent = _initializedControlPoints;
+        //    var controlPointRenderer = ControlPoint.GetComponent<MeshRenderer>();
+        //    //Find the correct material for this CP
+        //    //for (int j = 0; j < materialGroup.Count; j++)
+        //    //{
+        //    //    if (cpDataList[i].goColor[0] / 255 == materialGroup[j].color)
+        //    //    {
+        //    //        controlPointRenderer.material = materialGroup[j];
+        //    //        //Debug.Log("this is a string inside add material to class 0");
+        //    //        cpDataList[i].defautMaterial = materialGroup[j];
+        //    //        //Debug.Log("this is a string inside add material to class 1");
+        //    //        cpDataList[i].outlineMaterial = outlineMaterialGroup[j];
+        //    //        //Debug.Log("this is a string inside add material to class 2");
+        //    //    }
+        //    //}
+        //    controlPointList.Add(ControlPoint);
+        //    //_newPosCP.Add(ControlPoint.transform);
+        //    //PositionControlPoints.Add(ControlPoint.transform);
+        //}
+
+
+
+
+
+
+
+
 
         for (int i = 0; i < cageVertices.Length; i++)
         {
@@ -362,7 +363,7 @@ public class MeshCreateControlPoints : MonoBehaviour
 
     }
 
-    //create mats for model wwithout hiearchy
+    //create mats for model without hiearchy
     void CreateMaterial()
     {
         // regroup indexes of the same color
@@ -377,18 +378,23 @@ public class MeshCreateControlPoints : MonoBehaviour
         //}
 
         listTagsGroupedByIndex = tagsGroupedByIndex.ToList();
+        colorAmountsOfDifferentlevels=tagsGroupedByIndex.ToList().Count;
 
         // Create a simple material asset
         for (int i = 0; i < listTagsGroupedByIndex.Count(); i++)
         {
             var defautMaterial = new Material(Shader.Find("Diffuse"));
             var outlinedMaterial = new Material(Shader.Find("Outlined/Silhouetted Diffuse"));
-            AssetDatabase.CreateAsset(defautMaterial, "Assets/Resources/" + "Default Material Group" + i + ".mat");
-            AssetDatabase.CreateAsset(outlinedMaterial, "Assets/Resources/" + "Outlined Material Group" + i + ".mat");
-            defautMaterial.color = listTagsGroupedByIndex[i].Key/255;
+            //AssetDatabase.CreateAsset(defautMaterial, "Assets/Resources/" + "Default Material Group" + i + ".mat");
+
+            AssetDatabase.CreateAsset(defautMaterial, "Assets/Resources/" + String.Format("level{0}, Default Material Group {1}", cpDataList[0].goLevel,i) + ".mat");
+            AssetDatabase.CreateAsset(outlinedMaterial, "Assets/Resources/" + String.Format("level{0}, outlined Material Group {1}", cpDataList[0].goLevel,i) + ".mat");
+
+            //AssetDatabase.CreateAsset(outlinedMaterial, "Assets/Resources/" + "Outlined Material Group" + i + ".mat");
+            defautMaterial.color = listTagsGroupedByIndex[i].Key;
             //outlinedMaterial.color = listTagsGroupedByIndex[i].Key / 255;
-            var colorSource = listTagsGroupedByIndex[i].Key / 255;
-            outlinedMaterial.SetColor("_Color", new Color(colorSource.r, colorSource.g, colorSource.b, 0.8f ));
+            var colorSource = listTagsGroupedByIndex[i].Key;
+            outlinedMaterial.SetColor("_Color", new Color(colorSource.r, colorSource.g, colorSource.b, 0.8f));
             //outlinedMaterial.SetFloat("_Outline", 0.015f);
             outlinedMaterial.SetColor("_OutlineColor", Color.yellow);
         }
@@ -398,45 +404,43 @@ public class MeshCreateControlPoints : MonoBehaviour
 
 
 
-    //create mats for model wwithout hiearchy
-    void CreateLevelsMaterials()
-    {
-        // regroup indexes of the same color
-        Debug.Log("this is level material start");
-        
-        for (int i = 0; i < cpDataListLevels1.Count; i++)
-        {
-            var tagsGroupedByIndex = cpDataListLevels1[i].GroupBy(x => x.goColor[0]);
+    ////create mats for model without hierarchy
+    //void CreateLevelsMaterials()
+    //{
+    //    // regroup indexes of the same color
 
-            //Debug.Log("This is the amount of different tags " + tagsGroupedByIndex.Count());
-            //foreach (var group in tagsGroupedByIndex)
-            //{
-            //    Debug.Log("the vetex indexes of the color " + group.Key + ":");
-            //    foreach (var x in group)
-            //        Debug.Log("* " + x.goIndex);
-            //}
+    //    for (int i = 0; i < cpDataListLevels1.Count; i++)
+    //    {
+    //        List<IGrouping<Color, ControlPointsData>> listTagsGroupedByIndex1 = new List<IGrouping<Color, ControlPointsData>>();
+    //        var tagsGroupedByIndex = cpDataListLevels1[i].GroupBy(x => x.goColor[0]);
 
+    //        //Debug.Log("This is the amount of different tags " + tagsGroupedByIndex.Count());
+    //        //foreach (var group in tagsGroupedByIndex)
+    //        //{
+    //        //    Debug.Log("the vetex indexes of the color " + group.Key + ":");
+    //        //    foreach (var x in group)
+    //        //        Debug.Log("* " + x.goIndex);
+    //        //}
 
-
-            listTagsGroupedByIndex1 = tagsGroupedByIndex.ToList();
-
-            // Create a simple material asset
-            for (int j = 0; j < listTagsGroupedByIndex1.Count(); j++)
-            {
-                var defautMaterial = new Material(Shader.Find("Diffuse"));
-                var outlinedMaterial = new Material(Shader.Find("Outlined/Silhouetted Diffuse"));
-                Debug.Log("create mats of differents levels");
-                AssetDatabase.CreateAsset(defautMaterial, "Assets/Resources/" + String.Format("level{0}, Default Material Group {1}",i,j)+ ".mat");
-                AssetDatabase.CreateAsset(outlinedMaterial, "Assets/Resources/" + String.Format("level{0}, Outlined Material Group {1}", i,j)+ ".mat");
-                defautMaterial.color = listTagsGroupedByIndex1[j].Key / 255;
-                //outlinedMaterial.color = listTagsGroupedByIndex[i].Key / 255;
-                var colorSource = listTagsGroupedByIndex1[j].Key / 255;
-                outlinedMaterial.SetColor("_Color", new Color(colorSource.r, colorSource.g, colorSource.b, 0.8f));
-                //outlinedMaterial.SetFloat("_Outline", 0.015f);
-                outlinedMaterial.SetColor("_OutlineColor", Color.yellow);
-            }
-        }
-    }
+    //        listTagsGroupedByIndex1 = tagsGroupedByIndex.ToList();
+    //        colorAmountsOfDifferentlevels.Add(tagsGroupedByIndex.ToList().Count);
+    //        // Create a simple material asset
+    //        for (int j = 0; j < listTagsGroupedByIndex1.Count(); j++)
+    //        {
+    //            var defautMaterial = new Material(Shader.Find("Diffuse"));
+    //            var outlinedMaterial = new Material(Shader.Find("Outlined/Silhouetted Diffuse"));
+    //            //Debug.Log("create mats of differents levels");
+    //            AssetDatabase.CreateAsset(defautMaterial, "Assets/Resources/" + String.Format("level{0}, Default Material Group {1}", i, j) + ".mat");
+    //            AssetDatabase.CreateAsset(outlinedMaterial, "Assets/Resources/" + String.Format("level{0}, Outlined Material Group {1}", i, j) + ".mat");
+    //            defautMaterial.color = listTagsGroupedByIndex1[j].Key / 255;
+    //            //outlinedMaterial.color = listTagsGroupedByIndex[i].Key / 255;
+    //            var colorSource = listTagsGroupedByIndex1[j].Key / 255;
+    //            outlinedMaterial.SetColor("_Color", new Color(colorSource.r, colorSource.g, colorSource.b, 0.8f));
+    //            //outlinedMaterial.SetFloat("_Outline", 0.015f);
+    //            outlinedMaterial.SetColor("_OutlineColor", Color.yellow);
+    //        }
+    //    }
+    //}
 
 
 
@@ -468,8 +472,11 @@ public class MeshCreateControlPoints : MonoBehaviour
             }
         }
 
-        if(!InitializeMesh || UpdateModification || functionality.levelsChange)
-        { UpdateCage(cageVertices, _newPosCP, meshCage); }
+        if (!InitializeMesh || UpdateModification || functionality.levelsChange)
+        {
+
+            UpdateCage(cageVertices, _newPosCP, meshCage);
+        }
         
 
         if (scaleGO) GetNewPos();
@@ -481,8 +488,56 @@ public class MeshCreateControlPoints : MonoBehaviour
         }
 
         InitializeMesh = true;
-        Debug.Log("functionality.levelsChange "+ functionality.levelsChange);
+
+        if (functionality.levelsChange)
+        {
+            //UpdataControlPoints();
+        }
+        
     }
+
+
+
+
+    //private void UpdataControlPoints()
+    //{
+    //    //obtain all the CPs
+    //    for (int i = 0; i < cpDataListLevels1[0].Count; i++)
+    //    {
+            
+
+    //        //judge if level is changed,if level is changed, change the color of the CPs
+    //        for (int k = 0; k < functionality.levels.Count; k++)
+    //        {
+    //            if (functionality.levels[k] == true)
+    //            {
+    //                var controlPointRenderer = cpDataListLevels1[k][i].go.GetComponent<MeshRenderer>();
+
+    //                for (int j = 0; j < materialGroup1[k].Count; j++)
+    //                {
+    //                    if (cpDataListLevels1[k][i].goColor[0] / 255 == materialGroup1[k][j].color)
+    //                    {
+    //                        //Debug.Log("cpDataListLevels1[k][i].goColor[0] / 255 "+ cpDataListLevels1[k][i].goColor[0] / 255);
+    //                        //Debug.Log("materialGroup1[k][j].color " + materialGroup1[k][j].color);
+    //                        controlPointRenderer.material = materialGroup1[k][j];
+    //                        //Debug.Log("this is a string inside add material to class 0");
+    //                        cpDataListLevels1[k][i].defautMaterial = materialGroup1[k][j];
+    //                        //Debug.Log("this is a string inside add material to class 1");
+    //                        cpDataListLevels1[k][i].outlineMaterial = outlineMaterialGroup1[k][j];
+    //                        //Debug.Log("this is a string inside add material to class 2");
+    //                    }
+    //                }
+                    
+    //            }
+    //        }
+            
+            
+    //    }
+
+    //}
+
+
+
 
     private void UpdateModel()
     {
@@ -645,70 +700,72 @@ public class MeshCreateControlPoints : MonoBehaviour
         //    }
         //}
 
-        //Debug.Log("color not in tree(correct): " + colors[vertices.Length - 1]);
-        //Debug.Log("color not in tree(correct) 1: " + colors[100]);
+        //Debug.Log("color not in rootNode(correct): " + colors[vertices.Length - 1]);
+        //Debug.Log("color not in rootNode(correct) 1: " + colors[100]);
 
         ////full fill color array for level 0
-        var colors0 = new Color[vertices.Length];
-        for (var i = 0; i < readJson.AllSegVertsIndexes1[0].Count; i++)
-        {
-            //first level, i-th segemnt [1][i]
-            var intColor = readJson.tree.ID.color;
+        //var colors0 = new Color[vertices.Length];
+        //for (var i = 0; i < readJson.AllSegVertsIndexes1[0].Count; i++)
+        //{
+        //    //first level, i-th segemnt [1][i]
+        //    var intColor = readJson.rootNode.GetData().color;
 
-            for (var j = 0; j < readJson.AllSegVertsIndexes1[0][i].Count; j++)
-            {
-                //Debug.Log("this is a string inside j 1");
-                colors0[readJson.differentLevelModelSegments[0][i].verticesIndex[j]] = new Color(intColor[0] / 250, (float)intColor[1] / 250, (float)intColor[2] / 250);
-            }
-        }
+        //    for (var j = 0; j < readJson.AllSegVertsIndexes1[0][i].Count; j++)
+        //    {
+        //        //Debug.Log("this is a string inside j 1");
+        //        colors0[readJson.differentLevelModelSegments[0][i].verticesIndex[j]] = new Color(intColor[0] / 250, (float)intColor[1] / 250, (float)intColor[2] / 250);
+        //    }
+        //}
 
 
 
         ////full fill color array for level 1
-        var colors1 = new Color[vertices.Length];
-        //Debug.Log("readJson.AllSegVertsIndexes1[1] " + readJson.AllSegVertsIndexes1[1].Count);
-        for (var i = 0; i < readJson.AllSegVertsIndexes1[1].Count; i++)
-        {
-            //first level, i-th segemnt [1][i]
-            var intColor = readJson.tree.GetChild(readJson.differentLevelModelSegments[1][i]).ID.color;
+        //var colors1 = new Color[vertices.Length];
+        ////Debug.Log("readJson.AllSegVertsIndexes1[1] " + readJson.AllSegVertsIndexes1[1].Count);
+        //for (var i = 0; i < readJson.AllSegVertsIndexes1[1].Count; i++)
+        //{
+        //    //first level, i-th segemnt [1][i]
+        //    var intColor = readJson.rootNode.GetChild(readJson.differentLevelModelSegments[1][i]).ID.color;
 
-            for (var j = 0; j < readJson.AllSegVertsIndexes1[1][i].Count; j++)
-            {
-                //Debug.Log("this is a string inside j 1");
-                colors1[readJson.differentLevelModelSegments[1][i].verticesIndex[j]] = new Color(intColor[0] / 250, (float)intColor[1] / 250, (float)intColor[2] / 250);
-            }
-        }
+        //    for (var j = 0; j < readJson.AllSegVertsIndexes1[1][i].Count; j++)
+        //    {
+        //        //Debug.Log("this is a string inside j 1");
+        //        colors1[readJson.differentLevelModelSegments[1][i].verticesIndex[j]] = new Color(intColor[0] / 250, (float)intColor[1] / 250, (float)intColor[2] / 250);
+        //    }
+        //}
 
 
-        //modify the color array that should have mixed color
-        var intColor4 = readJson.differentLevelModelSegments[1][4].color;
-        var intColor6 = readJson.differentLevelModelSegments[1][6].color;
+        ////modify the color array that should have mixed color
+        //var intColor4 = readJson.differentLevelModelSegments[1][4].color;
+        //var intColor6 = readJson.differentLevelModelSegments[1][6].color;
 
-        for (int i = 0; i < readJson.AllSegVertsIndexes1[1][4].Count; i++)
-        {
+        //for (int i = 0; i < readJson.AllSegVertsIndexes1[1][4].Count; i++)
+        //{
 
-            for (int j = 0; j < readJson.AllSegVertsIndexes1[1][6].Count; j++)
-            {
-                if (readJson.AllSegVertsIndexes1[1][4][i] == readJson.AllSegVertsIndexes1[1][6][j])
-                    colors1[readJson.differentLevelModelSegments[1][4].verticesIndex[i]] = new Color(intColor4[0] + intColor6[0], intColor4[1] + intColor6[1], intColor4[2] + intColor6[2]) / 510;
+        //    for (int j = 0; j < readJson.AllSegVertsIndexes1[1][6].Count; j++)
+        //    {
+        //        if (readJson.AllSegVertsIndexes1[1][4][i] == readJson.AllSegVertsIndexes1[1][6][j])
+        //            colors1[readJson.differentLevelModelSegments[1][4].verticesIndex[i]] = new Color(intColor4[0] + intColor6[0], intColor4[1] + intColor6[1], intColor4[2] + intColor6[2]) / 510;
 
-            }
-        }
+        //    }
+        //}
 
-        var levelsColors = new List<Color[]>();
-        levelsColors.Add(colors0);
-        levelsColors.Add(colors1);
+        //var levelsColors = new List<Color[]>();
+        //levelsColors.Add(colors0);
+        //levelsColors.Add(colors1);
 
         mesh.vertices = vertices;
         mesh.RecalculateBounds();
         mesh.triangles = trisModel;
-        for (int i = 0; i < functionality.levels.Count; i++)
-        {
-            if (functionality.levels[i] == true)
-            {
-                mesh.colors = levelsColors[i];
-            }
-        }
+        mesh.colors = readJson.colorArrayLevelx;
+
+        //for (int i = 0; i < functionality.levels.Count; i++)
+        //{
+        //    if (functionality.levels[i] == true)
+        //    {
+        //        //mesh.colors = levelsColors[i];
+        //    }
+        //}
 
 
         //Debug.Log("color 2859 " + colors[trisModel[2859 * 3 + 0]]);
