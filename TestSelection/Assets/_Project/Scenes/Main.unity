@@ -4586,6 +4586,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hand_cage: {fileID: 0}
+  readJson: {fileID: 0}
+  levels: 
+  levelsChange: 0
 --- !u!114 &1550730623
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4614,6 +4617,8 @@ MonoBehaviour:
   trianCageSegmented: 
   trianModelSegmented: 
   wrist: 
+  colorArrayLevelx: []
+  levelMax: 0
   trisCage: 
   trisModel: 
   objCage: {fileID: 1225658508}
@@ -4694,6 +4699,7 @@ MonoBehaviour:
   objModel: {fileID: 1425029294}
   readFileComputeNewcage: {fileID: 1550730625}
   readJson: {fileID: 1550730623}
+  functionality: {fileID: 0}
   scale: 0
   scaleCenter: {x: 0, y: 0, z: 0}
   scaleGO: 0
@@ -4703,6 +4709,9 @@ MonoBehaviour:
   trisModel: 
   materialGroup: []
   outlineMaterialGroup: []
+  materialGroup1: []
+  outlineMaterialGroup1: []
+  colorAmountsOfDifferentlevels: 0
 --- !u!114 &1550730628
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4965,6 +4974,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae14ef7543af3084aa53a88bfc9418dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  functionality: {fileID: 0}
+  meshCreateControlPoints: {fileID: 0}
 --- !u!1001 &1777298968
 PrefabInstance:
   m_ObjectHideFlags: 0
