@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -69,6 +70,12 @@ using UnityEngine;
 
     [HideInInspector] public List<ModelData> importedSegmentsOfDifferentLevels = new List<ModelData>();
     [HideInInspector] public List<List<ModelData>> differentLevelModelSegments = new List<List<ModelData>>();
+    [HideInInspector] public Color[] colorArrayLevelx;
+    
+
+    [HideInInspector] public List<TreeNode> treeNodeLevelx = new List<TreeNode>();
+    [HideInInspector] public int levelMax = new int();
+
 
 
 
@@ -82,9 +89,9 @@ using UnityEngine;
     public Vector3[] modelVertices;
     public Vector3[] cageVertices;
     public List<string> segmentTags;
-    private List<int> level =new List<int>();
-    public List<int> modelLevel = new List<int>();
-    public TreeNode tree;
+    //private List<int> level =new List<int>();
+    //public List<int> modelLevel = new List<int>();
+    public TreeNode rootNode;
 
     void Awake()
     {
@@ -95,11 +102,12 @@ using UnityEngine;
         modelVertices = meshModel.vertices;
         trisCage = meshCage.triangles;
         trisModel = meshModel.triangles;
+        colorArrayLevelx = new Color[modelVertices.Length];
 
         meshCreateControlPoints = GameObject.Find("Selection Manager").GetComponent<MeshCreateControlPoints>();
         readFileComputeNewcage = GameObject.Find("Selection Manager").GetComponent<ReadFileComputeNewcage>();
         jsonString = File.ReadAllText(Application.streamingAssetsPath + "/" + "hand_segmentation_correct(no hierarchy).txt");
-        jsonString1 = File.ReadAllText(Application.streamingAssetsPath + "/" + "hand_segmentation_correct.txt");
+        jsonString1 = File.ReadAllText(Application.streamingAssetsPath + "/" + "hand_segmentation_hierarchical_nails.txt");
 
         data = JsonMapper.ToObject(jsonString);
         data1 = JsonMapper.ToObject(jsonString1);
@@ -133,7 +141,7 @@ using UnityEngine;
             GetDataToLst(data1["annotations"][i]["triangles"], interSegTrianLists);
             GetDataToLst(data1["annotations"][i]["color"], interSegColors);
             segmentTags.Add(Convert.ToString(data1["annotations"][i]["tag"]));
-            level.Add(int.Parse(Convert.ToString(data1["annotations"][i]["level"])));
+            //level.Add(int.Parse(Convert.ToString(data1["annotations"][i]["level"])));
             //for (int j = 0; j < interSegTrianLists.Count; j++)
             //{
             //    Debug.Log(interSegTrianLists[j]);
@@ -194,81 +202,33 @@ using UnityEngine;
             importedSegmentsOfDifferentLevels.Add(JsonMapper.ToObject<ModelData>(datatest));
             //Debug.Log("To see the colors  " + importedSegmentsOfDifferentLevels[i].color[0]);
 
-            //Create the GOs of levels
-            if (!modelLevel.Contains(importedSegmentsOfDifferentLevels[i].level))
-            {
-                modelLevel.Add(importedSegmentsOfDifferentLevels[i].level);
-            }
         }
 
-        List<ModelData> interListOfImportedSegmentsOfDifferentLevels = new List<ModelData>();
 
-
-        for (int j = 0; j <= modelLevel.Max(); j++)
-        {
-            interListOfImportedSegmentsOfDifferentLevels = importedSegmentsOfDifferentLevels.FindAll(x => x.level == j);
-            //importedSegmentsOfDifferentLevels[i].level =
-            differentLevelModelSegments.Add(interListOfImportedSegmentsOfDifferentLevels);
-        }
         //
-        // find the triangles indexes
-        //for different level
-        for (int l = 0; l < differentLevelModelSegments.Count; l++)
-        {
-            var interSegVertListOfLists = new List<List<int>>();
-            //for different segment
-            for (var j = 0; j < differentLevelModelSegments[l].Count; j++)
-            {
-
-                var interSegVertLists = new List<int>();
-                //for different trianlges
-                for (var i = 0; i < differentLevelModelSegments[l][j].triangles.Count; i++)
-                {
-                    //Debug.Log("littleFinger " +littleFinger[i] );
-                    if (!interSegVertLists.Contains(trisModel[(differentLevelModelSegments[l][j].triangles[i]) * 3]))
-                        interSegVertLists.Add(trisModel[(differentLevelModelSegments[l][j].triangles[i]) * 3]);
-                    //Debug.Log("vertex 1 " + sfd.trisModel[littleFinger[i] * 3]);
-
-                    if (!interSegVertLists.Contains(
-                        trisModel[(differentLevelModelSegments[l][j].triangles[i]) * 3 + 1]))
-                        interSegVertLists.Add(trisModel[(differentLevelModelSegments[l][j].triangles[i]) * 3 + 1]);
-                    //Debug.Log("vertex 3 " + sfd.trisModel[littleFinger[i] * 3 + 1]);
-
-
-                    if (!interSegVertLists.Contains(
-                        trisModel[(differentLevelModelSegments[l][j].triangles[i]) * 3 + 2]))
-                        interSegVertLists.Add(trisModel[(differentLevelModelSegments[l][j].triangles[i]) * 3 + 2]);
-                    //Debug.Log("vertex 2 " + sfd.trisModel[littleFinger[i] * 3+2]);
-                    //Debug.Log("little finger triangle index " + i + " " + littleFinger[i]);
-                }
-                
-                interSegVertListOfLists.Add(interSegVertLists);
-                //AllSegVertsIndexAmounts.Add(interSegVertLists.Count);
-            }
-            AllSegVertsIndexes1.Add(interSegVertListOfLists);
-        }
+        
 
         //Debug.Log("differentLevelModelSegments[0][0].triangles " + differentLevelModelSegments[0][0].triangles[0]);
         ///////////////////////////////////////////////////////////////////////////////
-;
+
         //// level-->element(segment) position in this level-->vertexe
         //Debug.Log("AllSegVertsIndexes1: " + AllSegVertsIndexes1[0][0][0]);
         //Debug.Log("AllSegVertsIndexes1: " + AllSegVertsIndexes1[1][0][1]);
         //Debug.Log("AllSegVertsIndexes1: " + AllSegVertsIndexes1[1][0][2]);
 
 
-        for (int i = 0; i < differentLevelModelSegments.Count; i++)
-        {
-            for (int j = 0; j < differentLevelModelSegments[i].Count; j++)
-            {
-                for (int k = 0; k < AllSegVertsIndexes1[i][j].Count; k++)
-                {
-                    //certain level certain segment
-                    differentLevelModelSegments[i][j].verticesIndex.Add(AllSegVertsIndexes1[i][j][k]);
-                }
-                
-            }
-        }
+        //for (int i = 0; i < differentLevelModelSegments.Count; i++)
+        //{
+        //    for (int j = 0; j < differentLevelModelSegments[i].Count; j++)
+        //    {
+        //        for (int k = 0; k < AllSegVertsIndexes1[i][j].Count; k++)
+        //        {
+        //            //certain level certain segment
+        //            differentLevelModelSegments[i][j].verticesIndex.Add(AllSegVertsIndexes1[i][j][k]);
+        //        }
+
+        //    }
+        //}
 
         //for (int i = 0; i < AllSegVertsIndexes1[1][4].Count; i++)
         //{
@@ -277,146 +237,165 @@ using UnityEngine;
         //    {
         //        //if (readJson.AllSegVertsIndexes1[1][4][i] == readJson.AllSegVertsIndexes1[1][6][j])
         //        //    colors1[readJson.differentLevelModelSegments[1][4].verticesIndex[j]] = new Color(intColor4[0] + intColor6[0], intColor4[1] + intColor6[1], intColor4[2] + intColor6[2]) / 510;
-        //        Debug.Log("hehe: ");
+        //      
         //    }
         //}
+        var segmentLevel0= importedSegmentsOfDifferentLevels.Find(x => x.father==-1);
 
-
-        tree = new TreeNode(differentLevelModelSegments[0][0]);
-        //loop for levels 
-        for (int i = 1; i < differentLevelModelSegments.Count; i++)
+        rootNode = new TreeNode(segmentLevel0);
+        //loop for levels
+        for (int i = 0; i < importedSegmentsOfDifferentLevels.Count; i++)
         {
-            //loop for the segments of a same level,take the first element as the head of this level, others are level+1
-            for (int j = 0/*1*/; j < differentLevelModelSegments[i].Count; j++)
+            if (importedSegmentsOfDifferentLevels[i].id==segmentLevel0.id)
             {
+                continue;
+            }
+            var node = new TreeNode(importedSegmentsOfDifferentLevels[i]);
+            var father= importedSegmentsOfDifferentLevels.Find(x => x.id == importedSegmentsOfDifferentLevels[i].father);
 
-                tree./*GetChild(differentLevelModelSegments[i][0]).*/Add(new TreeNode(differentLevelModelSegments[i][j]));
-                //Debug.Log("tree.GetChild(differentLevelModelSegments[i,1][j]).ID.tag:" + tree.GetChild(differentLevelModelSegments[i][0]).GetChild(differentLevelModelSegments[i][j]).ID.tag);
-                //Debug.Log("tree.GetChild(differentLevelModelSegments[i,1][j]).ID.tag:" + tree.GetChild(differentLevelModelSegments[i][j]).ID.tag);
+
+            if (rootNode.GetDescendent(father.id) != null)
+            {
+                rootNode.GetDescendent(father.id).Add(node);
+            }
+            
+        }
+
+        int idMax= importedSegmentsOfDifferentLevels.Max(x => x.id); ;
+
+
+        levelMax = rootNode.GetDescendent(idMax).GetLevel();
+        Debug.Log("levelMax "+levelMax);
+
+        //get the level x tree nodes
+        for (int i = 0; i < importedSegmentsOfDifferentLevels.Count; i++)
+        {
+            var GetNode = rootNode.GetDescendent(importedSegmentsOfDifferentLevels[i].id);
+            
+            if (GetNode.GetLevel() == 1/* x */)
+            {
+                treeNodeLevelx.Add(GetNode);
+                //for (int j = 0; j < importedSegmentsOfDifferentLevels[i].verticesIndex.Count; j++)
+                //{
+                //    var Getcolor = importedSegmentsOfDifferentLevels[i].color;
+                //    colorArrayLevelx.Add(new Color(Getcolor[0], Getcolor[1], Getcolor[2])/255);
+                //}
+                
+                //Debug.Log("rootNode level x " + rootNode.GetDescendent(importedSegmentsOfDifferentLevels[i].id).GetData().tag);
             }
         }
+
+
+        // find the vertices indexes for level x
+        // loop for different segment
+        for (var j = 0; j < treeNodeLevelx.Count; j++)
+        {
+
+            var GetSegmentTriangles = treeNodeLevelx[j].GetData().triangles;
+            var GetSegmentVertexIndexes = treeNodeLevelx[j].GetData().verticesIndex;
+            for (var i = 0; i < GetSegmentTriangles.Count; i++)
+            {
+                if (!GetSegmentVertexIndexes.Contains(trisModel[(GetSegmentTriangles[i]) * 3]))
+                    GetSegmentVertexIndexes.Add(trisModel[(GetSegmentTriangles[i]) * 3]);
+
+                if (!GetSegmentVertexIndexes.Contains(trisModel[(GetSegmentTriangles[i]) * 3 + 1]))
+                    GetSegmentVertexIndexes.Add(trisModel[(GetSegmentTriangles[i]) * 3 + 1]);
+                
+                if (!GetSegmentVertexIndexes.Contains(trisModel[(GetSegmentTriangles[i]) * 3 + 2]))
+                    GetSegmentVertexIndexes.Add(trisModel[(GetSegmentTriangles[i]) * 3 + 2]);
+            }
+        }
+
+        //get the level x colors
+        // loop for different segment
+        for (var i = 0; i < treeNodeLevelx.Count; i++)
+        {
+            var GetSegmentVertexIndexes = treeNodeLevelx[i].GetData().verticesIndex;
+            var GetSegmentColors = treeNodeLevelx[i].GetData().color;
+
+            for (var j = 0; j < GetSegmentVertexIndexes.Count; j++)
+            {
+                colorArrayLevelx[GetSegmentVertexIndexes[j]] += (new Color(GetSegmentColors[0], GetSegmentColors[1], GetSegmentColors[2], 255) / 255);
+            }
+        }
+        //mix the colors
+        for (int j = 0; j < colorArrayLevelx.Length; j++)
+        {
+            colorArrayLevelx[j] /= colorArrayLevelx[j].a;
+        }
+
+
+
+
+        //for (int i = 0; i < treeNodeLevelx.Count; i++)
+        //{
+        //    List<int> interLevelsCageSegVerts = new List<int>();
+        //    interLevelsCageSegVerts.Clear();
+        //    filterBarMatrix(0.4, treeNodeLevelx[i].GetData().verticesIndex, interLevelsCageSegVerts);
+        //    Debug.Log("InterLevelsCageSegVerts 0:" + interLevelsCageSegVerts.Count);
+        //    treeNodeLevelx[i].GetData().cageVerticesIndex = interLevelsCageSegVerts;
+        //    Debug.Log("InterLevelsCageSegVerts 1:" + interLevelsCageSegVerts.Count);
+        //}
+
+        //Debug.Log("treeNodeLevelx cage verts 0:"+ treeNodeLevelx[0].GetData().cageVerticesIndex.Count);
+        //foreach (var VARIABLE in treeNodeLevelx[0].GetData().cageVerticesIndex)
+        //{
+        //    Debug.Log("treeNodeLevelx cage verts " + VARIABLE);
+        //}
+        
 
 
         var hierarchy = new GameObject();
         hierarchy.name = ("Hierarchy");
-        GameObject rootObj = new GameObject();
-        rootObj.name = tree.ID.tag;
-        rootObj.transform.parent = hierarchy.transform;
-        for (int i = 0; i < modelLevel.Count; i++)
-        {
-            if (i > 0)
-            {
-                for (int j = 0; j < tree.Count; j++)
-                {
-                    GameObject ChildrenObj = new GameObject();
-                    ChildrenObj.name = tree.GetChild(differentLevelModelSegments[i][j]).ID.tag;
-                    ChildrenObj.transform.parent = rootObj.transform;
-                    //Debug.Log("tree.GetChild(differentLevelModelSegments[1][i]).ID.tag:" + tree.GetChild(differentLevelModelSegments[1][j]).ID.tag);
-                }
-            }
-        }
+        rootNode.GetGameobject().transform.parent = hierarchy.transform;
+
+        //BFS(rootNode);
+
+
+        //Create the color arrays for the different-level-model
+
+
+
+
+
+
+
+
     }
 
     // Start is called before the first frame update
     private void Start()
     {
-        //populate the tree with segments
+        //populate the rootNode with segments
         
-        //Debug.Log("hello here 2" + tree.GetChild("Item 4"));
+        //Debug.Log("hello here 2" + rootNode.GetChild("Item 4"));
 
-        GetDataToLst(data["annotations"][0]["triangles"], littleFinger);
-        GetDataToLst(data["annotations"][1]["triangles"], ringFinger);
-        GetDataToLst(data["annotations"][2]["triangles"], mediumFinger);
-        GetDataToLst(data["annotations"][3]["triangles"], indexFinger);
-        GetDataToLst(data["annotations"][4]["triangles"], thumb);
-        GetDataToLst(data["annotations"][5]["triangles"], wrist);
-        GetDataToLst(data["annotations"][6]["triangles"], palm);
+        //GetDataToLst(data["annotations"][0]["triangles"], littleFinger);
+        //GetDataToLst(data["annotations"][1]["triangles"], ringFinger);
+        //GetDataToLst(data["annotations"][2]["triangles"], mediumFinger);
+        //GetDataToLst(data["annotations"][3]["triangles"], indexFinger);
+        //GetDataToLst(data["annotations"][4]["triangles"], thumb);
+        //GetDataToLst(data["annotations"][5]["triangles"], wrist);
+        //GetDataToLst(data["annotations"][6]["triangles"], palm);
 
-        var allCount = littleFinger.Count + ringFinger.Count + mediumFinger.Count + indexFinger.Count + thumb.Count +
-                wrist.Count + palm.Count;
+        //var allCount = littleFinger.Count + ringFinger.Count + mediumFinger.Count + indexFinger.Count + thumb.Count +
+        //        wrist.Count + palm.Count;
 
 
-        //Debug.Log("total length "+ k);
-        //MapSegModel(littleFinger);
-        //filterBarMatrix(threshold);
-        //foreach (var VARIABLE in littleFinger)
-        //{
-        //    Debug.Log("littleFinger " + VARIABLE);
-        //}
-        //DrawFilter(ListCageSegOutput);
+
         thresholdPrime = 1.1f;
         switchSegment = false;
-        for (var j = 0; j < AllSegtrianIndexes.Count; j++)
-        {
-            var interSegVertLists = new List<int>();
-            interSegVertLists.Clear();
+        
 
-            for (var i = 0; i < AllSegtrianIndexes[j].Count; i++)
-            {
-                //Debug.Log("littleFinger " +littleFinger[i] );
-                if (!interSegVertLists.Contains(trisModel[(AllSegtrianIndexes[j][i]-1 ) * 3]))
-                    interSegVertLists.Add(trisModel[(AllSegtrianIndexes[j][i]-1 ) * 3]);
-                //Debug.Log("vertex 1 " + sfd.trisModel[littleFinger[i] * 3]);
-
-                if (!interSegVertLists.Contains(
-                    trisModel[(AllSegtrianIndexes[j][i]-1 ) * 3 + 1]))
-                    interSegVertLists.Add(trisModel[(AllSegtrianIndexes[j][i]-1 ) * 3 + 1]);
-                //Debug.Log("vertex 3 " + sfd.trisModel[littleFinger[i] * 3 + 1]);
-
-
-                if (!interSegVertLists.Contains(
-                    trisModel[(AllSegtrianIndexes[j][i]-1 ) * 3 + 2]))
-                    interSegVertLists.Add(trisModel[(AllSegtrianIndexes[j][i]-1 ) * 3 + 2]);
-                //Debug.Log("vertex 2 " + sfd.trisModel[littleFinger[i] * 3+2]);
-                //Debug.Log("little finger triangle index " + i + " " + littleFinger[i]);
-            }
-
-            AllSegVertsIndexes.Add(interSegVertLists);
-            AllSegVertsIndexAmounts.Add(interSegVertLists.Count);
-        }
-
-        //compute the segments on the cage with a threshold 0.4(no hierarchy)
-        for (var i = 0; i < AllSegVertsIndexes.Count; i++)
-        {
-            //Debug.Log("AllSegVertsIndexes[0][i] " + AllSegVertsIndexes[0][i]);
-            List<int> InterCageSegVerts = new List<int>();
-            //InterCageSegVerts.Clear();
-            ////////////////Debug.Log("AllSegVertsIndexes.Count " + AllSegVertsIndexes.Count);
-            filterBarMatrix(0.4, AllSegVertsIndexes[i], InterCageSegVerts);
-            //Debug.Log("InterCageSegVerts " + InterCageSegVerts.Count);
-            CageAllSegVertIndex.Add(InterCageSegVerts);
-        }
-
+        //get level x cage vertices
         //compute the segments on the cage with a threshold 0.4(with hierarchy)
-        //loop for the (i)levels
-        for (int i = 0; i < modelLevel.Count; i++)
+        for (int i = 0; i < treeNodeLevelx.Count; i++)
         {
-            List<int> InterLevelsCageSegVerts = new List<int>();
-            InterLevelsCageSegVerts.Clear();
-            ////////////////Debug.Log("AllSegVertsIndexes.Count " + AllSegVertsIndexes.Count);
-            if (i == 0)
-            {
-                filterBarMatrix(0.4, tree.ID.verticesIndex, InterLevelsCageSegVerts);
-                for (int j = 0; j < InterLevelsCageSegVerts.Count; j++)
-                {
-                    differentLevelModelSegments[0][0].cageVerticesIndex.Add(InterLevelsCageSegVerts[j]);
-                }
-
-            }
-
-            if (i == 1)
-            {
-                for (int j = 0; j < tree.Count; j++)
-                {
-                    InterLevelsCageSegVerts.Clear();
-                    filterBarMatrix(0.4, tree.GetChild(differentLevelModelSegments[1][j]).ID.verticesIndex, InterLevelsCageSegVerts);
-
-                    for (int k = 0; k < InterLevelsCageSegVerts.Count; k++)
-                    {
-                        differentLevelModelSegments[1][j].cageVerticesIndex.Add(InterLevelsCageSegVerts[k]);
-                    }
-                }
-            }
+            List<int> interLevelsCageSegVerts = new List<int>();
+            interLevelsCageSegVerts.Clear();
+            filterBarMatrix(0.4, treeNodeLevelx[i].GetData().verticesIndex, interLevelsCageSegVerts);
+            treeNodeLevelx[i].GetData().cageVerticesIndex = interLevelsCageSegVerts;
+            //Debug.Log("InterLevelsCageSegVerts 1:" + interLevelsCageSegVerts.Count);
         }
 
 
@@ -509,11 +488,48 @@ using UnityEngine;
             //Debug.Log("this is the a ModelData inside for loop ModelSegVertIndexesInput.Count");
             //Debug.Log("this is the a ModelData before the loop readFileComputeNewcage.rowNumberUpdate " + readFileComputeNewcage.rowNumberUpdate);
         for (var j = 0; j < readFileComputeNewcage.columnNumberUpdate; j++)
-            if (readFileComputeNewcage.barMatrices[ModelSegVertIndexesInput[i], j] > thres)
-                //Debug.Log("readFileComputeNewcage.barMatrices " +j +" "+ readFileComputeNewcage.barMatrices[ModelSegVertIndexesInput[i], j]);
+        {
+            if (readFileComputeNewcage.barMatrices[ModelSegVertIndexesInput[i], j] > thres)//Debug.Log("readFileComputeNewcage.barMatrices " +j +" "+ readFileComputeNewcage.barMatrices[ModelSegVertIndexesInput[i], j]);
+            {
                 if (!ListCageSegOutput.Contains(j))
                     ListCageSegOutput.Add(j);
+            }
+        }
         //Debug.Log("this is the positions of the elements less than threshold " + j);
         //Debug.Log("The related cage vertices amount: " + ListCageSegOutput.Count);
     }
-}
+
+    private void BFS(TreeNode start)
+    {
+        //LINE is the final order
+        List<TreeNode> LINE = new List<TreeNode>();
+        LINE.Add(start);
+
+        //qq is a stack
+        Queue qq = new Queue();
+        qq.Enqueue(start);
+
+        start.visited = true;
+
+        TreeNode a = new TreeNode(new ModelData());
+
+        while (qq.Count != 0)
+        {
+            a = new TreeNode(new ModelData());
+            a = (TreeNode)qq.Dequeue();
+
+            List<TreeNode> a_nbs = new List<TreeNode>();
+            a_nbs = a.GetChildren();
+
+            foreach (TreeNode tmp in a_nbs.Where(k => !k.visited).ToList())
+            {
+                qq.Enqueue(tmp);
+                LINE.Add(tmp);
+                tmp.visited = true;
+            }
+        }
+    }
+
+
+
+ }
