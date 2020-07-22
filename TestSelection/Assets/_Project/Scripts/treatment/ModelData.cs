@@ -12,24 +12,30 @@ namespace Assets._Project.Scripts.treatment
 {
     public class ModelData
     {
-        public int level;
+        public int id;
         public string tag;
-        public int[] color;
+        public int level;
+        public int father;
+        public float[] color;
         public List<int> triangles;
-        public List<List<int>> verticesIndex=new List<List<int>>();
+        public List<int> verticesIndex=new List<int>();
+        public List<int> cageVerticesIndex=new List<int>();
 
         public ModelData()
         {
 
         }
 
-        public ModelData(string tag, int level, int[] color, List<int> triangles, List<List<int>> verticesIndex)
+        public ModelData(int id, string tag, int level, int father, float[] color, List<int> triangles, List<int> verticesIndex, List<int> cageVerticesIndex)
         {
+            this.id = id;
             this.tag = tag;
             this.level = level;
+            this.father = father;
             this.color = color;
             this.triangles = triangles;
             this.verticesIndex = verticesIndex;
+            this.cageVerticesIndex = cageVerticesIndex;
         }
     }
 }
