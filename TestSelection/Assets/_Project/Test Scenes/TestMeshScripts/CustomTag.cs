@@ -36,4 +36,10 @@ public class CustomTag : MonoBehaviour
     {
         tags.Add(tagName);
     }
+
+    public void Clear()
+    {
+        tags.Clear();
+    }
+
 }
