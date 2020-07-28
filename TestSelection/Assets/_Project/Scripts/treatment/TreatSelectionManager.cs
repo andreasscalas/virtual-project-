@@ -26,7 +26,6 @@ public class TreatSelectionManager : MonoBehaviour
     [HideInInspector]
     public GameObject obj;
     public List<Transform> selectionList = new List<Transform>();
-    private List<Transform> interSelectionList = new List<Transform>();
 
     private Vector3 mousePos1;
     private Vector3 mousePos2;
@@ -47,8 +46,8 @@ public class TreatSelectionManager : MonoBehaviour
     public Text voiceControlCommand;
 
     public HandModelBase rightHandModel;
-    private bool select;
-    private bool delete;
+    [HideInInspector] public bool select;
+    [HideInInspector] public bool delete;
     private bool rayhitted;
     //private bool selected;
     RaycastHit hit;

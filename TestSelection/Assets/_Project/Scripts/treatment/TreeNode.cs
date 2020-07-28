@@ -86,7 +86,7 @@ public class TreeNode : IEnumerable<TreeNode>
         return this.GetEnumerator();
     }
 
-    public int Count
+    public int GetChildrenCount
     {
         get { return this._children.Count; }
     }
