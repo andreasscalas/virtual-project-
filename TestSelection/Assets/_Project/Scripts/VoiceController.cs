@@ -10,10 +10,15 @@ public class VoiceController : MonoBehaviour
     private KeywordRecognizer keywordRecognizer;
     private Dictionary<string, Action> actions= new Dictionary<string, Action>();
     public TreatSelectionManager treatslectionManager;
-    //public MeshCreateControlPoints meshCreateControlPoints;
+    public MeshCreateControlPoints meshCreateControlPoints;
+    [HideInInspector] public ReadJson readJson;
+    public bool segmentSelect;
+    public bool segmentDelete;
 
     void Start()
     {
+        segmentSelect = false;
+        GameObject.Find("Selection Manager").GetComponent<ReadJson>();
         actions.Add("select", treatslectionManager.OnSelect);
         actions.Add("remove", treatslectionManager.OnDelete);
         actions.Add("translate", treatslectionManager.Translation);
@@ -21,6 +26,12 @@ public class VoiceController : MonoBehaviour
         //actions.Add("scale", treatslectionManager.Scale);
         //actions.Add("change scale", treatslectionManager.ChangeScale);
         
+        actions.Add("select segment", this.SelectSegment);
+        actions.Add("delete segment", this.DeleteSegment);
+        actions.Add("level zero", readJson.ChangeLevel0);
+        actions.Add("level one", readJson.ChangeLevel1);
+        actions.Add("level two", readJson.ChangeLevel2);
+
 
         keywordRecognizer = new KeywordRecognizer(actions.Keys.ToArray());
         keywordRecognizer.OnPhraseRecognized += RecognizedSpeech;
@@ -31,6 +42,16 @@ public class VoiceController : MonoBehaviour
     {
         Debug.Log(speech.text);
         actions[speech.text].Invoke();
+    }
+
+    public void SelectSegment()
+    {
+        segmentSelect = true;
+    }
+
+    public void DeleteSegment()
+    {
+        segmentDelete = true;
     }
 
 }
