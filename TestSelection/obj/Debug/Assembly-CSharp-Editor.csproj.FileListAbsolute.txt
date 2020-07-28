@@ -1,0 +1,2 @@
+C:\Users\DELL\Documents\new ModelDeformationVR\TestSelection\obj\Debug\Assembly-CSharp-Editor.csprojAssemblyReference.cache
+C:\Users\DELL\Documents\new ModelDeformationVR\TestSelection\obj\Debug\Assembly-CSharp-Editor.csproj.CoreCompileInputs.cache
