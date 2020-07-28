@@ -6,6 +6,22 @@ public class RotateTextFaceCamera : MonoBehaviour
 {
     //public Transform target;
 
+    void Start()
+    {
+        var theText = new GameObject();
+
+        var textMesh = theText.AddComponent<TextMesh>();
+        var meshRenderer = theText.AddComponent<MeshRenderer>();
+
+        // do some settings here that are needed in the component
+        // set the text
+        textMesh.text = "Worldddddddddddd!";
+        textMesh.fontSize = 89;
+        textMesh.anchor = TextAnchor.MiddleCenter;
+        theText.transform.localScale = new Vector3(0.12f, 0.12f, 0.12f);
+
+    }
+
     void Update()
     {
         // Rotate the camera every frame so it keeps looking at the target
