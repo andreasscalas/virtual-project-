@@ -120,7 +120,7 @@ public class TreatSelectionManager : MonoBehaviour
         {
             select = false;
             delete = true;
-            voiceControlCommand.text = "Delete";
+            voiceControlCommand.text = "discard";
         }
     }
 
@@ -162,7 +162,6 @@ public class TreatSelectionManager : MonoBehaviour
 
                     if (select)
                     {
-                        Debug.Log("select hit");/*hit.transform.gameObject.GetComponent<ChangeColor>().SetColor();*/
                         Debug.Log(hit.transform.name);
                         if (selection.CompareTag(selectableTag))
                         {
@@ -370,7 +369,7 @@ public class TreatSelectionManager : MonoBehaviour
     /// </summary>
     public void DeleteRecreateSelecObj()
     {        
-        Destroy(SelectedControlPoints);
+        Destroy(SelectedControlPoints); //error could be here
         InitializeSelecObj();
     }
     public void DeleteParentCollider ()
@@ -449,20 +448,22 @@ public class TreatSelectionManager : MonoBehaviour
         Debug.Log("disMax" + disMax);
         //SelectedControlPoints.transform.localScale = new Vector3(2 * disMax, 2 * disMax, 2 * disMax);
         //SelectedControlPoints.GetComponent<MeshRenderer>().material= Selected_Transparent;
-        SelectedControlPoints.GetComponent<SphereCollider>().radius = 2f;
+        //SelectedControlPoints.GetComponent<SphereCollider>().radius = 2f;
         ////SelectedControlPoints.GetComponent<SphereCollider>().center = SelectedControlPoints.transform.position;
     }
 
     void InitializeSelecObj()
     {
         //SelectedControlPoints = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-        SelectedControlPoints = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        //SelectedControlPoints = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         //GameObject SelectedControlPoints = new GameObject();
-        SelectedControlPoints.transform.localScale = new Vector3(0.11f,0.11f,0.11f);
-        var renderer = SelectedControlPoints.GetComponent<MeshRenderer>();
-        renderer.material = barMaterial;
+        //SelectedControlPoints.transform.localScale = new Vector3(0.11f,0.11f,0.11f);
+        //var renderer = SelectedControlPoints.GetComponent<MeshRenderer>();
+        //renderer.material = barMaterial;
+        SelectedControlPoints = new GameObject();
         SelectedControlPoints.name = "Selected Control Points";
         SelectedControlPoints.tag = "SelectedParent";
+
         _selectedControlPoints = SelectedControlPoints.transform;
         //SelectedControlPoints.AddComponent<MoveObjectUpdate>();
         //SelectedControlPoints.GetComponent<SphereCollider>().radius=0.048f;
