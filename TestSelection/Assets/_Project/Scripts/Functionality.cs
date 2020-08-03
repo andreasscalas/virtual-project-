@@ -6,8 +6,12 @@ using UnityEngine.UI;
 
 public class Functionality : MonoBehaviour
 {
-    public GameObject model;
-    private Image image;
+    public GameObject modelCage;
+    private Image imageCage;
+    private Image imageControlPoints;
+    Text hideDisplayCage;
+    Text hideDisplayCPs;
+
 
     private ReadJson readJson;
     //public List<bool> levels=new List<bool>();
@@ -20,10 +24,17 @@ public class Functionality : MonoBehaviour
     void Start()
     {
         levelsChange = true;
-        model = GameObject.Find("hand_cage");
+        modelCage = GameObject.Find("hand_cage");
+        modelCage.SetActive(false);
+
         //transform.horse_cage().Where(x => x.name.Contains("Patrol"));
-        image = GameObject.Find("Hide/show Cage&CPs").GetComponent<Image>();
-        image.color = new Color(0f, 0.6f, 1f, 1f);
+        imageCage = GameObject.Find("Hide/show Cage").GetComponent<Image>();
+        hideDisplayCage = GameObject.Find("Hide/show Cage").transform.Find("Text").GetComponent<Text>();
+        imageCage.color = new Color(0f, 0.6f, 1f, 1f);
+
+        imageControlPoints = GameObject.Find("Hide/show CPs").GetComponent<Image>();
+        hideDisplayCPs = GameObject.Find("Hide/show CPs").transform.Find("Text").GetComponent<Text>();
+        imageControlPoints.color = new Color(0f, 0.6f, 1f, 1f);
 
         readJson = GameObject.Find("Selection Manager").GetComponent<ReadJson>();
         for (int i = 0; i <= readJson.levelMax; i++)
@@ -35,6 +46,7 @@ public class Functionality : MonoBehaviour
 
         GameObject[] objs = (GameObject[])FindObjectsOfType(typeof(GameObject));
         
+        //after resetting, need to do this again
         for (int i = 0; i < objs.Length; i++)
         {
             if (objs[i].name.Contains("Control Point"))
@@ -51,26 +63,61 @@ public class Functionality : MonoBehaviour
         levelsChange = false;
     }
 
-    public void HideDisplayCage()
+    public void HideDisplayControlPoints()
     {
-        
-        if (model.activeSelf)
+        foreach (var VARIABLE in controlPoints)
         {
-            model.SetActive(false);
-            foreach (var VARIABLE in controlPoints)
+
+            if (VARIABLE.activeSelf)
             {
                 VARIABLE.SetActive(false);
+                hideDisplayCPs.text = "Display CPs";
+                imageControlPoints.color = new Color(0f, 1f, 0.6f, 1f);
             }
-            image.color = new Color(0f, 1f, 0.6f, 1f);
+
+            else
+            {
+                VARIABLE.SetActive(true);
+                imageControlPoints.color = new Color(0f, 0.6f, 1f, 1f);
+                hideDisplayCPs.text = "Hide CPs";
+            }
+        }
+
+        //imageControlPoints.color = new Color(0f, 1f, 0.6f, 1f);
+
+        //foreach (var VARIABLE in controlPoints)
+        //{
+        //    if (!VARIABLE.activeSelf)
+        //    {
+        //        VARIABLE.SetActive(true);
+        //    }
+        //}
+        //imageControlPoints.color = new Color(0f, 0.6f, 1f, 1f);
+
+    }
+
+    public void HideDisplayCage()
+    {
+
+        if (modelCage.activeSelf)
+        {
+            modelCage.SetActive(false);
+            //foreach (var VARIABLE in controlPoints)
+            //{
+            //    VARIABLE.SetActive(false);
+            //}
+            hideDisplayCage.text = "Display cage";
+            imageCage.color =  new Color(0f, 0.6f, 1f, 1f);
         }
         else
         {
-            model.SetActive(true);
-            foreach (var VARIABLE in controlPoints)
-            {
-                VARIABLE.SetActive(true);
-            }
-            image.color = new Color(0f, 0.6f, 1f, 1f);
+            modelCage.SetActive(true);
+            //foreach (var VARIABLE in controlPoints)
+            //{
+            //    VARIABLE.SetActive(true);
+            //}
+            hideDisplayCage.text = "Hide cage";
+            imageCage.color = new Color(0f, 1f, 0.6f, 1f);
         }
     }
 
