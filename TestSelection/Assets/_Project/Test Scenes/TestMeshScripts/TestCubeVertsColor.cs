@@ -21,9 +21,9 @@ public class TestCubeVertsColor : MonoBehaviour
         mesh.RecalculateNormals();
         for (int i = 0; i < 12; i++)
         {
-            Debug.Log("triangles " + " " + i + "    vertex " + triangles[3*i]+"     vertex position: "+ vertices[triangles[3 * i]]);
-            Debug.Log("triangles " + " " + i + "    vertex " + triangles[3*i+1]+"     vertex position: "+ vertices[triangles[3 * i+1]]);
-            Debug.Log("triangles " + " " + i + "    vertex " + triangles[3*i+2]+"     vertex position: "+ vertices[triangles[3 * i+2]]);
+            //Debug.Log("triangles " + " " + i + "    vertex " + triangles[3*i]+"     vertex position: "+ vertices[triangles[3 * i]]);
+            //Debug.Log("triangles " + " " + i + "    vertex " + triangles[3*i+1]+"     vertex position: "+ vertices[triangles[3 * i+1]]);
+            //Debug.Log("triangles " + " " + i + "    vertex " + triangles[3*i+2]+"     vertex position: "+ vertices[triangles[3 * i+2]]);
         }
     }
 }
