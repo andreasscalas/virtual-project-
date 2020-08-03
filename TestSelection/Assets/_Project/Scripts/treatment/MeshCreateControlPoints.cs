@@ -56,7 +56,7 @@ public class MeshCreateControlPoints : MonoBehaviour
 
     [HideInInspector] public Vector3 scaleCenter;
 
-    [HideInInspector] public bool scaleGO;
+    [HideInInspector] public bool scaleGO; //scaleGO to stop scaling while mesh collides with walls
 
     [SerializeField] private readonly string selectableTag = "Selectable";
 
@@ -412,7 +412,7 @@ public class MeshCreateControlPoints : MonoBehaviour
             }
         }
 
-        if (/*!InitializeMesh ||*/ UpdateModification || readJson.levelChange/*functionality.levelsChange*/)
+        if ( UpdateModification || readJson.levelChange/*functionality.levelsChange*/)
         {
 
             UpdateCage(cageVertices, _newPosCP, meshCage);
@@ -579,6 +579,7 @@ public class MeshCreateControlPoints : MonoBehaviour
         //Reset slider
         slider.value = 1;
         scale = 1;
+        //Reset the control points
     }
 
     private void ResetCageMesh(Vector3[] vertices, Vector3[] DefaultPosition, Mesh mesh)
