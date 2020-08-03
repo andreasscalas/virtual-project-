@@ -20,7 +20,6 @@ public class CustomTagEditor : Editor
 
     private void OnEnable()
     {
-        Debug.Log("i'm editor");
         unityTags = InternalEditorUtility.tags;
         tagsProp = serializedObject.FindProperty("tags");
         list = new ReorderableList(serializedObject, tagsProp, true, true, true, true);
