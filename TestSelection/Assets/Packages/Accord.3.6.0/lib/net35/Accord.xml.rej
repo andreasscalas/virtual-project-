@@ -1,0 +1,10 @@
+diff a/TestSelection/Assets/Packages/Accord.3.6.0/lib/net35/Accord.xml b/TestSelection/Assets/Packages/Accord.3.6.0/lib/net35/Accord.xml	(rejected hunks)
+@@ -1663,7 +1663,7 @@
+         </member>
+         <member name="T:Accord.Collections.RedBlackTreeDictionary`2">
+             <summary>
+-              Sorted dictionary based on a <see cref="T:Accord.Collections.RedBlackTree`1">red-black tree</see>.
++              Sorted dictionary based on a <see cref="T:Accord.Collections.RedBlackTree`1">red-black rootNode</see>.
+             </summary>
+             
+             <typeparam name="TKey">The type of keys in the collection.</typeparam>
