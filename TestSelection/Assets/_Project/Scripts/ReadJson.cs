@@ -44,7 +44,7 @@ public class ReadJson : MonoBehaviour
 
     [HideInInspector] public List<TreeNode> treeNodeLevelx = new List<TreeNode>();
     [HideInInspector] public int levelMax = new int();
-    private int levelSelect;
+    [HideInInspector] public int levelSelect;
 
 
 
@@ -63,11 +63,12 @@ public class ReadJson : MonoBehaviour
     public TreeNode rootNode;
     public bool levelChange;
     public Text levelRange;
-    public Text VoiceLevel;
+    public Text level;
+    public Text voiceLevelCommand;
 
     void Awake()
     {
-        levelSelect = 1;
+        levelSelect = 0;
         levelChange = false;
         segmentTags = new List<string>();
         meshCage = objCage.GetComponent<MeshFilter>().mesh;
@@ -265,26 +266,28 @@ public class ReadJson : MonoBehaviour
         if (levelChange)
         {
             TreatmentCPLevelx();
-            VoiceLevel.text = levelSelect.ToString(); 
+            level.text = levelSelect.ToString(); 
             //levelChange = false;
         }
     }
 
     public void ChangeLevel0()
     {
+        voiceLevelCommand.text = "Level 0";
         levelSelect = 0;
-        
         levelChange = true;
     }
 
     public void ChangeLevel1()
     {
+        voiceLevelCommand.text = "Level 1";
         levelSelect = 1;
         levelChange = true;
     }
 
     public void ChangeLevel2()
     {
+        voiceLevelCommand.text = "Level 2";
         levelSelect = 2;
         levelChange = true;
     }
@@ -379,4 +382,4 @@ public class ReadJson : MonoBehaviour
 
 
 
- }
+}
