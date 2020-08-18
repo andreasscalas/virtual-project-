@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -8,36 +7,31 @@ using UnityEngine.Windows.Speech;
 
 public class VoiceController : MonoBehaviour
 {
+    private readonly Dictionary<string, Action> actions = new Dictionary<string, Action>();
+    public DragModel dragModel;
     private KeywordRecognizer keywordRecognizer;
-    private Dictionary<string, Action> actions= new Dictionary<string, Action>();
-    public TreatSelectionManager treatslectionManager;
     public MeshCreateControlPoints meshCreateControlPoints;
     [HideInInspector] public ReadJson readJson;
-    public DragModel dragModel;
-    [HideInInspector] public bool segmentSelect;
     [HideInInspector] public bool segmentDelete;
+    [HideInInspector] public bool segmentSelect;
+    public TreatSelectionManager treatslectionManager;
     public Text voiceSelection;
 
-    void Start()
+    private void Start()
     {
         segmentSelect = false;
         readJson = GameObject.Find("Selection Manager").GetComponent<ReadJson>();
         dragModel = GameObject.Find("hand").GetComponent<DragModel>();
         actions.Add("select", treatslectionManager.OnSelect);
         actions.Add("discard", treatslectionManager.OnDelete);
-        //actions.Add("translate", treatslectionManager.Translation);
-        //actions.Add("rotate", treatslectionManager.Rotation);
-        //actions.Add("scale", treatslectionManager.Scale);
-        //actions.Add("change scale", treatslectionManager.ChangeScale);
-        
-        actions.Add("select segment", this.SelectSegment);
-        actions.Add("discard segment", this.DeleteSegment);
+        actions.Add("select segment", SelectSegment);
+        actions.Add("discard segment", DeleteSegment);
         actions.Add("level zero", readJson.ChangeLevel0);
         actions.Add("level one", readJson.ChangeLevel1);
-        actions.Add("level two", readJson.ChangeLevel2);
+        actions.Add("level two", readJson.ChangeLevel2); //"lowest level"; "highest level" as key word
         actions.Add("change level", dragModel.SwitchLevel);
         actions.Add("scale", dragModel.ChangeScaleOfModel);
-        actions.Add("stop", dragModel.StopScaleModel);
+        actions.Add("stop scaling", dragModel.StopScaleModel);
 
 
         keywordRecognizer = new KeywordRecognizer(actions.Keys.ToArray());
@@ -62,5 +56,4 @@ public class VoiceController : MonoBehaviour
         segmentDelete = true;
         voiceSelection.text = "Discard (a set of) CPs";
     }
-
 }
