@@ -22,7 +22,7 @@ public class VoiceController : MonoBehaviour
         segmentSelect = false;
         readJson = GameObject.Find("Selection Manager").GetComponent<ReadJson>();
         //dragModel = GameObject.Find("hand").GetComponent<DragModel>();
-        dragModel = GameObject.Find("flowered_teapot_high_res").GetComponent<DragModel>();
+        dragModel = GameObject.Find("flowered_teapot_simplified").GetComponent<DragModel>();
         actions.Add("select", treatslectionManager.OnSelect);
         actions.Add("discard", treatslectionManager.OnDelete);
         actions.Add("select segment", SelectSegment);

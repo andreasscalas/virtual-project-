@@ -70,7 +70,7 @@ public class ReadJson : MonoBehaviour
 
         jsonString1 =
             //File.ReadAllText(Application.streamingAssetsPath + "/" + "hand_segmentation_hierarchical_nails.txt");
-            File.ReadAllText(Application.streamingAssetsPath + "/" + "flowered_teapot_high_res.triant");
+            File.ReadAllText(Application.streamingAssetsPath + "/" + "flowered_teapot_simplified.ant.txt");
       
         data1 = JsonMapper.ToObject(jsonString1);
 
