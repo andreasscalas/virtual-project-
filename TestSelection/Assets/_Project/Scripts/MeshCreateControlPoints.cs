@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Assets._Project.Scripts.treatment;
 using Leap.Unity.Interaction;
@@ -449,6 +450,7 @@ public class MeshCreateControlPoints : MonoBehaviour
         mesh.RecalculateBounds();
         mesh.triangles = trisModel;
         mesh.colors = readJson.colorArrayLevelx;
+
     }
 
     /// <summary>

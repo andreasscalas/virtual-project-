@@ -38,7 +38,7 @@ public class ReadFileComputeNewcage : MonoBehaviour
         barMatrices = ReadMatrixFromFile(barCoordFileName, true);
         Debug.Log("load matrix 3");
 
-        Debug.Log("loading matrix 3");
+        Debug.Log("loading matrix 1");
         modelMatrices = ReadMatrixFromFile(modelFileName, false);
         Debug.Log("load matrix 1");
 
