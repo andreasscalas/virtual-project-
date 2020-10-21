@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using Accord.Math;
 using UnityEngine;
@@ -33,14 +34,19 @@ public class ReadFileComputeNewcage : MonoBehaviour
 
     private void Start()
     {
-        modelMatrices = ReadMatrixFromFile(modelFileName, false);
-        //Debug.Log("load matrix 1");
-
-        cageMatrices = ReadMatrixFromFile(cageFileName, false);
-        //Debug.Log("load matrix 2");
-
+        Debug.Log("loading matrix 3");
         barMatrices = ReadMatrixFromFile(barCoordFileName, true);
-        //Debug.Log("load matrix 3");
+        Debug.Log("load matrix 3");
+
+        Debug.Log("loading matrix 3");
+        modelMatrices = ReadMatrixFromFile(modelFileName, false);
+        Debug.Log("load matrix 1");
+
+        Debug.Log("loading matrix 2");
+        cageMatrices = ReadMatrixFromFile(cageFileName, false);
+        Debug.Log("load matrix 2");
+
+        
 
     }
 
@@ -73,7 +79,7 @@ public class ReadFileComputeNewcage : MonoBehaviour
         }
         else
         {
-            Debug.Log("File does not exist");
+            Debug.Log("File " + path + " does not exist");
             return null;
         }
 
@@ -109,16 +115,11 @@ public class ReadFileComputeNewcage : MonoBehaviour
             columnNumber = int.Parse(matrixData.Get(1));
             columnNumberUpdate = int.Parse(matrixData.Get(1));
             //Debug.Log("This is matrix B's column size:" + columnNumber);
-<<<<<<< Updated upstream
-            var Barycentric = Matrix.Create(new double[rowNumber, columnNumber]);
-            for (var i = 2; i < rowNumber + 2; i++)
-=======
             double[,] Barycentric = Matrix.Create(new double[rowNumber, columnNumber]);
             NumberFormatInfo info = new NumberFormatInfo();
             info.NumberDecimalSeparator = ".";
 
             for (int i = 2; i < rowNumber + 2; i++)
->>>>>>> Stashed changes
             {
                 var line = fileLine.Get(i);
                 var k = i - 1;
@@ -126,16 +127,11 @@ public class ReadFileComputeNewcage : MonoBehaviour
                 var eachData = line.Split(' ');
                 for (var j = 0; j < columnNumber; j++)
                 {
-<<<<<<< Updated upstream
-                    Barycentric[i - 2, j] = float.Parse(eachData.Get(j));
-                    var l = j + 1;
-=======
                     float value = float.Parse(eachData.Get(j), System.Globalization.NumberStyles.Float, info);
                     Barycentric[i - 2, j] = value;
 
                     //Barycentric[i - 2, j] = float.Parse(eachData.Get(j));
                     int l = j + 1;
->>>>>>> Stashed changes
                     //Debug.Log("To see [" + k + "," + l + "] element in Matrix B:" + Barycentric[i - 2, j].ToString("F11"));
                 }
             }

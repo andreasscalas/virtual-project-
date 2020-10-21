@@ -67,7 +67,7 @@ public class TreatSelectionManager : MonoBehaviour
                     hit.transform.gameObject.GetComponent<MeshRenderer>().material =
                         meshCreateControlPoints.cpDataList[i].defautMaterial;
             //selectionRenderer.material = defaultMaterial;
-            Debug.Log("treatselection manager _outline 0");
+            Debug.Log(Application.streamingAssetsPath);
             _outline = null;
         }
 

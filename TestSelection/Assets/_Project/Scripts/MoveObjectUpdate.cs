@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 public class MoveObjectUpdate : MonoBehaviour
 {
-    private Transform transform;
+    public Transform transform;
     public bool FreeMovimentState;
     private bool CollisionState;
     private float mZCoord;
@@ -36,7 +36,7 @@ public class MoveObjectUpdate : MonoBehaviour
         {
             transform.position = GetMouseWorldPos() + mOffSet;
         }
-        else if (!FreeMovimentState)
+        else// if (!FreeMovimentState)
         {
             var possibleMoviment = previousDragPos - GetMouseWorldPos() - mOffSet;
             possibleMoviment = Vector3.Normalize(possibleMoviment);

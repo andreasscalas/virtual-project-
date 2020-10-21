@@ -121,6 +121,75 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1001 &33726450
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: -927199367670048503, guid: b87d9bac458db444290aead56f378f68,
+        type: 3}
+      propertyPath: m_Name
+      value: flowered_teapot_cage
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: b87d9bac458db444290aead56f378f68,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: b87d9bac458db444290aead56f378f68,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: b87d9bac458db444290aead56f378f68,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: b87d9bac458db444290aead56f378f68,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: b87d9bac458db444290aead56f378f68,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: b87d9bac458db444290aead56f378f68,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: b87d9bac458db444290aead56f378f68,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: b87d9bac458db444290aead56f378f68,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: b87d9bac458db444290aead56f378f68,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: b87d9bac458db444290aead56f378f68,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: b87d9bac458db444290aead56f378f68,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: b87d9bac458db444290aead56f378f68, type: 3}
 --- !u!1001 &38454545
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -132,6 +201,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: hand
+      objectReference: {fileID: 0}
+    - target: {fileID: -927199367670048503, guid: c4ed6f6b5cd5bfb4691975924fae2a21,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2534866581884222612, guid: c4ed6f6b5cd5bfb4691975924fae2a21,
         type: 3}
@@ -215,6 +289,75 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 11bb700d6d5d6d3428b1904cec2da060, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c4ed6f6b5cd5bfb4691975924fae2a21, type: 3}
+--- !u!1001 &60886856
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: -927199367670048503, guid: 32cb4f18719199c4bae87360bc30d24b,
+        type: 3}
+      propertyPath: m_Name
+      value: flowered_teapot_high_res
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: 32cb4f18719199c4bae87360bc30d24b,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: 32cb4f18719199c4bae87360bc30d24b,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: 32cb4f18719199c4bae87360bc30d24b,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: 32cb4f18719199c4bae87360bc30d24b,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: 32cb4f18719199c4bae87360bc30d24b,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: 32cb4f18719199c4bae87360bc30d24b,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: 32cb4f18719199c4bae87360bc30d24b,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: 32cb4f18719199c4bae87360bc30d24b,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: 32cb4f18719199c4bae87360bc30d24b,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: 32cb4f18719199c4bae87360bc30d24b,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -4216859302048453862, guid: 32cb4f18719199c4bae87360bc30d24b,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 32cb4f18719199c4bae87360bc30d24b, type: 3}
 --- !u!1 &79262712
 GameObject:
   m_ObjectHideFlags: 0
@@ -3410,7 +3553,7 @@ PrefabInstance:
     - target: {fileID: -927199367670048503, guid: 88a22e320579bda45b6ddfeffe422254,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2534866581884222612, guid: 88a22e320579bda45b6ddfeffe422254,
         type: 3}
@@ -3913,12 +4056,6 @@ MonoBehaviour:
   pinkyTip: {fileID: 0}
   _chirality: 1
   _isTracked: 1
---- !u!1 &1225658508 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2534866581884222612, guid: 88a22e320579bda45b6ddfeffe422254,
-    type: 3}
-  m_PrefabInstance: {fileID: 1055755593}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1229344675
 GameObject:
   m_ObjectHideFlags: 0
@@ -4686,12 +4823,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _attachmentPoints: 4
---- !u!1 &1425029294 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2534866581884222612, guid: c4ed6f6b5cd5bfb4691975924fae2a21,
-    type: 3}
-  m_PrefabInstance: {fileID: 38454545}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1550730619
 GameObject:
   m_ObjectHideFlags: 0
@@ -4770,7 +4901,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 545401d5eeb65ce4d96707b3f8ae09fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  modelCage: {fileID: 1225658508}
+  modelCage: {fileID: 0}
 --- !u!114 &1550730623
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4791,8 +4922,8 @@ MonoBehaviour:
   levelRange: {fileID: 1419351516}
   levelSelect: 0
   modelVertices: []
-  objCage: {fileID: 1225658508}
-  objModel: {fileID: 1425029294}
+  objCage: {fileID: 0}
+  objModel: {fileID: 0}
   segmentTags: []
   trisCage: 
   trisModel: 
@@ -4821,12 +4952,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc56610cfdd4d1c4abf5b4ccf5c8f9cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  barCoordFileName: hand.coord
-  cageFileName: hand_cage
+  barCoordFileName: flowered_teapot_high_res.coord
+  cageFileName: flowered_teapot_cage
   columnNumber: 0
   columnNumberUpdate: 0
   meshCreateControlPoints: {fileID: 1550730627}
-  modelFileName: hand
+  modelFileName: flowered_teapot_high_res_ASCI
   order: 
   rowNumberUpdate: 0
 --- !u!114 &1550730627
@@ -4853,8 +4984,8 @@ MonoBehaviour:
   interactCP: []
   materialGroup1: []
   modelVertices: []
-  objCage: {fileID: 1225658508}
-  objModel: {fileID: 1425029294}
+  objCage: {fileID: 0}
+  objModel: {fileID: 0}
   outlineMaterial: {fileID: 2100000, guid: 2bb2b639fd789dc43b0575bdd3072e4e, type: 2}
   outlineMaterialGroup1: []
   readFileComputeNewcage: {fileID: 1550730625}
@@ -4874,7 +5005,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3798de383d2d6c04daed1694f26c2695, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dragModel: {fileID: 82467863}
+  dragModel: {fileID: 0}
   meshCreateControlPoints: {fileID: 1550730627}
   readJson: {fileID: 1550730623}
   segmentDelete: 0
@@ -4893,8 +5024,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a24b1d3497c3e6045b9c46d6693a4e18, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  objCollider: {fileID: 82467862}
-  dragModel: {fileID: 82467863}
+  objCollider: {fileID: 0}
+  dragModel: {fileID: 0}
 --- !u!1 &1563168198
 GameObject:
   m_ObjectHideFlags: 0

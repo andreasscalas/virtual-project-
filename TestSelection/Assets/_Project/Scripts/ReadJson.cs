@@ -69,8 +69,9 @@ public class ReadJson : MonoBehaviour
         readFileComputeNewcage = GameObject.Find("Selection Manager").GetComponent<ReadFileComputeNewcage>();
 
         jsonString1 =
-            File.ReadAllText(Application.streamingAssetsPath + "/" + "hand_segmentation_hierarchical_nails.txt");
-
+            //File.ReadAllText(Application.streamingAssetsPath + "/" + "hand_segmentation_hierarchical_nails.txt");
+            File.ReadAllText(Application.streamingAssetsPath + "/" + "flowered_teapot_high_res.triant");
+      
         data1 = JsonMapper.ToObject(jsonString1);
 
         //Instantiation of the the model's segments(instances of the segments) 
@@ -78,7 +79,7 @@ public class ReadJson : MonoBehaviour
         {
             var datatest = JsonMapper.ToJson(data1["annotations"][i]);
             importedSegmentsOfDifferentLevels.Add(JsonMapper.ToObject<ModelData>(datatest));
-            //Debug.Log("To see the colors  " + importedSegmentsOfDifferentLevels[i].color[0]);
+            Debug.Log("To see the colors  " + importedSegmentsOfDifferentLevels[i].color[0]);
         }
 
 
@@ -98,7 +99,7 @@ public class ReadJson : MonoBehaviour
         }
 
         var idMax = importedSegmentsOfDifferentLevels.Max(x => x.id);
-        ;
+        Debug.Log("levelMax detected " + idMax);
 
 
         levelMax = rootNode.GetDescendent(idMax).GetLevel();
@@ -215,6 +216,7 @@ public class ReadJson : MonoBehaviour
 
     public void ChangeLevel1()
     {
+        Console.WriteLine("Riconosco di dover cambiare livello");
         voiceLevelCommand.text = "Level 1";
         levelSelect = 1;
         levelChange = true;

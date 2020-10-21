@@ -224,6 +224,7 @@ public class CameraRayGetTriangles : MonoBehaviour
         return true;
     }
 
+    // Funzione apparentemente non utilizzata!?!
     private void OutlineControPoints(int flagSegment)
     {
         //var myList = meshCreateControlPoints.cpDataListLevels1[k].FindAll(x =>new Color( x.goColor[0].r, x.goColor[0].g , x.goColor[0].b )/255 == new Color(substitut[0], substitut[1], substitut[2])/255 );
@@ -239,14 +240,13 @@ public class CameraRayGetTriangles : MonoBehaviour
                 if (myList[m].goColor[0] == meshCreateControlPoints.materialGroup1[j].color )
                 {
                     controlPointRenderer.material = meshCreateControlPoints.outlineMaterialGroup1[j];
-                    
                 }
                 
             }
         }
         voiceController.segmentSelect = false;
     }
-
+    
 
     private void DefaultControPoints(int flagSegment)
     {

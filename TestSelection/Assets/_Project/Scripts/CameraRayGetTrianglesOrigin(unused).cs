@@ -88,6 +88,7 @@ public class CameraRayGetTrianglesOrigin : MonoBehaviour
 
     }
 
+    // Questa è la funzione che viene chiamata per individuare i CP da etichettare come selezionati una volta scelto il segmento.
     private void OutlineControPoints(int flagSegment)
     {
         //var myList = meshCreateControlPoints.cpDataListLevels1[k].FindAll(x =>new Color( x.goColor[0].r, x.goColor[0].g , x.goColor[0].b )/255 == new Color(substitut[0], substitut[1], substitut[2])/255 );
@@ -120,6 +121,7 @@ public class CameraRayGetTrianglesOrigin : MonoBehaviour
                 if (myList[m].goColor[0] == meshCreateControlPoints.materialGroup1[j].color && treatSelectionManager.selectionList.Contains(myList[m].go.transform))
                 {
                     controlPointRenderer.material = OutlineMaterial2;
+                    Debug.Log("Selezionato il CP " + myList[m].go.name);
                 }
 
 

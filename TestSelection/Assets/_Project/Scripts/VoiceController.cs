@@ -21,13 +21,14 @@ public class VoiceController : MonoBehaviour
     {
         segmentSelect = false;
         readJson = GameObject.Find("Selection Manager").GetComponent<ReadJson>();
-        dragModel = GameObject.Find("hand").GetComponent<DragModel>();
+        //dragModel = GameObject.Find("hand").GetComponent<DragModel>();
+        dragModel = GameObject.Find("flowered_teapot_high_res").GetComponent<DragModel>();
         actions.Add("select", treatslectionManager.OnSelect);
         actions.Add("discard", treatslectionManager.OnDelete);
         actions.Add("select segment", SelectSegment);
         actions.Add("discard segment", DeleteSegment);
         actions.Add("level zero", readJson.ChangeLevel0);
-        actions.Add("level one", readJson.ChangeLevel1);
+        actions.Add("cambia", readJson.ChangeLevel1);
         actions.Add("level two", readJson.ChangeLevel2); //"lowest level"; "highest level" as key word
         actions.Add("change level", dragModel.SwitchLevel);
         actions.Add("scale", dragModel.ChangeScaleOfModel);
