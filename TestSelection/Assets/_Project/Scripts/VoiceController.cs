@@ -26,7 +26,7 @@ public class VoiceController : MonoBehaviour
         actions.Add("select", treatslectionManager.OnSelect);
         actions.Add("discard", treatslectionManager.OnDelete);
         actions.Add("select segment", treatslectionManager.OnSelectSegment);
-        actions.Add("discard segment", DeleteSegment);
+        actions.Add("discard segment", treatslectionManager.OnDeleteSegment);
         actions.Add("level zero", readJson.ChangeLevel0);
         actions.Add("cambia", readJson.ChangeLevel1);
         actions.Add("level two", readJson.ChangeLevel2); //"lowest level"; "highest level" as key word
@@ -47,9 +47,4 @@ public class VoiceController : MonoBehaviour
     }
 
 
-    public void DeleteSegment()
-    {
-        segmentDelete = true;
-        voiceSelection.text = "Discard (a set of) CPs";
-    }
 }

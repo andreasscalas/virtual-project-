@@ -90,7 +90,6 @@ public class TreatSelectionManager : MonoBehaviour
         CastSelectRay(delete);
     }
 
-
     public void OnSelect()
     {
         if (hit.transform.tag == "Selectable")
@@ -102,12 +101,6 @@ public class TreatSelectionManager : MonoBehaviour
     }
 
 
-    public void OnSelectSegment()
-    {
-        segmentSelect = true;
-        voiceControlCommand.text = "Select (a set of) CPs";
-    }
-
     public void OnDelete()
     {
         if (hit.transform.tag == "Selectable")
@@ -116,6 +109,19 @@ public class TreatSelectionManager : MonoBehaviour
             delete = true;
             voiceControlCommand.text = "discard";
         }
+    }
+
+    public void OnSelectSegment()
+    {
+        segmentSelect = true;
+        voiceControlCommand.text = "Select (a set of) CPs";
+    }
+
+
+    public void OnDeleteSegment()
+    {
+        segmentDelete = true;
+        voiceControlCommand.text = "Discard (a set of) CPs";
     }
 
 
@@ -190,7 +196,6 @@ public class TreatSelectionManager : MonoBehaviour
                         }
 
                         Destroy(selection.GetComponent<InteractionBehaviour>());
-                        select = false;
                         //selected = true;
                     }
 
@@ -249,7 +254,6 @@ public class TreatSelectionManager : MonoBehaviour
                             }
                         }
 
-                        delete = false;
                     }
 
                     _outline = selection;
@@ -268,8 +272,12 @@ public class TreatSelectionManager : MonoBehaviour
                         }
 
                     }
-                } 
+                }
 
+                select = false;
+                delete = false;
+                segmentSelect = false;
+                segmentDelete = false;
             }
         }
     }
@@ -308,6 +316,14 @@ public class TreatSelectionManager : MonoBehaviour
                     controlPointRenderer.material = OutlineMaterial2;
                 }
 
+
+                if (segmentDelete)
+                {
+                    selectionList.Remove(myList[m].go.transform);
+                    myList[m].go.GetComponent<MeshRenderer>().material = myList[m].defautMaterial;
+                    myList[m].go.transform.parent = null;
+                    myList[m].go.transform.parent = meshCreateControlPoints._initializedControlPoints;
+                }
 
 
             }
