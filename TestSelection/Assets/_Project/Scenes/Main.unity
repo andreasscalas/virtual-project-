@@ -4966,6 +4966,9 @@ MonoBehaviour:
   selectionList: []
   unselectedParentTag: UnselectedParent
   voiceControlCommand: {fileID: 1292404012}
+  modelGameObject: {fileID: 741077264}
+  segmentDelete: 0
+  segmentSelect: 0
 --- !u!4 &1550730621
 Transform:
   m_ObjectHideFlags: 0
@@ -5303,11 +5306,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: cage mesh
       objectReference: {fileID: 0}
-    - target: {fileID: -5975033157549033438, guid: b87d9bac458db444290aead56f378f68,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: b87d9bac458db444290aead56f378f68,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -5368,6 +5366,11 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 10e8554db567b514fa512e680271a666, type: 2}
+    - target: {fileID: -5975033157549033438, guid: b87d9bac458db444290aead56f378f68,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b87d9bac458db444290aead56f378f68, type: 3}
 --- !u!1 &1775228371 stripped

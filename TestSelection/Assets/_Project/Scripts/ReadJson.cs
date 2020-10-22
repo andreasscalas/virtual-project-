@@ -171,13 +171,6 @@ public class ReadJson : MonoBehaviour
 
             if (GetNode.GetLevel() == levelSelect /* x */)
                 treeNodeLevelx.Add(GetNode);
-            //for (int j = 0; j < importedSegmentsOfDifferentLevels[i].verticesIndex.Count; j++)
-            //{
-            //    var Getcolor = importedSegmentsOfDifferentLevels[i].color;
-            //    colorArrayLevelx.Add(new Color(Getcolor[0], Getcolor[1], Getcolor[2])/255);
-            //}
-
-            //UnityEngine.Debug.Log("rootNode level x " + rootNode.GetDescendent(importedSegmentsOfDifferentLevels[i].id).GetData().tag);
         }
 
 
