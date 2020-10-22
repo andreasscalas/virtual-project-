@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Assets._Project.Scripts.treatment;
+using System.Diagnostics;
 
 public class CameraRayGetTrianglesOrigin : MonoBehaviour
 {
@@ -43,8 +44,7 @@ public class CameraRayGetTrianglesOrigin : MonoBehaviour
 
         hitMeshCollider = Physics.Raycast(ray, out hit);
 
-
-        
+        UnityEngine.Debug.Log("QUI CI ARRIVA");
         if (/*flagSegment >= 0 */intersectSegmentIndexes!=null)
         {
             foreach (var VARIABLE in intersectSegmentIndexes)
@@ -55,7 +55,7 @@ public class CameraRayGetTrianglesOrigin : MonoBehaviour
             }
 
             //DefaultControPoints(flagSegment);
-            //    Debug.Log("CP has been set default material");
+            //    UnityEngine.Debug.Log("CP has been set default material");
             //intersectSegmentIndexes = null;
             intersectSegmentIndexes.Clear();
 
@@ -70,7 +70,7 @@ public class CameraRayGetTrianglesOrigin : MonoBehaviour
                 {
                     if ((readJson.treeNodeLevelx[i].GetData().triangles[j]==hit.triangleIndex))
                     {
-                        //Debug.Log("flagSegment:" );
+                        //UnityEngine.Debug.Log("flagSegment:" );
                         intersectSegmentIndexes.Add(i);
                         foreach (var VARIABLE in intersectSegmentIndexes)
                         {
@@ -121,7 +121,7 @@ public class CameraRayGetTrianglesOrigin : MonoBehaviour
                 if (myList[m].goColor[0] == meshCreateControlPoints.materialGroup1[j].color && treatSelectionManager.selectionList.Contains(myList[m].go.transform))
                 {
                     controlPointRenderer.material = OutlineMaterial2;
-                    Debug.Log("Selezionato il CP " + myList[m].go.name);
+                    UnityEngine.Debug.Log("Selezionato il CP " + myList[m].go.name);
                 }
 
 

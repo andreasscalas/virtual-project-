@@ -3,6 +3,7 @@ using Leap.Unity.Interaction;
 using UnityEngine;
 using UnityEngine.UI;
 
+
 public class TreatSelectionManager : MonoBehaviour
 {
     private Transform _outline;
@@ -41,6 +42,13 @@ public class TreatSelectionManager : MonoBehaviour
     [SerializeField] private string unselectedParentTag = "UnselectedParent";
 
     public Text voiceControlCommand;
+
+    /*****************Andreas Editing****************/
+    private List<int> highlightedAnnotation = new List<int>();
+    public GameObject modelGameObject;
+    [HideInInspector] public bool segmentDelete;
+    [HideInInspector] public bool segmentSelect;
+    /************************************************/
 
     //public Text objectselected;
     //public Text objectstored;
@@ -93,6 +101,13 @@ public class TreatSelectionManager : MonoBehaviour
         }
     }
 
+
+    public void OnSelectSegment()
+    {
+        segmentSelect = true;
+        voiceControlCommand.text = "Select (a set of) CPs";
+    }
+
     public void OnDelete()
     {
         if (hit.transform.tag == "Selectable")
@@ -110,12 +125,30 @@ public class TreatSelectionManager : MonoBehaviour
         {
             Debug.DrawRay(Camera.main.transform.position, 1000 * Camera.main.transform.forward, Color.green);
 
+
             var ray = new Ray(Camera.main.transform.position, 1000 * Camera.main.transform.forward);
 
             if (Physics.Raycast(ray, out hit))
             {
                 var selection = hit.transform;
-                //Debug.Log("this is a string in once hit happens");
+
+                for (int i = 0; i < highlightedAnnotation.Count; i++)
+                {
+
+                    List<int> associatedCageVertices = meshCreateControlPoints.readJson.treeNodeLevelx[highlightedAnnotation[i]].GetData().cageVerticesIndex;
+                    var associatedControlPointsData = meshCreateControlPoints.cpDataList.FindAll(x => associatedCageVertices.Contains(x.goIndex));
+                    foreach(var cpData in associatedControlPointsData)
+                    {
+                        if (selectionList.Contains(cpData.go.transform) == false)
+                            cpData.go.GetComponent<MeshRenderer>().material = cpData.defautMaterial;
+                        else
+                            cpData.go.GetComponent<MeshRenderer>().material = highlightMaterial;
+                    }
+
+
+                }
+                highlightedAnnotation.Clear();
+
                 if (hit.transform.tag == "Selectable")
                 {
                     //outline the gameobject
@@ -220,9 +253,66 @@ public class TreatSelectionManager : MonoBehaviour
                     }
 
                     _outline = selection;
-                }
+                } else if (hit.transform.name.Equals(modelGameObject.name))
+                {
+                    for (int i = 0; i < meshCreateControlPoints.readJson.treeNodeLevelx.Count; i++)
+                    {
+                        for (int j = 0; j < meshCreateControlPoints.readJson.treeNodeLevelx[i].GetData().triangles.Count; j++)
+                        {
+                            if ((meshCreateControlPoints.readJson.treeNodeLevelx[i].GetData().triangles[j] == hit.triangleIndex))
+                            {
+                                highlightedAnnotation.Add(i);
+                                OutlineControPoints(i);
+                                break;
+                            }
+                        }
+
+                    }
+                } 
+
             }
         }
+    }
+
+    private void OutlineControPoints(int flagSegment)
+    {
+        //var myList = meshCreateControlPoints.cpDataListLevels1[k].FindAll(x =>new Color( x.goColor[0].r, x.goColor[0].g , x.goColor[0].b )/255 == new Color(substitut[0], substitut[1], substitut[2])/255 );
+        //float[] segmentColorSubstitute= readJson.treeNodeLevelx[flagSegment].GetData().color;
+        //myList = meshCreateControlPoints.cpDataList.FindAll(x => x.goColor[0] == new Color(segmentColorSubstitute[0], segmentColorSubstitute[1], segmentColorSubstitute[2],255)/255/*x.goTags.Contains(readJson.treeNodeLevelx[flagSegment].GetData().tag)*/);
+        //find out the control points instances that belong to s segment of levelx.
+        List<int> segmentVertexSubstitute = meshCreateControlPoints.readJson.treeNodeLevelx[flagSegment].GetData().cageVerticesIndex;
+        var myList = meshCreateControlPoints.cpDataList.FindAll(x => segmentVertexSubstitute.Contains(x.goIndex));
+
+
+
+        for (int m = 0; m < myList.Count; m++)
+        {
+            var controlPointRenderer = myList[m].go.GetComponent<MeshRenderer>();
+
+            for (int j = 0; j < meshCreateControlPoints.materialGroup1.Count; j++)
+            {
+                if (myList[m].goColor[0] == meshCreateControlPoints.materialGroup1[j].color && !selectionList.Contains(myList[m].go.transform))
+                {
+                    controlPointRenderer.material = meshCreateControlPoints.outlineMaterialGroup1[j];
+                    if (segmentSelect)
+                    {
+                        selectionList.Add(myList[m].go.transform);
+                        myList[m].go.GetComponent<MeshRenderer>().material = OutlineMaterial2;
+                        myList[m].go.transform.parent = null;
+                        myList[m].go.transform.parent = _selectedControlPoints;
+                    }
+                }
+
+                if (myList[m].goColor[0] == meshCreateControlPoints.materialGroup1[j].color && selectionList.Contains(myList[m].go.transform))
+                {
+                    controlPointRenderer.material = OutlineMaterial2;
+                }
+
+
+
+            }
+        }
+        segmentSelect = false;
     }
 
     // translation, rotation and scaling for mouse version

@@ -25,10 +25,10 @@ public class VoiceController : MonoBehaviour
         dragModel = GameObject.Find("flowered_teapot_simplified").GetComponent<DragModel>();
         actions.Add("select", treatslectionManager.OnSelect);
         actions.Add("discard", treatslectionManager.OnDelete);
-        actions.Add("pippo", SelectSegment);
+        actions.Add("select segment", treatslectionManager.OnSelectSegment);
         actions.Add("discard segment", DeleteSegment);
         actions.Add("level zero", readJson.ChangeLevel0);
-        actions.Add("level one", readJson.ChangeLevel1);
+        actions.Add("cambia", readJson.ChangeLevel1);
         actions.Add("level two", readJson.ChangeLevel2); //"lowest level"; "highest level" as key word
         actions.Add("change level", dragModel.SwitchLevel);
         actions.Add("scale", dragModel.ChangeScaleOfModel);
@@ -46,11 +46,6 @@ public class VoiceController : MonoBehaviour
         actions[speech.text].Invoke();
     }
 
-    public void SelectSegment()
-    {
-        segmentSelect = true;
-        voiceSelection.text = "Select (a set of) CPs";
-    }
 
     public void DeleteSegment()
     {

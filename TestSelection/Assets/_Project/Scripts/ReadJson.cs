@@ -193,7 +193,7 @@ public class ReadJson : MonoBehaviour
         {
             var interLevelsCageSegVerts = new List<int>();
             interLevelsCageSegVerts.Clear();
-            filterBarMatrix(0.4, treeNodeLevelx[i].GetData().verticesIndex, interLevelsCageSegVerts);
+            filterBarMatrix(0.1, treeNodeLevelx[i].GetData().verticesIndex, interLevelsCageSegVerts);
             treeNodeLevelx[i].GetData().cageVerticesIndex = interLevelsCageSegVerts;
         }
     }
