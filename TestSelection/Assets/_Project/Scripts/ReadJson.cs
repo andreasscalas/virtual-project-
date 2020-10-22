@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Assets._Project.Scripts.treatment;
@@ -67,7 +68,10 @@ public class ReadJson : MonoBehaviour
 
         meshCreateControlPoints = GameObject.Find("Selection Manager").GetComponent<MeshCreateControlPoints>();
         readFileComputeNewcage = GameObject.Find("Selection Manager").GetComponent<ReadFileComputeNewcage>();
+    }
 
+    public void init() 
+    { 
         jsonString1 =
             //File.ReadAllText(Application.streamingAssetsPath + "/" + "hand_segmentation_hierarchical_nails.txt");
             File.ReadAllText(Application.streamingAssetsPath + "/" + "flowered_teapot_simplified.ant.txt");
@@ -80,7 +84,7 @@ public class ReadJson : MonoBehaviour
             var datatest = JsonMapper.ToJson(data1["annotations"][i]);
             importedSegmentsOfDifferentLevels.Add(JsonMapper.ToObject<ModelData>(datatest));
 
-            Debug.Log("To see the colors  " + importedSegmentsOfDifferentLevels[i].color[0]);
+            //UnityEngine.Debug.Log("To see the colors  " + importedSegmentsOfDifferentLevels[i].color[0]);
         }
 
 
@@ -103,6 +107,8 @@ public class ReadJson : MonoBehaviour
                     GetSegmentVertexIndexes.Add(trisModel[GetSegmentTriangles[j] * 3 + 2]);
 
             }
+
+            TresholdComputeCageVertices(rootNode);
         }
         //loop for levels
         for (var i = 0; i < importedSegmentsOfDifferentLevels.Count; i++)
@@ -122,8 +128,10 @@ public class ReadJson : MonoBehaviour
 
                 if (!GetSegmentVertexIndexes.Contains(trisModel[GetSegmentTriangles[j] * 3 + 2]))
                     GetSegmentVertexIndexes.Add(trisModel[GetSegmentTriangles[j] * 3 + 2]);
-            
+
             }
+            TresholdComputeCageVertices(node);
+            
 
             var father =
                 importedSegmentsOfDifferentLevels.Find(x => x.id == importedSegmentsOfDifferentLevels[i].father);
@@ -133,11 +141,11 @@ public class ReadJson : MonoBehaviour
         }
 
         var idMax = importedSegmentsOfDifferentLevels.Max(x => x.id);
-        Debug.Log("levelMax detected " + idMax);
+        UnityEngine.Debug.Log("levelMax detected " + idMax);
 
 
         levelMax = rootNode.GetDescendent(idMax).GetLevel();
-        Debug.Log("levelMax " + levelMax);
+        UnityEngine.Debug.Log("levelMax " + levelMax);
 
         levelRange.text = "0-" + levelMax;
         TreatmentCPLevelx();
@@ -169,7 +177,7 @@ public class ReadJson : MonoBehaviour
             //    colorArrayLevelx.Add(new Color(Getcolor[0], Getcolor[1], Getcolor[2])/255);
             //}
 
-            //Debug.Log("rootNode level x " + rootNode.GetDescendent(importedSegmentsOfDifferentLevels[i].id).GetData().tag);
+            //UnityEngine.Debug.Log("rootNode level x " + rootNode.GetDescendent(importedSegmentsOfDifferentLevels[i].id).GetData().tag);
         }
 
 
@@ -192,7 +200,6 @@ public class ReadJson : MonoBehaviour
         for (var j = 0; j < colorArrayLevelx.Length; j++) colorArrayLevelx[j] /= colorArrayLevelx[j].a;
 
 
-        TresholdComputeCageVertices();
     }
 
     // Start is called before the first frame update
@@ -202,17 +209,16 @@ public class ReadJson : MonoBehaviour
         //switchSegment = false;
     }
 
-    private void TresholdComputeCageVertices()
+    private void TresholdComputeCageVertices(TreeNode n)
     {
         //get level x cage vertices
         //compute the segments on the cage with a threshold 0.4(with hierarchy)
-        for (var i = 0; i < treeNodeLevelx.Count; i++)
-        {
-            var interLevelsCageSegVerts = new List<int>();
-            interLevelsCageSegVerts.Clear();
-            filterBarMatrix(0.2, treeNodeLevelx[i].GetData().verticesIndex, interLevelsCageSegVerts);
-            treeNodeLevelx[i].GetData().cageVerticesIndex = interLevelsCageSegVerts;
-        }
+        
+        var interLevelsCageSegVerts = new List<int>();
+        interLevelsCageSegVerts.Clear();
+        filterBarMatrix(0.2, n.GetData().verticesIndex, interLevelsCageSegVerts);
+        n.GetData().cageVerticesIndex = interLevelsCageSegVerts;
+
     }
 
     private void Update()
@@ -273,8 +279,8 @@ public class ReadJson : MonoBehaviour
         for (var i = 0; i < jsonData.Count; i++)
         {
             var interData = Convert.ToString(jsonData[i]);
-            //Debug.Log(interData);
-            //Debug.Log(Int32.Parse(interData));
+            //UnityEngine.Debug.Log(interData);
+            //UnityEngine.Debug.Log(Int32.Parse(interData));
             var k = int.Parse(interData);
             Mylist.Add(k);
         }
@@ -287,18 +293,25 @@ public class ReadJson : MonoBehaviour
     /// <param name="thresHold"></param>
     public void filterBarMatrix(double thres, List<int> ModelSegVertIndexesInput, List<int> ListCageSegOutput)
     {
-        //Debug.Log("this is the a ModelData inside filter");
+        //UnityEngine.Debug.Log("this is the a ModelData inside filter");
+
         ListCageSegOutput.Clear();
         for (var i = 0; i < ModelSegVertIndexesInput.Count; i++)
-            //Debug.Log("this is the a ModelData inside for loop ModelSegVertIndexesInput.Count");
-            //Debug.Log("this is the a ModelData before the loop readFileComputeNewcage.rowNumberUpdate " + readFileComputeNewcage.rowNumberUpdate);
-        for (var j = 0; j < readFileComputeNewcage.columnNumberUpdate; j++)
-            if (readFileComputeNewcage.barMatrices[ModelSegVertIndexesInput[i], j] > thres
-            ) //Debug.Log("readFileComputeNewcage.barMatrices " +j +" "+ readFileComputeNewcage.barMatrices[ModelSegVertIndexesInput[i], j]);
-                if (!ListCageSegOutput.Contains(j))
-                    ListCageSegOutput.Add(j);
-        //Debug.Log("this is the positions of the elements less than threshold " + j);
-        //Debug.Log("The related cage vertices amount: " + ListCageSegOutput.Count);
+        {
+            for (var j = 0; j < readFileComputeNewcage.columnNumberUpdate; j++)
+            {
+                if (readFileComputeNewcage.barMatrices[ModelSegVertIndexesInput[i], j] > thres)
+                {
+                    if (!ListCageSegOutput.Contains(j))
+                        ListCageSegOutput.Add(j);
+                }
+                    
+            }
+                
+        }
+        
+        //UnityEngine.Debug.Log("this is the positions of the elements less than threshold " + j);
+        //UnityEngine.Debug.Log("The related cage vertices amount: " + ListCageSegOutput.Count);
     }
 
     private void BFS(TreeNode start)

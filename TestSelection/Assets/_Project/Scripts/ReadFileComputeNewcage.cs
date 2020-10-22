@@ -46,7 +46,7 @@ public class ReadFileComputeNewcage : MonoBehaviour
         cageMatrices = ReadMatrixFromFile(cageFileName, false);
         Debug.Log("load matrix 2");
 
-        
+        meshCreateControlPoints.readJson.init();
 
     }
 
