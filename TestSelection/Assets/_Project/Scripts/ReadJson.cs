@@ -71,7 +71,7 @@ public class ReadJson : MonoBehaviour
         jsonString1 =
             //File.ReadAllText(Application.streamingAssetsPath + "/" + "hand_segmentation_hierarchical_nails.txt");
             File.ReadAllText(Application.streamingAssetsPath + "/" + "flowered_teapot_simplified.ant.txt");
-      
+
         data1 = JsonMapper.ToObject(jsonString1);
 
         //Instantiation of the the model's segments(instances of the segments) 
@@ -79,6 +79,7 @@ public class ReadJson : MonoBehaviour
         {
             var datatest = JsonMapper.ToJson(data1["annotations"][i]);
             importedSegmentsOfDifferentLevels.Add(JsonMapper.ToObject<ModelData>(datatest));
+
             Debug.Log("To see the colors  " + importedSegmentsOfDifferentLevels[i].color[0]);
         }
 
@@ -86,11 +87,44 @@ public class ReadJson : MonoBehaviour
         var segmentLevel0 = importedSegmentsOfDifferentLevels.Find(x => x.father == -1);
 
         rootNode = new TreeNode(segmentLevel0);
+        //Andreas: Questa cosa è a dir poco oscena, ma sono costretto a farla per non riscrivere il codice 
+        { 
+            var GetSegmentTriangles = rootNode.GetData().triangles;
+            var GetSegmentVertexIndexes = rootNode.GetData().verticesIndex;
+            for (var j = 0; j < GetSegmentTriangles.Count; j++)
+            {
+                if (!GetSegmentVertexIndexes.Contains(trisModel[GetSegmentTriangles[j] * 3]))
+                    GetSegmentVertexIndexes.Add(trisModel[GetSegmentTriangles[j] * 3]);
+
+                if (!GetSegmentVertexIndexes.Contains(trisModel[GetSegmentTriangles[j] * 3 + 1]))
+                    GetSegmentVertexIndexes.Add(trisModel[GetSegmentTriangles[j] * 3 + 1]);
+
+                if (!GetSegmentVertexIndexes.Contains(trisModel[GetSegmentTriangles[j] * 3 + 2]))
+                    GetSegmentVertexIndexes.Add(trisModel[GetSegmentTriangles[j] * 3 + 2]);
+
+            }
+        }
         //loop for levels
         for (var i = 0; i < importedSegmentsOfDifferentLevels.Count; i++)
         {
             if (importedSegmentsOfDifferentLevels[i].id == segmentLevel0.id) continue;
             var node = new TreeNode(importedSegmentsOfDifferentLevels[i]);
+            
+            var GetSegmentTriangles = node.GetData().triangles;
+            var GetSegmentVertexIndexes = node.GetData().verticesIndex;
+            for (var j = 0; j < GetSegmentTriangles.Count; j++)
+            {
+                if (!GetSegmentVertexIndexes.Contains(trisModel[GetSegmentTriangles[j] * 3]))
+                    GetSegmentVertexIndexes.Add(trisModel[GetSegmentTriangles[j] * 3]);
+
+                if (!GetSegmentVertexIndexes.Contains(trisModel[GetSegmentTriangles[j] * 3 + 1]))
+                    GetSegmentVertexIndexes.Add(trisModel[GetSegmentTriangles[j] * 3 + 1]);
+
+                if (!GetSegmentVertexIndexes.Contains(trisModel[GetSegmentTriangles[j] * 3 + 2]))
+                    GetSegmentVertexIndexes.Add(trisModel[GetSegmentTriangles[j] * 3 + 2]);
+            
+            }
+
             var father =
                 importedSegmentsOfDifferentLevels.Find(x => x.id == importedSegmentsOfDifferentLevels[i].father);
 
@@ -139,24 +173,7 @@ public class ReadJson : MonoBehaviour
         }
 
 
-        // find the vertices indexes for level x
-        // loop for different segment
-        for (var j = 0; j < treeNodeLevelx.Count; j++)
-        {
-            var GetSegmentTriangles = treeNodeLevelx[j].GetData().triangles;
-            var GetSegmentVertexIndexes = treeNodeLevelx[j].GetData().verticesIndex;
-            for (var i = 0; i < GetSegmentTriangles.Count; i++)
-            {
-                if (!GetSegmentVertexIndexes.Contains(trisModel[GetSegmentTriangles[i] * 3]))
-                    GetSegmentVertexIndexes.Add(trisModel[GetSegmentTriangles[i] * 3]);
-
-                if (!GetSegmentVertexIndexes.Contains(trisModel[GetSegmentTriangles[i] * 3 + 1]))
-                    GetSegmentVertexIndexes.Add(trisModel[GetSegmentTriangles[i] * 3 + 1]);
-
-                if (!GetSegmentVertexIndexes.Contains(trisModel[GetSegmentTriangles[i] * 3 + 2]))
-                    GetSegmentVertexIndexes.Add(trisModel[GetSegmentTriangles[i] * 3 + 2]);
-            }
-        }
+        
 
         //get the level x colors
         // loop for different segment
@@ -193,7 +210,7 @@ public class ReadJson : MonoBehaviour
         {
             var interLevelsCageSegVerts = new List<int>();
             interLevelsCageSegVerts.Clear();
-            filterBarMatrix(0.1, treeNodeLevelx[i].GetData().verticesIndex, interLevelsCageSegVerts);
+            filterBarMatrix(0.2, treeNodeLevelx[i].GetData().verticesIndex, interLevelsCageSegVerts);
             treeNodeLevelx[i].GetData().cageVerticesIndex = interLevelsCageSegVerts;
         }
     }

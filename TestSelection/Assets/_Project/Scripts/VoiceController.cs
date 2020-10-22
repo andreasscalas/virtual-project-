@@ -28,7 +28,7 @@ public class VoiceController : MonoBehaviour
         actions.Add("select segment", treatslectionManager.OnSelectSegment);
         actions.Add("discard segment", treatslectionManager.OnDeleteSegment);
         actions.Add("level zero", readJson.ChangeLevel0);
-        actions.Add("cambia", readJson.ChangeLevel1);
+        actions.Add("level one", readJson.ChangeLevel1);
         actions.Add("level two", readJson.ChangeLevel2); //"lowest level"; "highest level" as key word
         actions.Add("change level", dragModel.SwitchLevel);
         actions.Add("scale", dragModel.ChangeScaleOfModel);
