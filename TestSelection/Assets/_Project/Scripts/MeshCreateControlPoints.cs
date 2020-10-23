@@ -142,6 +142,8 @@ public class MeshCreateControlPoints : MonoBehaviour
                 cpData.goLevel = readJson.treeNodeLevelx[i].GetLevel();
 
                 cpData.goColor.Add(new Color(getColor[0], getColor[1], getColor[2], 255) / 255);
+                cpData.defautMaterial = readJson.treeNodeLevelx[i].GetData().defautMaterial;
+                cpData.outlineMaterial = readJson.treeNodeLevelx[i].GetData().outlineMaterial;
                 //Debug.Log("cpData.goTags vertices" + cpData.goTags.Last());
                 cpDataList.Add(cpData);
             }
@@ -157,21 +159,6 @@ public class MeshCreateControlPoints : MonoBehaviour
             cpDataList[i].goColor.Add(mycolor);
         }
 
-
-        CreateMaterial();
-
-        //load the defaut materials for the segments on the cage(with hierarchy)
-        materialGroup1.Clear();
-        outlineMaterialGroup1.Clear();
-        for (var k = 0; k < colorAmountsOfDifferentlevels; k++)
-        {
-            materialGroup1.Add(
-                Resources.Load(string.Format("level{0}, Default Material Group {1}", cpDataList.Last().goLevel, k),
-                    typeof(Material)) as Material);
-            outlineMaterialGroup1.Add(
-                Resources.Load(string.Format("level{0}, Outlined Material Group {1}", cpDataList.Last().goLevel, k),
-                    typeof(Material)) as Material);
-        }
 
         //create all CPs
         if (controlPointList.Count == 0)
@@ -196,47 +183,42 @@ public class MeshCreateControlPoints : MonoBehaviour
 
         //color, add tags to CPs of different
         for (var i = 0; i < cpDataList.Count; i++)
-        for (var j = 0; j < controlPointList.Count; j++)
-            if (controlPointList[j].transform.position == cageVertices[cpDataList[i].goIndex])
-            {
-                cpDataList[i].go = controlPointList[j];
-                var tagSystem0 = cpDataList[i].go.GetComponent<CustomTag>();
-                if (tagSystem0 == null) cpDataList[i].go.AddComponent<CustomTag>();
-                var tagSystem1 = cpDataList[i].go.GetComponent<CustomTag>();
-                tagSystem1.Clear();
-
-                for (var k = 0; k < cpDataList[i].goTags.Count; k++) tagSystem1.Add(cpDataList[i].goTags[k]);
-
-                var controlPointRenderer = cpDataList[i].go.GetComponent<MeshRenderer>();
-                //Find the correct material for this CP
-                for (var k = 0; k < materialGroup1.Count; k++)
-                    if (!treatSelectionManager.selectionList.Contains(cpDataList[i].go.transform))
-                        if (cpDataList[i].goColor[0] == materialGroup1[k].color)
-                        {
-                            controlPointRenderer.material = materialGroup1[k];
-                            //Debug.Log("this is a string inside add material to class 0");
-                            cpDataList[i].defautMaterial = materialGroup1[k];
-                            //Debug.Log("this is a string inside add material to class 1");
-                            cpDataList[i].outlineMaterial = outlineMaterialGroup1[k];
-                        }
-            }
-
-        //find out the control points that belong to no segment in the cpDatalist, assign them materials etc.
-        for (var i = 0; i < controlPointList.Count; i++)
         {
-            var cpData = new ControlPointsData();
-            cpData.go = controlPointList[i];
-            var controlPointsOfNoSegment = cpDataList.Find(x => x.go.name == controlPointList[i].name);
-            if (controlPointsOfNoSegment == null && !treatSelectionManager.selectionList.Contains(cpData.go.transform)
-            ) //belong to the non=annotated segment
+            for (var j = 0; j < controlPointList.Count; j++)
             {
-                cpData.go.GetComponent<MeshRenderer>().material = defaultMaterial;
-                cpData.defautMaterial = defaultMaterial;
-                cpData.outlineMaterial = outlineMaterial;
-                cpData.goColor.Add(new Color(0, 0, 0, 1));
-                cpDataList.Add(cpData);
+                if (controlPointList[j].transform.position == cageVertices[cpDataList[i].goIndex])
+                {
+                    cpDataList[i].go = controlPointList[j];
+                    var tagSystem0 = cpDataList[i].go.GetComponent<CustomTag>();
+                    if (tagSystem0 == null) cpDataList[i].go.AddComponent<CustomTag>();
+                    var tagSystem1 = cpDataList[i].go.GetComponent<CustomTag>();
+                    tagSystem1.Clear();
+
+                    for (var k = 0; k < cpDataList[i].goTags.Count; k++) tagSystem1.Add(cpDataList[i].goTags[k]);
+
+                    //var controlPointRenderer = cpDataList[i].go.GetComponent<MeshRenderer>();
+                    cpDataList[i].go.GetComponent<MeshRenderer>().material = cpDataList[i].defautMaterial;
+                }
             }
         }
+    
+
+        ////find out the control points that belong to no segment in the cpDatalist, assign them materials etc.
+        //for (var i = 0; i < controlPointList.Count; i++)
+        //{
+        //    var cpData = new ControlPointsData();
+        //    cpData.go = controlPointList[i];
+        //    var controlPointsOfNoSegment = cpDataList.Find(x => x.go.name == controlPointList[i].name);
+        //    if (controlPointsOfNoSegment == null && !treatSelectionManager.selectionList.Contains(cpData.go.transform)
+        //    ) //belong to the non=annotated segment
+        //    {
+        //        cpData.go.GetComponent<MeshRenderer>().material = defaultMaterial;
+        //        cpData.defautMaterial = defaultMaterial;
+        //        cpData.outlineMaterial = outlineMaterial;
+        //        cpData.goColor.Add(new Color(0, 0, 0, 1));
+        //        cpDataList.Add(cpData);
+        //    }
+        //}
 
         //make the transforms inside the _newPosCP have the right order
         _newPosCP.Clear();

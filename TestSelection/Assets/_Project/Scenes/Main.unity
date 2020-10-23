@@ -138,11 +138,6 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 2534866581884222612, guid: c4ed6f6b5cd5bfb4691975924fae2a21,
-        type: 3}
-      propertyPath: m_Name
-      value: model mesh
-      objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: c4ed6f6b5cd5bfb4691975924fae2a21,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -218,6 +213,11 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 11bb700d6d5d6d3428b1904cec2da060, type: 2}
+    - target: {fileID: 2534866581884222612, guid: c4ed6f6b5cd5bfb4691975924fae2a21,
+        type: 3}
+      propertyPath: m_Name
+      value: model mesh
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c4ed6f6b5cd5bfb4691975924fae2a21, type: 3}
 --- !u!1 &79262712
@@ -2370,11 +2370,6 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 2534866581884222612, guid: 98ecd10bf0c48b64c824402d26373bd9,
-        type: 3}
-      propertyPath: m_Name
-      value: model mesh
-      objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: 98ecd10bf0c48b64c824402d26373bd9,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2435,6 +2430,11 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 11bb700d6d5d6d3428b1904cec2da060, type: 2}
+    - target: {fileID: 2534866581884222612, guid: 98ecd10bf0c48b64c824402d26373bd9,
+        type: 3}
+      propertyPath: m_Name
+      value: model mesh
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 98ecd10bf0c48b64c824402d26373bd9, type: 3}
 --- !u!1 &741077264 stripped
@@ -3646,11 +3646,6 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 2534866581884222612, guid: 88a22e320579bda45b6ddfeffe422254,
-        type: 3}
-      propertyPath: m_Name
-      value: cage mesh
-      objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: 88a22e320579bda45b6ddfeffe422254,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -3711,6 +3706,11 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 10e8554db567b514fa512e680271a666, type: 2}
+    - target: {fileID: 2534866581884222612, guid: 88a22e320579bda45b6ddfeffe422254,
+        type: 3}
+      propertyPath: m_Name
+      value: cage mesh
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 88a22e320579bda45b6ddfeffe422254, type: 3}
 --- !u!1 &1063832166
@@ -4966,6 +4966,9 @@ MonoBehaviour:
   selectionList: []
   unselectedParentTag: UnselectedParent
   voiceControlCommand: {fileID: 1292404012}
+  modelGameObject: {fileID: 741077264}
+  segmentDelete: 0
+  segmentSelect: 0
 --- !u!4 &1550730621
 Transform:
   m_ObjectHideFlags: 0
@@ -5298,11 +5301,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: flowered_teapot_cage
       objectReference: {fileID: 0}
-    - target: {fileID: 2534866581884222612, guid: b87d9bac458db444290aead56f378f68,
-        type: 3}
-      propertyPath: m_Name
-      value: cage mesh
-      objectReference: {fileID: 0}
     - target: {fileID: -5975033157549033438, guid: b87d9bac458db444290aead56f378f68,
         type: 3}
       propertyPath: m_LocalPosition.z
@@ -5368,6 +5366,11 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 10e8554db567b514fa512e680271a666, type: 2}
+    - target: {fileID: 2534866581884222612, guid: b87d9bac458db444290aead56f378f68,
+        type: 3}
+      propertyPath: m_Name
+      value: cage mesh
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b87d9bac458db444290aead56f378f68, type: 3}
 --- !u!1 &1775228371 stripped

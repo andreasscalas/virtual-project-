@@ -20,6 +20,8 @@ namespace Assets._Project.Scripts.treatment
         public List<int> triangles;
         public List<int> verticesIndex=new List<int>();
         public List<int> cageVerticesIndex=new List<int>();
+        public Material defautMaterial;
+        public Material outlineMaterial;
 
         public ModelData()
         {

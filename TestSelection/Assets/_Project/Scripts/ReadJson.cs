@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using Assets._Project.Scripts.treatment;
 using LitJson;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -83,6 +84,23 @@ public class ReadJson : MonoBehaviour
         {
             var datatest = JsonMapper.ToJson(data1["annotations"][i]);
             importedSegmentsOfDifferentLevels.Add(JsonMapper.ToObject<ModelData>(datatest));
+            var lastModelData = importedSegmentsOfDifferentLevels.Last();
+
+            var defautMaterial = new Material(Shader.Find("Diffuse"));
+            var outlinedMaterial = new Material(Shader.Find("Outlined/Silhouetted Diffuse"));
+            AssetDatabase.CreateAsset(defautMaterial,
+                "Assets/Resources/" + string.Format("level{0}, Default Material Group {1}", lastModelData.level, lastModelData.id) +
+                ".mat");
+            AssetDatabase.CreateAsset(outlinedMaterial,
+                "Assets/Resources/" + string.Format("level{0}, outlined Material Group {1}", lastModelData.level, lastModelData.id) +
+                ".mat");
+
+            lastModelData.defautMaterial = defautMaterial;
+            lastModelData.outlineMaterial = outlinedMaterial;
+            lastModelData.defautMaterial.color = new Color(lastModelData.color[0] / 255.0f, lastModelData.color[1] / 255.0f, lastModelData.color[2] / 255.0f, 0.8f);
+            lastModelData.outlineMaterial.SetColor("_Color", new Color(lastModelData.color[0] / 255.0f, lastModelData.color[1] / 255.0f, lastModelData.color[2] / 255.0f, 0.8f));
+            lastModelData.outlineMaterial.SetColor("_OutlineColor", Color.yellow);
+
 
             //UnityEngine.Debug.Log("To see the colors  " + importedSegmentsOfDifferentLevels[i].color[0]);
         }
