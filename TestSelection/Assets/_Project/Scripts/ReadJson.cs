@@ -15,8 +15,6 @@ public class ReadJson : MonoBehaviour
 
     [HideInInspector] public Color[] colorArrayLevelx;
     private JsonData data1;
-
-
     //[SerializeField] private Material segmentmMaterial;
     //[SerializeField] private Material segmentmMaterial2;
     //[HideInInspector] public bool switchSegment;
@@ -28,6 +26,9 @@ public class ReadJson : MonoBehaviour
 
     private string jsonString1;
     public Text level;
+    public Material blackMaterial;
+    public Material selectedMaterial;
+
     public bool levelChange;
     [HideInInspector] public int levelMax;
     public Text levelRange;
@@ -163,7 +164,8 @@ public class ReadJson : MonoBehaviour
 
     private void TreatmentCPLevelx()
     {
-        //get the level x tree nodes
+        meshCreateControlPoints.treatSelectionManager.clearHighlighting();
+
         treeNodeLevelx.Clear();
         for (var i = 0; i < importedSegmentsOfDifferentLevels.Count; i++)
         {
@@ -172,9 +174,6 @@ public class ReadJson : MonoBehaviour
             if (GetNode.GetLevel() == levelSelect /* x */)
                 treeNodeLevelx.Add(GetNode);
         }
-
-
-        
 
         //get the level x colors
         // loop for different segment

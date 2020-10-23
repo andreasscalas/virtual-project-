@@ -44,7 +44,7 @@ public class TreatSelectionManager : MonoBehaviour
     public Text voiceControlCommand;
 
     /*****************Andreas Editing****************/
-    private List<int> highlightedAnnotation = new List<int>();
+    public List<int> highlightedAnnotations = new List<int>();
     public GameObject modelGameObject;
     [HideInInspector] public bool segmentDelete;
     [HideInInspector] public bool segmentSelect;
@@ -74,7 +74,6 @@ public class TreatSelectionManager : MonoBehaviour
                 if (_outline == meshCreateControlPoints.cpDataList[i].go.transform)
                     hit.transform.gameObject.GetComponent<MeshRenderer>().material =
                         meshCreateControlPoints.cpDataList[i].defautMaterial;
-            //selectionRenderer.material = defaultMaterial;
             _outline = null;
         }
 
@@ -129,7 +128,7 @@ public class TreatSelectionManager : MonoBehaviour
     {
         if (true /*rightHandModel.IsTracked*/)
         {
-            Debug.DrawRay(Camera.main.transform.position, 1000 * Camera.main.transform.forward, Color.green);
+            //Debug.DrawRay(Camera.main.transform.position, 1000 * Camera.main.transform.forward, Color.green);
 
 
             var ray = new Ray(Camera.main.transform.position, 1000 * Camera.main.transform.forward);
@@ -138,23 +137,7 @@ public class TreatSelectionManager : MonoBehaviour
             {
                 var selection = hit.transform;
 
-                for (int i = 0; i < highlightedAnnotation.Count; i++)
-                {
-
-                    List<int> associatedCageVertices = meshCreateControlPoints.readJson.treeNodeLevelx[highlightedAnnotation[i]].GetData().cageVerticesIndex;
-                    var associatedControlPointsData = meshCreateControlPoints.cpDataList.FindAll(x => associatedCageVertices.Contains(x.goIndex));
-                    foreach(var cpData in associatedControlPointsData)
-                    {
-                        if (selectionList.Contains(cpData.go.transform) == false)
-                            cpData.go.GetComponent<MeshRenderer>().material = cpData.defautMaterial;
-                        else
-                            cpData.go.GetComponent<MeshRenderer>().material = highlightMaterial;
-                    }
-
-
-                }
-                highlightedAnnotation.Clear();
-
+                clearHighlighting();
                 if (hit.transform.tag == "Selectable")
                 {
                     //outline the gameobject
@@ -257,6 +240,7 @@ public class TreatSelectionManager : MonoBehaviour
                     }
 
                     _outline = selection;
+
                 } else if (hit.transform.name.Equals(modelGameObject.name))
                 {
                     for (int i = 0; i < meshCreateControlPoints.readJson.treeNodeLevelx.Count; i++)
@@ -265,7 +249,7 @@ public class TreatSelectionManager : MonoBehaviour
                         {
                             if ((meshCreateControlPoints.readJson.treeNodeLevelx[i].GetData().triangles[j] == hit.triangleIndex))
                             {
-                                highlightedAnnotation.Add(i);
+                                highlightedAnnotations.Add(i);
                                 OutlineControPoints(i);
                                 break;
                             }
@@ -331,6 +315,27 @@ public class TreatSelectionManager : MonoBehaviour
         segmentSelect = false;
     }
 
+
+    public void clearHighlighting()
+    {
+
+        for (int i = 0; i < highlightedAnnotations.Count; i++)
+        {
+
+            List<int> associatedCageVertices = meshCreateControlPoints.readJson.treeNodeLevelx[highlightedAnnotations[i]].GetData().cageVerticesIndex;
+            var associatedControlPointsData = meshCreateControlPoints.cpDataList.FindAll(x => associatedCageVertices.Contains(x.goIndex));
+            foreach (var cpData in associatedControlPointsData)
+            {
+                if (selectionList.Contains(cpData.go.transform) == false)
+                    cpData.go.GetComponent<MeshRenderer>().material = cpData.defautMaterial;
+                else
+                    cpData.go.GetComponent<MeshRenderer>().material = highlightMaterial;
+            }
+
+
+        }
+        highlightedAnnotations.Clear();
+    }
     // translation, rotation and scaling for mouse version
 
     //public void Rotation()

@@ -4966,6 +4966,7 @@ MonoBehaviour:
   selectionList: []
   unselectedParentTag: UnselectedParent
   voiceControlCommand: {fileID: 1292404012}
+  highlightedAnnotations: 
   modelGameObject: {fileID: 741077264}
   segmentDelete: 0
   segmentSelect: 0
@@ -5011,6 +5012,8 @@ MonoBehaviour:
   cageVertices: []
   colorArrayLevelx: []
   level: {fileID: 844027902}
+  blackMaterial: {fileID: 2100000, guid: a19dd76d7ec6e094a8f30236adafce4c, type: 2}
+  selectedMaterial: {fileID: 0}
   levelChange: 0
   levelMax: 0
   levelRange: {fileID: 1419351516}
