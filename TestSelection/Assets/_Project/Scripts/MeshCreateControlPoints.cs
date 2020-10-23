@@ -201,24 +201,24 @@ public class MeshCreateControlPoints : MonoBehaviour
                 }
             }
         }
-    
 
-        ////find out the control points that belong to no segment in the cpDatalist, assign them materials etc.
-        //for (var i = 0; i < controlPointList.Count; i++)
-        //{
-        //    var cpData = new ControlPointsData();
-        //    cpData.go = controlPointList[i];
-        //    var controlPointsOfNoSegment = cpDataList.Find(x => x.go.name == controlPointList[i].name);
-        //    if (controlPointsOfNoSegment == null && !treatSelectionManager.selectionList.Contains(cpData.go.transform)
-        //    ) //belong to the non=annotated segment
-        //    {
-        //        cpData.go.GetComponent<MeshRenderer>().material = defaultMaterial;
-        //        cpData.defautMaterial = defaultMaterial;
-        //        cpData.outlineMaterial = outlineMaterial;
-        //        cpData.goColor.Add(new Color(0, 0, 0, 1));
-        //        cpDataList.Add(cpData);
-        //    }
-        //}
+
+        //find out the control points that belong to no segment in the cpDatalist, assign them materials etc.
+        for (var i = 0; i < controlPointList.Count; i++)
+        {
+            var cpData = new ControlPointsData();
+            cpData.go = controlPointList[i];
+            var controlPointsOfNoSegment = cpDataList.Find(x => x.go.name == controlPointList[i].name);
+            if (controlPointsOfNoSegment == null && !treatSelectionManager.selectionList.Contains(cpData.go.transform)
+            ) //belong to the non=annotated segment
+            {
+                cpData.go.GetComponent<MeshRenderer>().material = defaultMaterial;
+                cpData.defautMaterial = defaultMaterial;
+                cpData.outlineMaterial = outlineMaterial;
+                cpData.goColor.Add(new Color(0, 0, 0, 1));
+                cpDataList.Add(cpData);
+            }
+        }
 
         //make the transforms inside the _newPosCP have the right order
         _newPosCP.Clear();

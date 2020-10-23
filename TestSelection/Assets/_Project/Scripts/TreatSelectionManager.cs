@@ -280,39 +280,23 @@ public class TreatSelectionManager : MonoBehaviour
         for (int m = 0; m < myList.Count; m++)
         {
             var controlPointRenderer = myList[m].go.GetComponent<MeshRenderer>();
-
-            for (int j = 0; j < meshCreateControlPoints.materialGroup1.Count; j++)
+            if (segmentSelect)
             {
-                if (myList[m].goColor[0] == meshCreateControlPoints.materialGroup1[j].color && !selectionList.Contains(myList[m].go.transform))
-                {
-                    controlPointRenderer.material = meshCreateControlPoints.outlineMaterialGroup1[j];
-                    if (segmentSelect)
-                    {
-                        selectionList.Add(myList[m].go.transform);
-                        myList[m].go.GetComponent<MeshRenderer>().material = OutlineMaterial2;
-                        myList[m].go.transform.parent = null;
-                        myList[m].go.transform.parent = _selectedControlPoints;
-                    }
-                }
-
-                if (myList[m].goColor[0] == meshCreateControlPoints.materialGroup1[j].color && selectionList.Contains(myList[m].go.transform))
-                {
-                    controlPointRenderer.material = OutlineMaterial2;
-                }
-
-
-                if (segmentDelete)
-                {
-                    selectionList.Remove(myList[m].go.transform);
-                    myList[m].go.GetComponent<MeshRenderer>().material = myList[m].defautMaterial;
-                    myList[m].go.transform.parent = null;
-                    myList[m].go.transform.parent = meshCreateControlPoints._initializedControlPoints;
-                }
-
-
-            }
+                selectionList.Add(myList[m].go.transform);
+                myList[m].go.GetComponent<MeshRenderer>().material = OutlineMaterial2;
+                myList[m].go.transform.parent = null;
+                myList[m].go.transform.parent = _selectedControlPoints;
+            } else if (segmentDelete)
+            {
+                selectionList.Remove(myList[m].go.transform);
+                myList[m].go.GetComponent<MeshRenderer>().material = myList[m].defautMaterial;
+                myList[m].go.transform.parent = null;
+                myList[m].go.transform.parent = meshCreateControlPoints._initializedControlPoints;
+            } else if (selectionList.Contains(myList[m].go.transform))
+                controlPointRenderer.material = OutlineMaterial2;
+            else
+                controlPointRenderer.material = myList[m].outlineMaterial;
         }
-        segmentSelect = false;
     }
 
 
