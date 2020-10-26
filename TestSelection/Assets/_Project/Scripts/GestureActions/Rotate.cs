@@ -49,9 +49,10 @@ namespace Leap.Unity
         void Update()
         {
 
-            selectedObject = GameObject.FindWithTag("Selected");
-           
-            if (selectedObject != null)
+            //selectedObject = GameObject.FindWithTag("Selected");
+            selectedObject = GameObject.Find("Selected Control Points");
+
+            if(selectedObject != null)
             {
 
                 ///Create box collider of the selected object if it doesn't exist yet
@@ -72,6 +73,11 @@ namespace Leap.Unity
                 }
 
                 var bbox = selectedObject.GetComponent<BoxCollider>();
+                if (bbox == null)
+                {
+                    selectedObject.AddComponent<BoxCollider>();
+                    bbox = selectedObject.GetComponent<BoxCollider>();
+                }
 
                 //Coordinates of the center of the box collider
                 Vector3 barycenterSelectedObject = bbox.center;
@@ -104,7 +110,7 @@ namespace Leap.Unity
                         //GameObject.Find("CenterEyeAnchor").GetComponent<Gaze>().enabled = false;
 
 
-                        selectedObject.gameObject.GetComponent<InteractionBehaviour>().ignoreGrasping = true;
+                       // selectedObject.gameObject.GetComponent<InteractionBehaviour>().ignoreGrasping = true;
 
                         /// Store direction between palms
                         palmPosition_L = HandModel_L.GetLeapHand().PalmPosition.ToVector3();
@@ -144,24 +150,25 @@ namespace Leap.Unity
                         /// Rotate and replace the object. Two different cases: if the object is an assembly or
                         /// if it is a comonent/part. The assembly must be set in the origin (0,0,0) before rotate,
                         /// the component/part no because locally it is in (0,0,0) yet.
-                        if (selectedObject.transform.parent.name == "Assemblies")
-                        {
-                            // Translation of the selectedObject from the _userPlace (add this vector after the rotation to replace the object in its initial position)
-                            //Vector3 translation = selectedObject.transform.position - ReferencialDisplay._userPlace + selectedObject.transform.localRotation * Vector3.Scale(barycenterSelectedObject, scaleFactor);
 
-                            // Put the selectedObject in the origin (0,0,0)
-                            selectedObject.transform.position = -Vector3.Scale(barycenterSelectedObject, scaleFactor);
+                        //if (selectedObject.transform.parent.name == "Assemblies")
+                        //{
+                        //    // Translation of the selectedObject from the _userPlace (add this vector after the rotation to replace the object in its initial position)
+                        //    //Vector3 translation = selectedObject.transform.position - ReferencialDisplay._userPlace + selectedObject.transform.localRotation * Vector3.Scale(barycenterSelectedObject, scaleFactor);
 
-                            // Rotate the selectedObject
-                            selectedObject.transform.rotation = handRot * selectedObject.transform.rotation;
+                        //    // Put the selectedObject in the origin (0,0,0)
+                        //    selectedObject.transform.position = -Vector3.Scale(barycenterSelectedObject, scaleFactor);
 
-                            // Replace the selectedObject in the origin (0,0,0) by applying the inverse transformation to the position
-                            selectedObject.transform.position = selectedObject.transform.localRotation * selectedObject.transform.position;
+                        //    // Rotate the selectedObject
+                        //    selectedObject.transform.rotation = handRot * selectedObject.transform.rotation;
 
-                            // Put the selectedObject in the initial position (userPlace + translation) 
-                            //selectedObject.transform.position = selectedObject.transform.position + ReferencialDisplay._userPlace + translation;
-                        }
-                        else
+                        //    // Replace the selectedObject in the origin (0,0,0) by applying the inverse transformation to the position
+                        //    selectedObject.transform.position = selectedObject.transform.localRotation * selectedObject.transform.position;
+
+                        //    // Put the selectedObject in the initial position (userPlace + translation) 
+                        //    //selectedObject.transform.position = selectedObject.transform.position + ReferencialDisplay._userPlace + translation;
+                        //}
+                        //else
                         {
                             // Calculate the translation of the selectedObject after a scale (if the object hasn't been scaled scaleTranslation = 0 ) 
                             // (add this vector, correctly rotated, to the final position in order to replace the object in its initial position )  
@@ -189,7 +196,7 @@ namespace Leap.Unity
                 {
                     _rotationActive = false;                                   
 
-                    selectedObject.gameObject.GetComponent<InteractionBehaviour>().ignoreGrasping = false;
+                    //selectedObject.gameObject.GetComponent<InteractionBehaviour>().ignoreGrasping = false;
                     
                     //GameObject.Find("Attachment Hands").GetComponent<HandMenuAppearance>().enabled = true;
                     //GameObject.Find("CenterEyeAnchor").GetComponent<Gaze>().enabled = true;

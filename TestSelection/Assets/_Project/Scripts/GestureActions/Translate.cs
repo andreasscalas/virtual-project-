@@ -27,14 +27,15 @@ public class Translate : MonoBehaviour {
     void Start()
     {
         _extendedIndexActive = false;
-        gestureWaitingTime = 1.0f;
+        gestureWaitingTime = 0.0f;
         time = 0.0f;
     }
 
     void Update()
     {
 
-        selectedObject = GameObject.FindWithTag("Selected");
+        //selectedObject = GameObject.FindWithTag("Selected");
+        selectedObject = GameObject.Find("Selected Control Points");
 
 
         if (selectedObject != null)
@@ -54,14 +55,14 @@ public class Translate : MonoBehaviour {
 
             if (extendedFingerDetectorR != null && extendedFingerDetectorR.IsActive)
             {
-                if (time > gestureWaitingTime)
+                if (time >= gestureWaitingTime)
                 {
 
                     /// When the gesture is avtive disable the scripts for the hand menu appearance to disambiguate the functionalities.
                     //GameObject.Find("Attachment Hands").GetComponent<HandMenuAppearance>().enabled = false;
                     //GameObject.Find("CenterEyeAnchor").GetComponent<Gaze>().enabled = false;
 
-                    selectedObject.gameObject.GetComponent<InteractionBehaviour>().ignoreGrasping = true;
+                    //selectedObject.gameObject.GetComponent<InteractionBehaviour>().ignoreGrasping = true;
 
                     //Store index position
                     indexPosition = HandModel_R.GetLeapHand().Fingers[1].TipPosition.ToVector3();
@@ -96,7 +97,7 @@ public class Translate : MonoBehaviour {
                     }
 
 
-                    Vector3 deltaIndexPosition = indexPosition - lastIndexPosition;
+                    Vector3 deltaIndexPosition = (indexPosition - lastIndexPosition)*5.0f;
 
                     // Change the position of the object
                     //Vector3 translation = Vector3.Scale(scaleParents, deltaIndexPosition);
@@ -111,7 +112,7 @@ public class Translate : MonoBehaviour {
             {
                 _extendedIndexActive = false;
                              
-                selectedObject.gameObject.GetComponent<InteractionBehaviour>().ignoreGrasping = false;
+                //selectedObject.gameObject.GetComponent<InteractionBehaviour>().ignoreGrasping = false;
 
                 //GameObject.Find("Attachment Hands").GetComponent<HandMenuAppearance>().enabled = true;
                 //GameObject.Find("CenterEyeAnchor").GetComponent<Gaze>().enabled = true;
