@@ -54,6 +54,7 @@ public class TreatSelectionManager : MonoBehaviour
     [HideInInspector] public bool segmentSelect;
     /************************************************/
 
+    private LineRenderer lineRenderer;
     //public Text objectselected;
     //public Text objectstored;
     //public Text objectdeleted;
@@ -69,6 +70,12 @@ public class TreatSelectionManager : MonoBehaviour
         highlightingActivated = true;
         select = false;
         delete = false;
+
+        var go = new GameObject();
+        lineRenderer = go.AddComponent<LineRenderer>();
+        //lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
+        lineRenderer.widthMultiplier = 0.2f;
+        lineRenderer.positionCount = 2;
     }
 
     private void Update()
@@ -134,12 +141,12 @@ public class TreatSelectionManager : MonoBehaviour
         if (true /*rightHandModel.IsTracked*/)
         {
             //Debug.DrawRay(Camera.main.transform.position, 1000 * Camera.main.transform.forward, Color.green);
-
-
-            clearHighlighting();
+			clearHighlighting();
             var ray = new Ray(Camera.main.transform.position, 1000 * Camera.main.transform.forward);
+            //lineRenderer.SetPosition(0, Camera.main.transform.position);
+            //lineRenderer.SetPosition(1, Camera.main.transform.position + 1000 * Camera.main.transform.forward );
 
-            if (Physics.Raycast(ray, out hit))
+            if(Physics.Raycast(ray, out hit))
             {
                 var selection = hit.transform;
 
