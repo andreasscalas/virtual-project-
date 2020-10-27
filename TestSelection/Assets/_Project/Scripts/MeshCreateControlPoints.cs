@@ -167,7 +167,7 @@ public class MeshCreateControlPoints : MonoBehaviour
                 var ControlPoint = GameObject.CreatePrimitive(PrimitiveType.Sphere);
                 var K = initialControlPointPosition[i];
                 ControlPoint.transform.position = new Vector3(K[0], K[1], K[2]);
-                ControlPoint.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
+                ControlPoint.transform.localScale = new Vector3(0.05f, 0.05f, 0.05f);
                 ControlPoint.tag = selectableTag;
                 ControlPoint.name = "Control Point " + goCounter;
                 interactCP.Add(ControlPoint.AddComponent<InteractionBehaviour>());
