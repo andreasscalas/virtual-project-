@@ -6,6 +6,10 @@ using UnityEngine.UI;
 
 public class TreatSelectionManager : MonoBehaviour
 {
+
+
+
+    public bool highlightingActivated;
     private Transform _outline;
 
     [HideInInspector] public Transform _selectedControlPoints;
@@ -17,15 +21,15 @@ public class TreatSelectionManager : MonoBehaviour
     private Vector3 colliderPosition; //can be useful to know which control point is hit
     [SerializeField] private Material defaultMaterial;
     [HideInInspector] public bool delete;
-    [SerializeField] private Material highlightMaterial;
     private RaycastHit hit;
 
     public MeshCreateControlPoints meshCreateControlPoints;
 
     [HideInInspector] public GameObject obj;
 
-    [SerializeField] private Material OutlineMaterial1;
-    [SerializeField] private Material OutlineMaterial2;
+    public Material OutlineMaterial1;
+    public Material OutlineMaterial2;
+    public Material highlightMaterial;
 
     private readonly List<Material> outlineMaterialGroup = new List<Material>();
 
@@ -62,6 +66,7 @@ public class TreatSelectionManager : MonoBehaviour
 
         InitializeSelecObj();
         //InitializeUnselecObj();
+        highlightingActivated = true;
         select = false;
         delete = false;
     }
@@ -82,7 +87,7 @@ public class TreatSelectionManager : MonoBehaviour
             var selectionRenderer = _outline.GetComponent<Renderer>();
             selectionRenderer.material = highlightMaterial;
             _outline = null;
-            Debug.Log("treatselection manager _outline 1");
+            //Debug.Log("treatselection manager _outline 1");
         }
 
         CastSelectRay(select);
@@ -131,13 +136,13 @@ public class TreatSelectionManager : MonoBehaviour
             //Debug.DrawRay(Camera.main.transform.position, 1000 * Camera.main.transform.forward, Color.green);
 
 
+            clearHighlighting();
             var ray = new Ray(Camera.main.transform.position, 1000 * Camera.main.transform.forward);
 
             if (Physics.Raycast(ray, out hit))
             {
                 var selection = hit.transform;
 
-                clearHighlighting();
                 if (hit.transform.tag == "Selectable")
                 {
                     //outline the gameobject
@@ -148,7 +153,7 @@ public class TreatSelectionManager : MonoBehaviour
                                 hit.transform.gameObject.GetComponent<MeshRenderer>().material =
                                     meshCreateControlPoints.cpDataList[i].outlineMaterial;
 
-                    if (selectionList.Contains(hit.transform))
+                    if (selectionList.Contains(hit.transform) && highlightingActivated)
                         hit.transform.gameObject.GetComponent<MeshRenderer>().material = OutlineMaterial2;
 
                     if (select)
@@ -162,7 +167,7 @@ public class TreatSelectionManager : MonoBehaviour
                             obj.transform.parent = _selectedControlPoints;
                             //Debug.Log(obj + " gameobject is selected");
 
-                            if (selectionRenderer != null) selectionRenderer.material = OutlineMaterial2;
+                            if (selectionRenderer != null && highlightingActivated) selectionRenderer.material = OutlineMaterial2;
                             if (selectionList.Contains(selection) == false)
                                 selectionList.Add(selection);
                             //Debug.Log(obj + " gameobject is stored");
@@ -241,7 +246,7 @@ public class TreatSelectionManager : MonoBehaviour
 
                     _outline = selection;
 
-                } else if (hit.transform.name.Equals(modelGameObject.name))
+                } else if (hit.transform.name.Equals(modelGameObject.name) && highlightingActivated)
                 {
                     for (int i = 0; i < meshCreateControlPoints.readJson.treeNodeLevelx.Count; i++)
                     {

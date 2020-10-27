@@ -182,7 +182,8 @@ public class ReadJson : MonoBehaviour
 
     private void TreatmentCPLevelx()
     {
-        //meshCreateControlPoints.treatSelectionManager.clearHighlighting();
+        if(meshCreateControlPoints.treatSelectionManager != null)
+            meshCreateControlPoints.treatSelectionManager.clearHighlighting();
 
         treeNodeLevelx.Clear();
         for (var i = 0; i < importedSegmentsOfDifferentLevels.Count; i++)

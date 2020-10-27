@@ -197,7 +197,10 @@ public class MeshCreateControlPoints : MonoBehaviour
                     for (var k = 0; k < cpDataList[i].goTags.Count; k++) tagSystem1.Add(cpDataList[i].goTags[k]);
 
                     //var controlPointRenderer = cpDataList[i].go.GetComponent<MeshRenderer>();
-                    cpDataList[i].go.GetComponent<MeshRenderer>().material = cpDataList[i].defautMaterial;
+                    if(treatSelectionManager.selectionList.Contains(cpDataList[i].go.transform))
+                        cpDataList[i].go.GetComponent<MeshRenderer>().material = treatSelectionManager.highlightMaterial;
+                    else
+                        cpDataList[i].go.GetComponent<MeshRenderer>().material = cpDataList[i].defautMaterial;
                 }
             }
         }
