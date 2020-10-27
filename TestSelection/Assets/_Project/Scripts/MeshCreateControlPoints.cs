@@ -167,7 +167,7 @@ public class MeshCreateControlPoints : MonoBehaviour
                 var ControlPoint = GameObject.CreatePrimitive(PrimitiveType.Sphere);
                 var K = initialControlPointPosition[i];
                 ControlPoint.transform.position = new Vector3(K[0], K[1], K[2]);
-                ControlPoint.transform.localScale = new Vector3(0.05f, 0.05f, 0.05f);
+                ControlPoint.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
                 ControlPoint.tag = selectableTag;
                 ControlPoint.name = "Control Point " + goCounter;
                 interactCP.Add(ControlPoint.AddComponent<InteractionBehaviour>());
@@ -212,13 +212,12 @@ public class MeshCreateControlPoints : MonoBehaviour
             var cpData = new ControlPointsData();
             cpData.go = controlPointList[i];
             var controlPointsOfNoSegment = cpDataList.Find(x => x.go.name == controlPointList[i].name);
-            if (controlPointsOfNoSegment == null && !treatSelectionManager.selectionList.Contains(cpData.go.transform)
-            ) //belong to the non=annotated segment
+            if (controlPointsOfNoSegment == null && !treatSelectionManager.selectionList.Contains(cpData.go.transform)) //belong to the non=annotated segment
             {
                 cpData.go.GetComponent<MeshRenderer>().material = defaultMaterial;
                 cpData.defautMaterial = defaultMaterial;
                 cpData.outlineMaterial = outlineMaterial;
-                cpData.goColor.Add(new Color(0, 0, 0, 1));
+                //cpData.goColor.Add(new Color(0, 0, 0, 1));
                 cpDataList.Add(cpData);
             }
         }
