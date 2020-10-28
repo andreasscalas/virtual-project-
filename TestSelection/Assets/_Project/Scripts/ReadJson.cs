@@ -100,7 +100,7 @@ public class ReadJson : MonoBehaviour
             lastModelData.outlineMaterial = outlinedMaterial;
             lastModelData.defautMaterial.color = new Color(lastModelData.color[0] / 255.0f, lastModelData.color[1] / 255.0f, lastModelData.color[2] / 255.0f, 0.8f);
             lastModelData.outlineMaterial.SetColor("_Color", new Color(lastModelData.color[0] / 255.0f, lastModelData.color[1] / 255.0f, lastModelData.color[2] / 255.0f, 0.8f));
-            lastModelData.outlineMaterial.SetFloat("_Outline", 0.1f);
+            lastModelData.outlineMaterial.SetFloat("_Outline", 0.3f);
             lastModelData.outlineMaterial.SetColor("_OutlineColor", Color.yellow);
 
 
@@ -228,7 +228,7 @@ public class ReadJson : MonoBehaviour
         
         var interLevelsCageSegVerts = new List<int>();
         interLevelsCageSegVerts.Clear();
-        filterBarMatrix(0.25, n.GetData().verticesIndex, interLevelsCageSegVerts);
+        filterBarMatrix(0.21, n.GetData().verticesIndex, interLevelsCageSegVerts);
         n.GetData().cageVerticesIndex = interLevelsCageSegVerts;
 
     }

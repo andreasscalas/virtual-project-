@@ -322,62 +322,52 @@ public class DragModel : MonoBehaviour
     //method to scale the whole model(scale the selected control points and the initialized control points)
     public void Scale()
     {
+        var count = 0;
         var frame = provider.CurrentFrame;
+        
         foreach (var hand in frame.Hands)
         {
-            if (isOpenFullHand(hand) && !changeScaleCollision)
+            if (hand.IsRight && frame.Hands.Count !=2)
             {
-                Debug.Log("zoom in");
-                var initialCPs = GameObject.Find("Initialized Control Points");
-                var SelectedCPs = GameObject.Find("Selected Control Points");
+                if (isOpenFullHand(hand) && !changeScaleCollision)
+                {
+                    Debug.Log("zoom in");
+                    var initialCPs = GameObject.Find("Initialized Control Points");
+                    var SelectedCPs = GameObject.Find("Selected Control Points");
 
-                var value = initialCPs.transform.localScale;
-                value += new Vector3(value.x * 0.05f, value.y * 0.05f, value.z * 0.05f);
-                //    Debug.Log(value);
-                initialCPs.transform.localScale = value;
-                SelectedCPs.transform.localScale = value;
-                leapHandAction.text = "leap-hand is open";
+                    var value = initialCPs.transform.localScale;
+                    value += new Vector3(value.x * 0.05f, value.y * 0.05f, value.z * 0.05f);
+                    //    Debug.Log(value);
+                    initialCPs.transform.localScale = value;
+                    SelectedCPs.transform.localScale = value;
+                    leapHandAction.text = "leap-hand is open";
+                }
+                else if (isFist(hand))
+                {
+                    Debug.Log("zoom out");
+                    var initialCPs = GameObject.Find("Initialized Control Points");
+                    var SelectedCPs = GameObject.Find("Selected Control Points");
+
+                    var value = initialCPs.transform.localScale;
+                    value -= new Vector3(value.x * 0.05f, value.y * 0.05f, value.z * 0.05f);
+                    //    Debug.Log(value);
+                    initialCPs.transform.localScale = value;
+                    SelectedCPs.transform.localScale = value;
+                    changeScaleCollision = false;
+                    leapHandAction.text = "leap-hand is clenched";
+                }
             }
 
-            Debug.Log("isCloseHand(hand):" + isCloseHand(hand));
-            if (isCloseHand(hand))
-            {
-                Debug.Log("zoom out");
-                var initialCPs = GameObject.Find("Initialized Control Points");
-                var SelectedCPs = GameObject.Find("Selected Control Points");
-
-                var value = initialCPs.transform.localScale;
-                value -= new Vector3(value.x * 0.05f, value.y * 0.05f, value.z * 0.05f);
-                //    Debug.Log(value);
-                initialCPs.transform.localScale = value;
-                SelectedCPs.transform.localScale = value;
-                changeScaleCollision = false;
-                leapHandAction.text = "leap-hand is clenched";
-            }
         }
     }
 
     //check if hand makes a fist
-    protected bool isCloseHand(Hand hand)
-    {
-        var listOfFingers = hand.Fingers;
-        var count = 0;
-        for (var f = 0; f < listOfFingers.Count; f++)
-        {
-            //check all fingers
-            var finger = listOfFingers[f];
-            if ((finger.TipPosition - hand.PalmPosition).Magnitude < deltaCloseFinger) //float deltaCloseFinger = 0.05f;
-                count++;
-        }
-
-        Debug.Log("deltaCloseFinger:" + deltaCloseFinger);
-        return count == 5;
+    protected bool isFist(Hand hand){
+        return hand.GrabStrength > 0.95;
     }
 
-    //hand is fully open
-    protected bool isOpenFullHand(Hand hand)
-    {
-        //Debug.Log (hand.GrabStrength + " " + hand.PalmVelocity + " " + hand.PalmVelocity.Magnitude);
-        return hand.GrabStrength == 0;
+    protected bool isOpenFullHand(Hand hand) {
+        return hand.GrabStrength < 0.01;
     }
+
 }

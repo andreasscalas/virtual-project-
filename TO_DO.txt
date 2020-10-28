@@ -1,0 +1,2 @@
+* Muovere tutto il modello senza passare dal livello zero
+* Selezione più semplice per la selezione dei CP.

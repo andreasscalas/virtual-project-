@@ -225,12 +225,12 @@ public class MeshCreateControlPoints : MonoBehaviour
         //make the transforms inside the _newPosCP have the right order
         _newPosCP.Clear();
         for (var i = 0; i < cageVertices.Length; i++)
-        for (var j = 0; j < controlPointList.Count; j++)
-            if (controlPointList[j].transform.position == cageVertices[i])
-            {
-                _newPosCP.Add(controlPointList[j].transform);
-                PositionControlPoints.Add(controlPointList[j].transform);
-            }
+            for (var j = 0; j < controlPointList.Count; j++)
+                if (controlPointList[j].transform.position == cageVertices[i])
+                {
+                    _newPosCP.Add(controlPointList[j].transform);
+                    PositionControlPoints.Add(controlPointList[j].transform);
+                }
     }
 
     //create materials for model

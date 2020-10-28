@@ -66,6 +66,7 @@ public class TreatSelectionManager : MonoBehaviour
             outlineMaterialGroup.Add(Resources.Load("Outlined Material Group" + i, typeof(Material)) as Material);
 
         InitializeSelecObj();
+        OutlineMaterial2.SetFloat("_Outline", 0.3f);
         //InitializeUnselecObj();
         highlightingActivated = true;
         select = false;
@@ -288,7 +289,7 @@ public class TreatSelectionManager : MonoBehaviour
         var myList = meshCreateControlPoints.cpDataList.FindAll(x => segmentVertexSubstitute.Contains(x.goIndex));
 
 
-
+        Debug.Log("Sto per cambiare colore a " + myList.Count + " CPs");
         for (int m = 0; m < myList.Count; m++)
         {
             var controlPointRenderer = myList[m].go.GetComponent<MeshRenderer>();
