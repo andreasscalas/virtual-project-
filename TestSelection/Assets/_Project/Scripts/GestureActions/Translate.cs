@@ -105,13 +105,17 @@ public class Translate : MonoBehaviour {
 
                     lastIndexPosition = indexPosition;
                     _extendedIndexActive = true;
+                    GameObject.Find("Selection Manager").GetComponent<TreatSelectionManager>()
+                        .highlightingActivated = false;
                 }
 
             }
             else
             {
+                if(_extendedIndexActive == true)
+                    GameObject.Find("Selection Manager").GetComponent<TreatSelectionManager>()
+                        .highlightingActivated = true;
                 _extendedIndexActive = false;
-                             
                 //selectedObject.gameObject.GetComponent<InteractionBehaviour>().ignoreGrasping = false;
 
                 //GameObject.Find("Attachment Hands").GetComponent<HandMenuAppearance>().enabled = true;

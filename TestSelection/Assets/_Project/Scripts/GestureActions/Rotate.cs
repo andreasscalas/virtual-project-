@@ -142,6 +142,9 @@ namespace Leap.Unity
                            //VoiceController.transformationsFlow.Add(transformSelectedObject);
 
                             _rotationActive = true;
+                            GameObject.Find("Selection Manager").GetComponent<TreatSelectionManager>()
+                                .highlightingActivated = false;
+
 
                         }
 
@@ -194,10 +197,12 @@ namespace Leap.Unity
                 }
                 else
                 {
-                    _rotationActive = false;                                   
-
+                    if(_rotationActive==true)
+                        GameObject.Find("Selection Manager").GetComponent<TreatSelectionManager>()
+                            .highlightingActivated = true;
+                    _rotationActive = false;
                     //selectedObject.gameObject.GetComponent<InteractionBehaviour>().ignoreGrasping = false;
-                    
+
                     //GameObject.Find("Attachment Hands").GetComponent<HandMenuAppearance>().enabled = true;
                     //GameObject.Find("CenterEyeAnchor").GetComponent<Gaze>().enabled = true;
 
