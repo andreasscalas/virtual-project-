@@ -75,8 +75,9 @@ public class ReadJson : MonoBehaviour
     public void init() 
     { 
         jsonString1 =
+            File.ReadAllText(Application.streamingAssetsPath + "/" + "flowered_teapot.triant");
             //File.ReadAllText(Application.streamingAssetsPath + "/" + "hand_segmentation_hierarchical_nails.txt");
-            File.ReadAllText(Application.streamingAssetsPath + "/" + "flowered_teapot_simplified.ant.txt");
+            //File.ReadAllText(Application.streamingAssetsPath + "/" + "bob.triant");
 
         data1 = JsonMapper.ToObject(jsonString1);
 
@@ -100,7 +101,11 @@ public class ReadJson : MonoBehaviour
             lastModelData.outlineMaterial = outlinedMaterial;
             lastModelData.defautMaterial.color = new Color(lastModelData.color[0] / 255.0f, lastModelData.color[1] / 255.0f, lastModelData.color[2] / 255.0f, 0.8f);
             lastModelData.outlineMaterial.SetColor("_Color", new Color(lastModelData.color[0] / 255.0f, lastModelData.color[1] / 255.0f, lastModelData.color[2] / 255.0f, 0.8f));
-            lastModelData.outlineMaterial.SetFloat("_Outline", 0.3f);
+
+            Bounds bb = objModel.transform.parent.gameObject.GetComponent<Collider>().bounds;
+            float bbDiagonalLength = (bb.min - bb.max).magnitude;
+            float bbLengthRatio = 0.05f;
+            lastModelData.outlineMaterial.SetFloat("_Outline", bbLengthRatio * bbDiagonalLength);
             lastModelData.outlineMaterial.SetColor("_OutlineColor", Color.yellow);
 
 

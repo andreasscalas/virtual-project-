@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEditor;
 
 namespace Assets._Project.Scripts.treatment
 {
@@ -16,6 +17,8 @@ namespace Assets._Project.Scripts.treatment
         public int goLevel;
         public Material defautMaterial;
         public Material outlineMaterial;
+        public string defautMaterialAssetPath;
+        public string outlineMaterialAssetPath;
 
         public ControlPointsData()
         {
@@ -33,6 +36,12 @@ namespace Assets._Project.Scripts.treatment
             this.outlineMaterial = outlineMaterial;
 
 
+        }
+
+        ~ControlPointsData()
+        {
+            AssetDatabase.DeleteAsset(defautMaterialAssetPath);
+            AssetDatabase.DeleteAsset(outlineMaterialAssetPath);
         }
     }
 }

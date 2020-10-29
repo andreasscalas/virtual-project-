@@ -50,6 +50,7 @@ public class TreatSelectionManager : MonoBehaviour
     /*****************Andreas Editing****************/
     public List<int> highlightedAnnotations = new List<int>();
     public GameObject modelGameObject;
+    public GameObject cageGameObject;
     [HideInInspector] public bool segmentDelete;
     [HideInInspector] public bool segmentSelect;
     /************************************************/
@@ -66,7 +67,10 @@ public class TreatSelectionManager : MonoBehaviour
             outlineMaterialGroup.Add(Resources.Load("Outlined Material Group" + i, typeof(Material)) as Material);
 
         InitializeSelecObj();
-        OutlineMaterial2.SetFloat("_Outline", 0.3f);
+        Bounds bb = modelGameObject.GetComponent<Collider>().bounds;
+        float bbDiagonalLength = (bb.min - bb.max).magnitude;
+        float bbLengthRatio = 0.05f;
+        OutlineMaterial2.SetFloat("_Outline", bbLengthRatio * bbDiagonalLength);
         //InitializeUnselecObj();
         highlightingActivated = true;
         select = false;
@@ -136,6 +140,32 @@ public class TreatSelectionManager : MonoBehaviour
         voiceControlCommand.text = "Discard (a set of) CPs";
     }
 
+    public void onActivateHighlighting()
+    {
+        highlightingActivated = true;
+        voiceControlCommand.text = "Highlighting active";
+    }
+
+
+
+    public void onStopHighlighting()
+    {
+        highlightingActivated = false;
+        voiceControlCommand.text = "Highlighting deactivated";
+    }
+
+
+    public void onHideCage()
+    {
+        cageGameObject.SetActive(false);
+        voiceControlCommand.text = "Cage hidden";
+    }
+
+    public void onDisplayCage()
+    {
+        cageGameObject.SetActive(true);
+        voiceControlCommand.text = "Cage displayed";
+    }
 
     private void CastSelectRay(bool act)
     {
@@ -176,6 +206,7 @@ public class TreatSelectionManager : MonoBehaviour
                             //Debug.Log(obj + " gameobject is selected");
 
                             if (selectionRenderer != null && highlightingActivated) selectionRenderer.material = OutlineMaterial2;
+                            else if(selectionRenderer != null) selectionRenderer.material = highlightMaterial;
                             if (selectionList.Contains(selection) == false)
                                 selectionList.Add(selection);
                             //Debug.Log(obj + " gameobject is stored");
@@ -289,14 +320,17 @@ public class TreatSelectionManager : MonoBehaviour
         var myList = meshCreateControlPoints.cpDataList.FindAll(x => segmentVertexSubstitute.Contains(x.goIndex));
 
 
-        Debug.Log("Sto per cambiare colore a " + myList.Count + " CPs");
+        //Debug.Log("Sto per cambiare colore a " + myList.Count + " CPs");
         for (int m = 0; m < myList.Count; m++)
         {
             var controlPointRenderer = myList[m].go.GetComponent<MeshRenderer>();
             if (segmentSelect)
             {
                 selectionList.Add(myList[m].go.transform);
-                myList[m].go.GetComponent<MeshRenderer>().material = OutlineMaterial2;
+                if(highlightingActivated)
+                    myList[m].go.GetComponent<MeshRenderer>().material = OutlineMaterial2;
+                else
+                    myList[m].go.GetComponent<MeshRenderer>().material = highlightMaterial;
                 myList[m].go.transform.parent = null;
                 myList[m].go.transform.parent = _selectedControlPoints;
             } else if (segmentDelete)
@@ -305,8 +339,13 @@ public class TreatSelectionManager : MonoBehaviour
                 myList[m].go.GetComponent<MeshRenderer>().material = myList[m].defautMaterial;
                 myList[m].go.transform.parent = null;
                 myList[m].go.transform.parent = meshCreateControlPoints._initializedControlPoints;
-            } else if (selectionList.Contains(myList[m].go.transform))
-                controlPointRenderer.material = OutlineMaterial2;
+            } else if (selectionList.Contains(myList[m].go.transform)) 
+                if(highlightingActivated)
+                    controlPointRenderer.material = OutlineMaterial2;
+                else 
+                    controlPointRenderer.material = highlightMaterial;
+            else if(!highlightingActivated)
+                controlPointRenderer.material = myList[m].defautMaterial;
             else
                 controlPointRenderer.material = myList[m].outlineMaterial;
         }

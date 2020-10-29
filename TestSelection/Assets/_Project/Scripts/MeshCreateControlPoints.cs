@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using Assets._Project.Scripts.treatment;
 using Leap.Unity.Interaction;
 using UnityEditor;
@@ -74,7 +75,6 @@ public class MeshCreateControlPoints : MonoBehaviour
     private bool UpdateModification;
     //private bool InitializeMesh;
 
-
     private void Start()
     {
         PositionControlPoints = new List<Transform>();
@@ -103,6 +103,7 @@ public class MeshCreateControlPoints : MonoBehaviour
         //CreateControlPoints();
 
         ComputeBarCenter(modelVertices);
+        CreateControlPoints();
 
         //scaleCenter = barCenter;
     }
@@ -116,121 +117,48 @@ public class MeshCreateControlPoints : MonoBehaviour
         //Merge the same CPs that have different tags(belong to different segments)(with hierarchy and tree node)
         //loop for the different segments
         cpDataList.Clear();
+        controlPointList.Clear();
 
-        for (var i = 0; i < readJson.treeNodeLevelx.Count; i++)
-        for (var j = 0; j < readJson.treeNodeLevelx[i].GetData().cageVerticesIndex.Count; j++)
+        for(var i = 0; i < cageVertices.Length; i++)
         {
             var cpData = new ControlPointsData();
-            cpData = cpDataList.Find(x => x.goIndex == readJson.treeNodeLevelx[i].GetData().cageVerticesIndex[j]);
-            if (cpData != null)
-            {
-                var getColor = readJson.treeNodeLevelx[i].GetData().color;
-                cpData.goTags.Add(readJson.treeNodeLevelx[i].GetData().tag);
+            cpData.goIndex = i;
+            cpData.defautMaterial = new Material(Shader.Find("Diffuse"));
+            cpData.outlineMaterial = new Material(Shader.Find("Outlined/Silhouetted Diffuse"));
+            cpData.defautMaterialAssetPath = "Assets/Resources/" + string.Format("level{0}, Default Material Group {1}", cpData.goLevel, cpData.goIndex) + ".mat";
+            cpData.outlineMaterialAssetPath = "Assets/Resources/" + string.Format("level{0}, outlined Material Group {1}", cpData.goLevel, cpData.goIndex) + ".mat";
 
-                cpData.goLevel = readJson.treeNodeLevelx[i].GetLevel();
+            AssetDatabase.CreateAsset(cpData.defautMaterial, cpData.defautMaterialAssetPath);
+            AssetDatabase.CreateAsset(cpData.outlineMaterial, cpData.outlineMaterialAssetPath);
 
-                cpData.goColor.Add(new Color(getColor[0], getColor[1], getColor[2], 255) / 255);
-            }
-            else
-            {
-                cpData = new ControlPointsData();
-                //cpData.go = cube;
-                var getColor = readJson.treeNodeLevelx[i].GetData().color;
-                cpData.goIndex = readJson.treeNodeLevelx[i].GetData().cageVerticesIndex[j];
-                cpData.goTags.Add(readJson.treeNodeLevelx[i].GetData().tag);
+            cpData.defautMaterial.color = new Color(0f, 0f, 0f, 1f);
+            cpData.outlineMaterial.SetColor("_Color", new Color(0f, 0f, 0f, 1f));
 
-                cpData.goLevel = readJson.treeNodeLevelx[i].GetLevel();
-
-                cpData.goColor.Add(new Color(getColor[0], getColor[1], getColor[2], 255) / 255);
-                cpData.defautMaterial = readJson.treeNodeLevelx[i].GetData().defautMaterial;
-                cpData.outlineMaterial = readJson.treeNodeLevelx[i].GetData().outlineMaterial;
-                //Debug.Log("cpData.goTags vertices" + cpData.goTags.Last());
-                cpDataList.Add(cpData);
-            }
+            Bounds bb = objModel.transform.parent.gameObject.GetComponent<Collider>().bounds;
+            float bbDiagonalLength = (bb.min - bb.max).magnitude;
+            float bbOutlineLengthRatio = 0.05f;
+            cpData.outlineMaterial.SetFloat("_Outline", bbOutlineLengthRatio * bbDiagonalLength);
+            cpData.outlineMaterial.SetColor("_OutlineColor", Color.yellow);
+            //Debug.Log("cpData.goTags vertices" + cpData.goTags.Last());
+            cpDataList.Add(cpData);
+            var ControlPoint = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            ControlPoint.tag = selectableTag;
+            var K = initialControlPointPosition[i];
+            ControlPoint.transform.position = new Vector3(K[0], K[1], K[2]);
+            float bbSphereLengthRatio = 0.02f;
+            ControlPoint.transform.localScale = new Vector3(bbSphereLengthRatio * bbDiagonalLength, bbSphereLengthRatio * bbDiagonalLength, bbSphereLengthRatio * bbDiagonalLength);
+            ControlPoint.name = "Control Point " + goCounter;
+            interactCP.Add(ControlPoint.AddComponent<InteractionBehaviour>());
+            ControlPoint.GetComponent<Rigidbody>().useGravity = false;
+            ControlPoint.GetComponent<Rigidbody>().isKinematic = true;
+            ControlPoint.AddComponent<ChangeColor>();
+            goCounter++;
+            ControlPoint.transform.parent = _initializedControlPoints;
+            controlPointList.Add(ControlPoint);
+            cpData.go = ControlPoint;
+            ControlPoint.SetActive(false);
         }
 
-        // compute(mix) the color for each Control Point; add level for each CP
-        for (var i = 0; i < cpDataList.Count; i++)
-        {
-            var mycolor = new Color(0, 0, 0, 0);
-            for (var j = 0; j < cpDataList[i].goColor.Count; j++) mycolor += cpDataList[i].goColor[j];
-            mycolor /= cpDataList[i].goColor.Count;
-            cpDataList[i].goColor.Clear();
-            cpDataList[i].goColor.Add(mycolor);
-        }
-
-
-        //create all CPs
-        if (controlPointList.Count == 0)
-            for (var i = 0; i < meshCage.vertices.Length; i++)
-            {
-                var ControlPoint = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-                var K = initialControlPointPosition[i];
-                ControlPoint.transform.position = new Vector3(K[0], K[1], K[2]);
-                ControlPoint.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
-                ControlPoint.tag = selectableTag;
-                ControlPoint.name = "Control Point " + goCounter;
-                interactCP.Add(ControlPoint.AddComponent<InteractionBehaviour>());
-                ControlPoint.GetComponent<Rigidbody>().useGravity = false;
-                ControlPoint.GetComponent<Rigidbody>().isKinematic = true;
-                ControlPoint.AddComponent<ChangeColor>();
-
-                goCounter++;
-                ControlPoint.transform.parent = _initializedControlPoints;
-                controlPointList.Add(ControlPoint);
-            }
-
-
-        //color, add tags to CPs of different
-        for (var i = 0; i < cpDataList.Count; i++)
-        {
-            for (var j = 0; j < controlPointList.Count; j++)
-            {
-                if (controlPointList[j].transform.position == cageVertices[cpDataList[i].goIndex])
-                {
-                    cpDataList[i].go = controlPointList[j];
-                    var tagSystem0 = cpDataList[i].go.GetComponent<CustomTag>();
-                    if (tagSystem0 == null) cpDataList[i].go.AddComponent<CustomTag>();
-                    var tagSystem1 = cpDataList[i].go.GetComponent<CustomTag>();
-                    tagSystem1.Clear();
-
-                    for (var k = 0; k < cpDataList[i].goTags.Count; k++) tagSystem1.Add(cpDataList[i].goTags[k]);
-
-                    //var controlPointRenderer = cpDataList[i].go.GetComponent<MeshRenderer>();
-                    if(treatSelectionManager.selectionList.Contains(cpDataList[i].go.transform))
-                        cpDataList[i].go.GetComponent<MeshRenderer>().material = treatSelectionManager.highlightMaterial;
-                    else
-                        cpDataList[i].go.GetComponent<MeshRenderer>().material = cpDataList[i].defautMaterial;
-                }
-            }
-        }
-
-
-        //find out the control points that belong to no segment in the cpDatalist, assign them materials etc.
-        for (var i = 0; i < controlPointList.Count; i++)
-        {
-            var cpData = new ControlPointsData();
-            cpData.go = controlPointList[i];
-            var controlPointsOfNoSegment = cpDataList.Find(x => x.go.name == controlPointList[i].name);
-            if (controlPointsOfNoSegment == null && !treatSelectionManager.selectionList.Contains(cpData.go.transform)) //belong to the non=annotated segment
-            {
-                cpData.go.GetComponent<MeshRenderer>().material = defaultMaterial;
-                cpData.defautMaterial = defaultMaterial;
-                cpData.outlineMaterial = outlineMaterial;
-                //cpData.goColor.Add(new Color(0, 0, 0, 1));
-                cpDataList.Add(cpData);
-            }
-        }
-
-        //make the transforms inside the _newPosCP have the right order
-        _newPosCP.Clear();
-        for (var i = 0; i < cageVertices.Length; i++)
-            for (var j = 0; j < controlPointList.Count; j++)
-                if (controlPointList[j].transform.position == cageVertices[i])
-                {
-                    _newPosCP.Add(controlPointList[j].transform);
-                    PositionControlPoints.Add(controlPointList[j].transform);
-                }
     }
 
     //create materials for model
@@ -266,7 +194,70 @@ public class MeshCreateControlPoints : MonoBehaviour
     {
         if (readJson.levelChange)
         {
-            CreateControlPoints();
+            for (var i = 0; i < cpDataList.Count; i++)
+            {
+                cpDataList[i].go.SetActive(true);
+                cpDataList[i].goTags.Clear();
+                cpDataList[i].goColor.Clear();
+            }
+            
+
+            for (var i = 0; i < readJson.treeNodeLevelx.Count; i++)
+                for (var j = 0; j < readJson.treeNodeLevelx[i].GetData().cageVerticesIndex.Count; j++)
+                {
+                    var cpData = cpDataList.Find(x => x.goIndex == readJson.treeNodeLevelx[i].GetData().cageVerticesIndex[j]);
+                    if (cpData != null)
+                    {
+                        var getColor = readJson.treeNodeLevelx[i].GetData().color;
+                        cpData.goTags.Add(readJson.treeNodeLevelx[i].GetData().id.ToString());
+                        cpData.goLevel = readJson.treeNodeLevelx[i].GetLevel();
+                        cpData.goColor.Add(new Color(getColor[0], getColor[1], getColor[2], 255) / 255);
+                    }
+                }
+
+            // compute(mix) the color for each Control Point; add level for each CP
+            for (var i = 0; i < cpDataList.Count; i++)
+            {
+                var mycolor = new Color(0, 0, 0, 0);
+                for (var j = 0; j < cpDataList[i].goColor.Count; j++) mycolor += cpDataList[i].goColor[j];
+                mycolor /= cpDataList[i].goColor.Count;
+                cpDataList[i].goColor.Clear();
+                cpDataList[i].goColor.Add(mycolor);
+                cpDataList[i].defautMaterial.SetColor("_Color", mycolor);
+                cpDataList[i].outlineMaterial.SetColor("_Color", mycolor);
+            }
+
+
+            //color, add tags to CPs of different
+            for (var i = 0; i < cpDataList.Count; i++)
+            {
+                var tagSystem0 = cpDataList[i].go.GetComponent<CustomTag>();
+                if (tagSystem0 == null) cpDataList[i].go.AddComponent<CustomTag>();
+                var tagSystem1 = cpDataList[i].go.GetComponent<CustomTag>();
+                tagSystem1.Clear();
+
+                for (var k = 0; k < cpDataList[i].goTags.Count; k++) tagSystem1.Add(cpDataList[i].goTags[k]);
+
+                //var controlPointRenderer = cpDataList[i].go.GetComponent<MeshRenderer>();
+                if (treatSelectionManager.selectionList.Contains(cpDataList[i].go.transform))
+                    cpDataList[i].go.GetComponent<MeshRenderer>().material = treatSelectionManager.highlightMaterial;
+                else
+                {
+                    cpDataList[i].go.GetComponent<MeshRenderer>().material = cpDataList[i].defautMaterial;
+
+                }
+            }
+
+            //make the transforms inside the _newPosCP have the right order
+            _newPosCP.Clear();
+            for (var i = 0; i < cageVertices.Length; i++)
+                for (var j = 0; j < controlPointList.Count; j++)
+                    if (controlPointList[j].transform.position == cageVertices[i])
+                    {
+                        _newPosCP.Add(controlPointList[j].transform);
+                        PositionControlPoints.Add(controlPointList[j].transform);
+                        break;
+                    }
         }
 
         //sliderValue = slider.value;

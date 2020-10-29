@@ -21,8 +21,14 @@ public class VoiceController : MonoBehaviour
     {
         segmentSelect = false;
         readJson = GameObject.Find("Selection Manager").GetComponent<ReadJson>();
+        //dragModel = GameObject.Find("flowered_teapot_simplified").GetComponent<DragModel>();
         //dragModel = GameObject.Find("hand").GetComponent<DragModel>();
-        dragModel = GameObject.Find("flowered_teapot_simplified").GetComponent<DragModel>();
+        //dragModel = GameObject.Find("bob").GetComponent<DragModel>();
+
+        actions.Add("activate highlighting", treatslectionManager.onActivateHighlighting);
+        actions.Add("stop highlighting", treatslectionManager.onStopHighlighting);
+        actions.Add("display cage", treatslectionManager.onDisplayCage);
+        actions.Add("hide cage", treatslectionManager.onHideCage);
         actions.Add("select", treatslectionManager.OnSelect);
         actions.Add("discard", treatslectionManager.OnDelete);
         actions.Add("select segment", treatslectionManager.OnSelectSegment);
