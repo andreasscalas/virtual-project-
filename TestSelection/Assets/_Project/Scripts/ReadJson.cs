@@ -233,7 +233,7 @@ public class ReadJson : MonoBehaviour
         
         var interLevelsCageSegVerts = new List<int>();
         interLevelsCageSegVerts.Clear();
-        filterBarMatrix(0.21, n.GetData().verticesIndex, interLevelsCageSegVerts);
+        filterBarMatrix(readFileComputeNewcage.threshold, n.GetData().verticesIndex, interLevelsCageSegVerts);
         n.GetData().cageVerticesIndex = interLevelsCageSegVerts;
 
     }
@@ -311,13 +311,14 @@ public class ReadJson : MonoBehaviour
     public void filterBarMatrix(double thres, List<int> ModelSegVertIndexesInput, List<int> ListCageSegOutput)
     {
         //UnityEngine.Debug.Log("this is the a ModelData inside filter");
+        double epsilon = 1e-5;
 
         ListCageSegOutput.Clear();
         for (var i = 0; i < ModelSegVertIndexesInput.Count; i++)
         {
             for (var j = 0; j < readFileComputeNewcage.columnNumberUpdate; j++)
             {
-                if (readFileComputeNewcage.barMatrices[ModelSegVertIndexesInput[i], j] > thres)
+                if (readFileComputeNewcage.barMatrices[ModelSegVertIndexesInput[i], j] > thres - epsilon)
                 {
                     if (!ListCageSegOutput.Contains(j))
                         ListCageSegOutput.Add(j);

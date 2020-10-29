@@ -7,6 +7,9 @@ using UnityEngine;
 
 public class ReadFileComputeNewcage : MonoBehaviour
 {
+
+
+    public double threshold;
     public string barCoordFileName; 
 
     [HideInInspector] public double[,] barMatrices; //the matrix B
@@ -34,17 +37,31 @@ public class ReadFileComputeNewcage : MonoBehaviour
 
     private void Start()
     {
-        Debug.Log("loading matrix 3");
+        //Debug.Log("loading matrix 3");
         barMatrices = ReadMatrixFromFile(barCoordFileName, true);
-        Debug.Log("load matrix 3");
+        //Debug.Log("load matrix 3");
 
-        Debug.Log("loading matrix 1");
+        threshold = double.MaxValue;
+        for (var j = 0; j < barMatrices.GetLength(1); j++)
+        {
+            double max = 0.0f;
+            for (var i = 0; i < barMatrices.GetLength(0); i++)
+            {
+                if (barMatrices[i,j] > max)
+                    max = barMatrices[i,j];
+            }
+            if (max < threshold)
+                threshold = max;
+        }
+
+
+        //Debug.Log("loading matrix 1");
         modelMatrices = ReadMatrixFromFile(modelFileName, false);
-        Debug.Log("load matrix 1");
+        //Debug.Log("load matrix 1");
 
-        Debug.Log("loading matrix 2");
+        //Debug.Log("loading matrix 2");
         cageMatrices = ReadMatrixFromFile(cageFileName, false);
-        Debug.Log("load matrix 2");
+        //Debug.Log("load matrix 2");
 
         meshCreateControlPoints.readJson.init();
 

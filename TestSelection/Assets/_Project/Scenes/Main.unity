@@ -6738,6 +6738,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc56610cfdd4d1c4abf5b4ccf5c8f9cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  threshold: 0
   barCoordFileName: flowered_teapot.coord
   cageFileName: flowered_teapot_cage
   columnNumber: 0
